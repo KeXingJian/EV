@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root {
+    --border-color: #e0e0e0;
+    --font-color: #ffffff;
+    --delete-color: #8e2a2a;
+
+    --1-background-color: #0d1f2d;
+    --2-background-color: #1d2e3d;
+    --3-background-color: #C9D6DF;
+    --hover-color: #354656;
+
+    --1-theme-color: #0d6e6e;
+    --active-color: #ff3d3d;
+    --theme-hover-color: #15ccbe;
+
+    --inactivation-color: #666666;
+
+    --transition-color: linear-gradient(#212121, #212121) padding-box,
+    linear-gradient(145deg, transparent 35%, #e81cff, #ff3d3d) border-box;
+
+}
+
+.resizable-r {
+    background: var(--2-background-color);
+    height: calc(100vh - 80px) !important;
+    overflow: hidden;
+}
