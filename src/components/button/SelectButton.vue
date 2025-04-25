@@ -5,6 +5,9 @@ const props = defineProps({
   modelValue: {
     type: Boolean,
     default: false
+  },
+  inactivation:{
+    default: false
   }
 })
 
@@ -16,12 +19,15 @@ const toggle = (event) => {
 </script>
 
 <template>
-  <label class="switch">
+  <label class="switch" :class="{
+          inactivation: inactivation
+        }">
     <input
         type="checkbox"
         :checked="modelValue"
         @change="toggle"
         @keydown.space.prevent="toggle"
+        :disabled="inactivation"
     >
     <span class="slider"></span>
   </label>
@@ -83,4 +89,14 @@ const toggle = (event) => {
 .switch:hover .slider:before {
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
+
+.inactivation {
+  cursor: not-allowed !important;
+
+  .slider{
+    cursor: not-allowed !important;
+    background-color: var(--inactivation-color) !important;
+  }
+}
+
 </style>

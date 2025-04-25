@@ -2,10 +2,10 @@
   <Menu></Menu>
   <ColorMenu></ColorMenu>
   <OptionItem></OptionItem>
-  <main >
+  <Page></Page>
+  <main>
     <HeaderNavigation></HeaderNavigation>
     <div ref="container" class="container">
-
       <vue-resizable
           :active="['r']"
           :min-width="420"
@@ -17,12 +17,10 @@
           <SelectArea></SelectArea>
         </section>
       </vue-resizable>
-
       <section class="section-right">
         <GraphCanvas></GraphCanvas>
         <AboutRegion></AboutRegion>
       </section>
-
     </div>
   </main>
 
@@ -41,26 +39,19 @@ import Menu from "./components/card/Menu.vue";
 import ColorMenu from "./components/card/ColorMenu.vue";
 import OptionItem from "./components/card/OptionItem.vue";
 import {storeToRefs} from "pinia";
-import {useOptionConfig} from "./store/OptionConfig.js"; // 引入 vue-resizable
+import {useOptionConfig} from "./store/OptionConfig.js";
+import {pushMsg} from "./utils/MsgUtils.js";
+import Page from "./components/rightPage/Page.vue"; // 引入 vue-resizable
 
 const onResize = () => {
   emitter.emit("resize");
 }
 
-const {Gs,Hs,Vs,Ss} = storeToRefs(useOptionConfig())
-
-const defaultGraph = ()=>{
-  Hs.value[0].G = Gs.value[0]
-  Vs.value[0].G = Gs.value[0]
-  Ss.value[0].G = Gs.value[0]
-  console.log('装载第一图')
-}
-
-console.log()
+const {Hs,Vs,Ss} = storeToRefs(useOptionConfig())
 
 onMounted(() => {
 window.addEventListener('resize', onResize)
-  defaultGraph()
+pushMsg(0,'欢迎使用DATAVISION,如果您是第一次使用,强烈建议您关注通知栏,它会解答您的一些困惑,点击右侧半球可以查看使用手册')
 })
 
 onBeforeUnmount(() => {
@@ -96,7 +87,7 @@ main {
 }
 
 .section-right{
-  margin: 10px;
+  margin-left: 6px;
   display: grid;
   cursor: pointer;
   grid-template-rows: calc(100vh - 80px) auto;

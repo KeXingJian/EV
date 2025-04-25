@@ -1,31 +1,24 @@
+<script setup>
+
+</script>
+
 <template>
-  <button type="button" class="button" :style="{
-    width: `${width}`,
-  }">
+  <button type="button" class="button">
     <span class="button__text"><slot></slot></span>
     <span class="button__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" height="24" fill="none" class="svg"><line y2="19" y1="5" x2="12" x1="12"></line><line y2="12" y1="12" x2="19" x1="5"></line></svg></span>
   </button>
 </template>
 
-<script setup>
-defineProps({
-  width: {
-    type: String,
-    default: '150px'
-  }
-})
-</script>
-
-
 <style scoped>
 .button {
   position: relative;
+  width: 150px;
   height: 40px;
   cursor: pointer;
   display: flex;
   align-items: center;
   border: 1px solid var(--1-theme-color);
-  background-color: var(--theme-hover-color);
+  background-color: var(--1-theme-color);
 }
 
 .button, .button__icon, .button__text {
@@ -43,7 +36,7 @@ defineProps({
   transform: translateX(109px);
   height: 100%;
   width: 39px;
-  background-color: var(--1-theme-color);
+  background-color: var(--theme-hover-color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -55,7 +48,7 @@ defineProps({
 }
 
 .button:hover {
-  background-color: var(--1-theme-color);
+  background: var(--theme-hover-color);
 }
 
 .button:hover .button__text {
@@ -68,10 +61,10 @@ defineProps({
 }
 
 .button:active .button__icon {
-  background-color: var(--theme-hover-color);
+  background-color: var(--1-theme-color);
 }
 
 .button:active {
-  border: 1px solid var(--theme-hover-color);
+  border: 1px solid var(--1-theme-color);
 }
 </style>

@@ -65,7 +65,7 @@ ul{
 }
 
 .option-item{
-  width: 100px;
+
   padding: 10px;
   background: var(--1-background-color);
   cursor: pointer;
@@ -78,6 +78,15 @@ ul{
     cursor: pointer;
     border: none;
     background: var(--1-background-color);
+    max-width: 150px;
+    min-width: 80px;
+  }
+  span{
+    white-space: nowrap;      /* 禁止换行 */
+    overflow: hidden;         /* 隐藏溢出内容 */
+    text-overflow: ellipsis;  /* 显示省略号 */
+    width: 100%;              /* 必须设置宽度（或max-width）*/
+    display: block;           /* 块级元素或 inline-block */
   }
 
 }

@@ -1,13 +1,14 @@
 import {useOptionConfig} from "../store/OptionConfig.js";
 import {storeToRefs} from "pinia";
 import emitter from "../emitter/emitter.js";
-import {getGridSet} from "./GridSetUtils.js";
-import {addSeries, loadH, loadV} from "./ChartUtils.js";
+import {getGridSet, getPolarSet} from "./GridSetUtils.js";
+import {addHForType1, addSeries, addVForType1, load4Stack, loadH, loadV} from "./ChartUtils.js";
+
 
 export const checkAxis = (axis, type) => {
     console.log('检查轴类型变更合法性')
     //检查变更轴类型字段是否为数值
-    const {fileData} = storeToRefs(useOptionConfig())
+    const {fileData,Ss} = storeToRefs(useOptionConfig())
     const index = axis.field
     //类型->判断存在->是否符合->变为-1
     if (
@@ -32,6 +33,21 @@ export const checkAxis = (axis, type) => {
         console.error('检查轴类型变更不合法性')
         axis.field = -1
         if (axis.isLoad) {
+            if (type===0){
+                Ss.value.forEach(item=>{
+                    if (item.isLoad && item.H.id === axis.id){
+                        seriesChange(item)
+                    }
+                })
+            }else {
+                Ss.value.forEach(item=>{
+                    if (item.isLoad && item.V.id === axis.id){
+                        seriesChange(item)
+                    }
+                })
+            }
+
+
             console.log('发现其已加载,开始卸载')
             unloadAxis(axis, type)
         }
@@ -42,7 +58,6 @@ export const checkAxis = (axis, type) => {
 export const checkSeriesForVDelete = (V) => {
     console.log('检查由于V轴删除所影响的数据集')
     const {Ss} = storeToRefs(useOptionConfig())
-
 
     console.log('卸载横轴')
     if (V.isLoad) unloadAxis(V, 1)
@@ -70,9 +85,6 @@ export const checkSeriesForHDelete = (H) => {
     console.log('检查由于H轴删除所影响的数据集')
     const {Ss} = storeToRefs(useOptionConfig())
 
-    console.log('卸载横轴')
-    if (H.isLoad) unloadAxis(H, 0)
-
     console.log('检查所有数据集')
     Ss.value.forEach(s => {
         if (!s.V) {
@@ -89,6 +101,10 @@ export const checkSeriesForHDelete = (H) => {
             s.H = null
         }
     })
+
+    console.log('卸载横轴')
+    if (H.isLoad) unloadAxis(H, 0)
+
 }
 
 export const checkGraphDelete = (gid) => {
@@ -119,7 +135,15 @@ export const checkGraphDelete = (gid) => {
     emitter.emit('load-chart')
 }
 
-export const allSeriesCheck = () => {
+export const allSeriesCheck = (gId) => {
+    const {Ss} = storeToRefs(useOptionConfig())
+    console.log('对所有系列进行检查')
+    Ss.value.filter(i=>i.G.id ===gId).forEach(s => {
+        seriesChange(s)
+    })
+}
+
+export const allSeriesCheckByD = () => {
     const {Ss} = storeToRefs(useOptionConfig())
     console.log('对所有系列进行检查')
     Ss.value.forEach(s => {
@@ -128,14 +152,24 @@ export const allSeriesCheck = () => {
 }
 
 export const unloadAxis = (axis, type) => {
-    const {echartsOptions,Ss} = storeToRefs(useOptionConfig())
+    const {echartsOptions,Hs,Vs} = storeToRefs(useOptionConfig())
     if (type === 0) {
-        console.log('H轴卸载')
+        console.log('H轴卸载4x0y系')
         echartsOptions.value.xAxis = echartsOptions.value.xAxis.filter(i => i.id !== axis.id)
-    } else {
-        console.log('V轴卸载')
+        echartsOptions.value.radiusAxis = echartsOptions.value.radiusAxis.filter(i => i.id !== axis.id)
+
+    } else if (type === 1){
+        console.log('V轴卸载4x0y系')
         echartsOptions.value.yAxis = echartsOptions.value.yAxis.filter(i => i.id !== axis.id)
+        echartsOptions.value.angleAxis = echartsOptions.value.angleAxis.filter(i => i.id !== axis.id)
+
     }
+    if (axis.id === -2+axis.G?.name) {
+        console.log('重映射中移除')
+        Hs.value = Hs.value.filter(i => i.id !== axis.id)
+        echartsOptions.value.polar = echartsOptions.value.polar.filter(i => i.id !== axis.G.id)
+    }
+
     axis.isLoad = false
     console.log('轴卸载完成',axis)
 }
@@ -173,6 +207,32 @@ export const seriesChange = (series) => {
             console.log('加载失败')
             return
         }
+
+        if (series.G.type===0 && series.G.isStack && series.H.type === 0 && series.V.type===0){
+            console.log('堆叠图使用双类目轴不准允加载')
+            return
+        }
+        if (series.G.type===0 && series.G.isStack && ((!series.G.stackType && series.V.type === 0) || (series.G.stackType && series.H.type===0)) ) {
+            console.log('堆叠图数值轴不一致,不准允加载')
+            return
+        }
+
+        if (series.G.type === 1 && ((series.H.type===0 && series.V.type === 0) || (series.H.type===1 && series.V.type === 1))) {
+            console.log("极坐标下轴类型不成对,不准予加载")
+            return
+        }
+
+        if (series.G.type === 1 && ((!series.G.polarType && series.V.type === 0) || series.G.polarType && series.H.type===0 )){
+            console.log("极坐标下,数值轴不一致不准予加载")
+            return
+        }
+
+
+        if (series.G.type === 2 && series.V.type ===0){
+            console.log('饼图下V轴不为数值轴,不准予加载')
+            return
+        }
+
         console.log('准予加载')
         //合法性检验通过,准予加载
         loadOptions(series)
@@ -181,9 +241,101 @@ export const seriesChange = (series) => {
 
 //加载配置项!
 export const loadOptions = (series) => {
-    const {echartsOptions} = storeToRefs(useOptionConfig())
+    const {echartsOptions,Ss,Hs,Vs,Gs} = storeToRefs(useOptionConfig())
+
     console.log('构建数据')
-    const data = getData(series.H.field, series.V.field)
+    const data = getData(series.H.field, series.V.field,series.D)
+
+    if (series.G.type !== 1 && series.G.isStack && !series.G.isStackAxisLoad){
+        load4Stack(series.G,Ss,Hs,Vs,echartsOptions)
+    }
+
+    const polarSet = getPolarSet()
+    const polarCount = Gs.value.filter(i => i.type === 1).length
+
+    console.log('根据极坐标数载入polar', polarCount)
+    if (polarCount===0) echartsOptions.value.polar=[]
+
+    if (series.G.type === 1 && !series.G.isPolarAxisLoad){
+
+        console.log('载入占位轴')
+        Gs.value.filter(i=> i.type === 1 && !Hs.value.some(h => h.id === (-2 + i.name))
+        )
+            .forEach(i => {
+                console.log('发现极坐标加载请求',i)
+
+                const polar = polarSet[polarCount - 1].item
+                polar.id = i.id
+                i.pi = polarSet[polarCount - 1].args.pi
+                i.po = polarSet[polarCount - 1].args.po
+                i.pl = polarSet[polarCount - 1].args.pl
+                i.pt = polarSet[polarCount - 1].args.pt
+
+                echartsOptions.value.polar.push(polar)
+                const polarHAxis =  {
+                    id: null,
+                    name: null,
+                    G: null,
+                    isLoad: true,
+                    field: -1,
+                    type: 0,
+                    axisName: 'null',
+                    unit: '',
+                    textColor: '#fff',
+                    labelColor: '#fff',
+                    lineColor: '#0D6E6E',
+                    tickLine: false,
+                    splitLine: false,
+                    labelShow: true,
+                    show: true,
+                    symbol: true,
+                    position: false,
+                    offset: 0,
+                    polarId: -1,
+                }
+                const polarVAxis =  {
+                    id: null,
+                    name: null,
+                    G: null,
+                    isLoad: true,
+                    field: -1,
+                    type: 0,
+                    axisName: null,
+                    unit: '',
+                    textColor: '#fff',
+                    labelColor: '#fff',
+                    lineColor: '#0D6E6E',
+                    tickLine: false,
+                    splitLine: false,
+                    labelShow: true,
+                    show: true,
+                    symbol: true,
+                    position: false,
+                    offset: 0,
+                    polarId: -1,
+                    sa: 0,
+                    ea:360
+                }
+
+                polarHAxis.id = -2+i.name
+                polarHAxis.G = i
+                polarHAxis.name = '极坐标轴-'+i.name
+                polarHAxis.axisName = '极坐标轴-'+i.name
+                polarHAxis.polarId = i.id
+                polarHAxis.type = i.polarType ? 1 : 0
+                Hs.value.push(polarHAxis)
+                addHForType1(polarHAxis,echartsOptions)
+
+                polarVAxis.id = -2+i.name
+                polarVAxis.G = i
+                polarVAxis.name = '极坐标轴-'+i.name
+                polarVAxis.axisName = '极坐标轴-'+i.name
+                polarVAxis.polarId = i.id
+                polarVAxis.type = i.polarType ? 0 : 1
+                Vs.value.push(polarVAxis)
+                addVForType1(polarVAxis,echartsOptions)
+            })
+    }
 
     loadH(series.H,echartsOptions)
     loadV(series.V,echartsOptions)
@@ -192,24 +344,30 @@ export const loadOptions = (series) => {
         console.log('为重载,从echartsOptions尝试找到系列')
         const targetSeries = echartsOptions.value.series.find(i => i.id === series.id)
         console.log('系列找到,开始重载')
-        if (series.G.type === 0) { //x0y类型
+        if (series.G.type === 0 || series.G.type === 1) { //x0y类型
             console.log('重载x0y系')
             targetSeries.data = data
-        } else if (series.G.type === 1) { //极坐标
-            console.log('重载极坐标系')
+            if (series.type === 2 && series.scatterConfig.type === 1 && series.scatterConfig.mapField !==-1) {
+                console.log('重载为气泡,更新数据')
+                targetSeries.data = getData3(series.H.field, series.V.field, series.scatterConfig.mapField,series.D)
+            }
+
         } else if (series.G.type === 2) { //饼图
             console.log('重载饼图系')
-        } else if (series.G.type === 3) { // 雷达
-            console.log('重载雷达系')
+            targetSeries.data = getPieData(
+                series.H.field,
+                series.V.field,
+                series.color,
+                series.D
+            )
         }
-
     } else {
         console.log('开始加载系列',series)
         addSeries(series,echartsOptions,data)
         series.isLoad = true
     }
 
-    emitter.emit('load-chart')
+    emitter.emit('load-chart',series.G.type)
 }
 
 export const unloadSeries = (s) => {
@@ -223,6 +381,7 @@ export const unloadSeries = (s) => {
 export const reloadGraph = () => {
     const {Gs, Hs, Vs, echartsOptions} = storeToRefs(useOptionConfig())
     const gridSet = getGridSet()
+
     console.log('开始重载图')
     console.log('令所有图变更gridIndex,以及初始化边距和大小')
     Gs.value.forEach((g, index) => {
@@ -237,13 +396,15 @@ export const reloadGraph = () => {
     console.log('修改所有已加载H轴echartsOptions的gridIndex')
     Hs.value.forEach(h => {
         if (h.isLoad) {
-            echartsOptions.value.xAxis.find(i => i.id === h.id).gridIndex = h.G.gridIndex
+            const target =echartsOptions.value.xAxis.find(i => i.id === h.id)
+                if (target) target.gridIndex = h.G.gridIndex
         }
     })
     console.log('修改所有已加载V轴echartsOptions的gridIndex')
     Vs.value.forEach(v => {
         if (v.isLoad) {
-            echartsOptions.value.yAxis.find(i => i.id === v.id).gridIndex = v.G.gridIndex
+            const target =echartsOptions.value.yAxis.find(i => i.id === v.id)
+            if (target) target.gridIndex = v.G.gridIndex
         }
     })
 
@@ -278,12 +439,47 @@ export const buildGrid = (t, b, l, r, w, h) => {
     }
 }
 
-const getData = (hIndex, vIndex) => {
-    const {dataset} = storeToRefs(useOptionConfig())
-    return dataset.value.source.map(item => {
+export const buildPolar = (pi,po,pl,pt)=>{
+    return {
+        radius: [`${pi}%`,`${po}%`],
+        center: [`${pl}%`, `${pt}%`]
+    }
+}
+
+export const getData = (hIndex, vIndex,dataset) => {
+
+    console.log(hIndex)
+    console.log(vIndex)
+
+    const store = useOptionConfig()
+    return store.getDataFromD(dataset).map(item => {
         return [
             item[hIndex],
             item[vIndex]
         ]
+    })
+}
+
+export const getData3 = (hIndex, vIndex,mapIndex,dataset) => {
+    const store = useOptionConfig()
+    return store.getDataFromD(dataset).map(item => {
+        return [
+            item[hIndex],
+            item[vIndex],
+            item[mapIndex],
+        ]
+    })
+}
+
+export const getPieData = (hIndex, vIndex,color,dataset)=>{
+    const store = useOptionConfig()
+    return store.getDataFromD(dataset).map(item => {
+        return {
+            name:item[hIndex],
+            value:item[vIndex],
+            itemStyle: {
+                color: color
+            },
+    }
     })
 }

@@ -39,7 +39,7 @@ import emitter from "../../emitter/emitter.js";
 import {computed} from "vue";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
-import {allSeriesCheck, checkAxis, checkSeriesForHDelete, seriesChange} from "../../utils/CheckUtils.js";
+import {allSeriesCheck, checkAxis, checkSeriesForHDelete} from "../../utils/CheckUtils.js";
 
 const props = defineProps({
   modelItem:{
@@ -98,11 +98,6 @@ const showOption4Type = (event) => {
       console.log('轴类型切换',target)
       target.type = index
       checkAxis(target,0)
-      Ss.value.forEach(item=>{
-        if (item.isLoad && item.H.id === target.id){
-          seriesChange(item)
-        }
-      })
     }
   })
 }
@@ -116,7 +111,7 @@ const showOption4Var = (event) => {
     handle: (index,target)=>{
       console.log('轴字段切换',target)
       target.field = index
-      allSeriesCheck()
+      allSeriesCheck(target.G.id)
     }
   })
 }

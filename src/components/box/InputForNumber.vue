@@ -5,17 +5,20 @@
     <input
         class="input"
         :placeholder="text"
-        required=""
-        type="text"
-        :value="modelValue"
-        @input="$emit('update:modelValue', $event.target.value)"
+        required
+        type="number"
+        :value="displayValue"
+        @input="handleInput($event.target.value)"
+        @blur="handleBlur"
     >
     <span class="input-border"></span>
   </div>
 </template>
 
 <script setup>
-defineProps({
+import {ref, watch} from "vue";
+
+const props = defineProps({
   text:{
     type: String,
     required:true
@@ -26,14 +29,38 @@ defineProps({
   },
   // v-model 绑定的值
   modelValue: {
-    type: String,
-    default: ''
+    type: Number,
+    default: 0
   }
 })
+
+
+const emit = defineEmits(['update:modelValue']);
+const displayValue = ref(props.modelValue.toString());
+
+// 当外部值变化时更新显示值
+watch(() => props.modelValue, (newVal) => {
+  displayValue.value = newVal.toString();
+});
+
+const handleInput = (value) => {
+  displayValue.value = value; // 允许临时显示输入内容
+};
+
+const handleBlur = () => {
+  const num = Number(displayValue.value);
+  if (!isNaN(num)) {
+    emit('update:modelValue', num);
+  } else {
+    // 无效时恢复原值
+    displayValue.value = props.modelValue.toString();
+  }
+};
 </script>
 
 <style scoped>
 .form {
+
   --border-height: 1px;
   --border-before-color: rgba(221, 221, 221, 0.39);
   --border-after-color: #5891ff;

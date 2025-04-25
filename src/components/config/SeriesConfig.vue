@@ -1,14 +1,14 @@
 <template>
   <div class="series-config">
 
-    <div class="chart-select" v-if="item.G.type===0">
+    <div class="chart-select" v-if="item.G.type===0 || item.G.type===1">
       <RadioBox
           v-model="item.type"
           :options="GraphTypeSelect"
           :name="'GraphTypeSelect'+item.id"
       ></RadioBox>
     </div>
-    <div class="t-1">
+    <div class="t-1" v-if="item.G.type===0 || item.G.type===1">
       <div class="config-item">
         <span>标签:</span>
         <CheckBox v-model="item.isLabel"></CheckBox>
@@ -16,6 +16,10 @@
       <div class="config-item">
         <span>系列:</span>
         <ColorPoint v-model="item.color"></ColorPoint>
+      </div>
+      <div class="config-item">
+
+        <InputBox width="100" text="text" v-model="item.name"></InputBox>
       </div>
     </div>
     <component :is="currentView" :item="item"></component>
@@ -29,13 +33,14 @@ import LineChartL from "../GrpahType/LineChartL.vue";
 import BarChartL from "../GrpahType/BarChartL.vue";
 import PieChartL from "../GrpahType/PieChartL.vue";
 import ScatterChartL from "../GrpahType/ScatterChartL.vue";
-import RadarChartL from "../GrpahType/RadarChartL.vue";
 import CheckBox from "../box/CheckBox.vue";
 import ColorPoint from "../button/ColorPoint.vue";
 import {chartType} from "../../utils/ChartUtils.js";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
 import emitter from "../../emitter/emitter.js";
+import ProgressBarArea from "../button/ProgressBarArea.vue";
+import InputBox from "../box/InputBox.vue";
 
 const props = defineProps({
   item: {
@@ -68,7 +73,6 @@ const views = [
   markRaw(BarChartL),  // [!code ++]
   markRaw(ScatterChartL), // [!code ++]
   markRaw(PieChartL),  // [!code ++]
-  markRaw(RadarChartL) // [!code ++]
 ]
 
 // 用 watchEffect 替代 onMounted + watch 组合
@@ -79,16 +83,16 @@ watchEffect(() => {
 const {type} = toRefs(props.item)
 
 watch(type, (newVal) =>{
-
   const target = echartsOptions.value.series.find(i=>i.id===props.item.id)
   target.type = chartType[newVal]
+  if (newVal !==2){
+    target.symbolSize = undefined
+  }
   console.log('类型变更,触发合并',target)
-  console.log('类型变更,触发合并',echartsOptions.value)
   emitter.emit('merge-option')
-
-
-
 })
+
+
 </script>
 
 <style scoped>
@@ -131,4 +135,23 @@ watch(type, (newVal) =>{
     width: 53px;
   }
 }
+
+.ProgressBarArea {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: 300ms ease-in-out;
+
+  > div {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+}
+
+.isLayer.ProgressBarArea {
+  grid-template-rows: 1fr;
+}
+
 </style>

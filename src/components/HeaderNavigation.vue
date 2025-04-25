@@ -20,11 +20,12 @@
 <script setup>
 import { ref } from 'vue';
 import * as XLSX from 'xlsx';
-import {uploadExcel} from "../api/index.js";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../store/OptionConfig.js";
 import {analyzeColumns, detectRowCount} from "../utils/ExcelUtils.js";
 import emitter from "../emitter/emitter.js";
+import {init} from "../utils/InitUtils.js";
+import {pushMsg} from "../utils/MsgUtils.js";
 
 
 // 策略配置
@@ -32,7 +33,7 @@ const STRATEGY_THRESHOLD = 1000000; // 前端处理最大行数
 const fileInput = ref(null);
 let isFrontend = false
 
-
+const store = useOptionConfig()
 // 数据存储结构
 const {fileData,Ds,dataset,Ss,Hs,Vs} = storeToRefs(useOptionConfig())
 
@@ -51,12 +52,9 @@ const handleFileUpload = async (e) => {
   const processingMode = rowCount > STRATEGY_THRESHOLD ? 'backend' : 'frontend';
   if(!fileData.value.raw) cleanup()
   if (processingMode === 'backend') {
-    const result = await uploadExcel(file)
-    console.log(result)
-    isFrontend = false
+
   }else {
-    // 总处理开始时间
-    const totalStart = performance.now()
+
     isFrontend = true
     // 新增前端处理逻辑
     const reader = new FileReader();
@@ -75,6 +73,7 @@ const handleFileUpload = async (e) => {
       dataset.value.dimension = fileData.value.columnStats.map(i=>i.field)
 
       console.log('数据导入完成',dataset.value)
+      console.log('数据导入完成',fileData.value)
 
       importDone()
     };
@@ -83,26 +82,22 @@ const handleFileUpload = async (e) => {
 
 };
 
+const generateAnalysisReport = (data)=> {
+  const anomalies = data.filter(item => item.hasAnomaly);
+
+  if (anomalies.length > 0) {
+    const anomalyFields = anomalies.map(item => item.field);
+    return `您的数据解析完毕,共计${fileData.value.rowCount}条数据条目，但是发现字段[${anomalyFields.join(', ')}]下的条目存在数据类型不一致或为空的情况，在必要时刻将移除该条目`;
+  }
+  return `您的数据解析完毕${fileData.value.rowCount}条数据条目，可以开始构建系列啦!!!`;
+}
+
 const importDone = () =>{
-  if (fileData.value.columnStats){
-    Ds.value[0] =  {
-      id: 0,
-      name: "ROOT",
-      from: 'excel import',
-      alias: 'ROOT',
-      count: dataset.value.source.length,
-      options:{
-        filter: [],
-        group: [],
-      },
-    }
+  if (fileData.value.columnStats) {
 
-    Ss.value[0].H = Hs.value[0]
-    Ss.value[0].V = Vs.value[0]
-    Ss.value[0].D = Ds.value[0]
-    console.log('创建ROOT数据集')
-    console.log('装载第一系列')
-
+    init()
+    pushMsg(0,generateAnalysisReport(fileData.value.columnStats))
+    store.refreshDataset(Ds.value[0].id)
     emitter.emit('load-chart')
   }
 

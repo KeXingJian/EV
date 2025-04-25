@@ -63,14 +63,18 @@ const {Hs, Vs, Ss} = storeToRefs(useOptionConfig())
 const H = computed(() => {
   return Hs.value.filter(h => {
     if (!h || !h.G) return false
-    return h.id !==-1+h.G.name && h.G.id === props.graph.id
+    return h.id !==-1+h.G.name &&
+        h.G.id === props.graph.id &&
+        h.id !== -2+h.G.name
   })
 })
 
 const V = computed(() => {
   return Vs.value.filter(v => {
     if (!v || !v.G) return false
-    return v.id !==-1+v.G.name && v.G.id === props.graph.id
+    return v.id !==-1+v.G.name &&
+        v.G.id === props.graph.id &&
+        v.id !== -2+v.G.name
   })
 })
 

@@ -21,7 +21,7 @@ const toggle = (event) => {
 <template>
   <label class="switch" :class="{
           inactivation: inactivation
-        }">>
+        }">
     <input
         type="checkbox"
         :checked="modelValue"

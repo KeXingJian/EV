@@ -1,71 +1,130 @@
 <template>
   <div class="container">
-    <div class="options">
-      <AddButton @click="addBreakpointBetweenLastTwo">添加分界点</AddButton>
-      <DeleteButton @click="removeSecondLastBreakpoint" v-if="breakpoints.length > 2">删除分界点</DeleteButton>
-
-    </div>
-    <!-- 进度条容器 -->
-    <div
-        class="progress-bar"
-        ref="progressBar"
-    >
-      <!-- 颜色分段 -->
-      <div
-          v-for="(segment, index) in colorSegments"
-          :key="index"
-          class="color-segment"
-          :style="{
-          left: segment.start + '%',
-          width: (segment.end - segment.start) + '%',
-          backgroundColor: segment.color
-        }"
-      ></div>
-
-      <!-- 断点组件 -->
-      <div
-          v-for="(bp, index) in sortedBreakpoints"
-          :key="index"
-          class="breakpoint"
-          :style="{
-            left: bp.position + '%',
-          }"
-          @mousedown="startDragging(index, $event)"
-      >
-        <div v-if="index === draggingIndex" id="range-thumb" ref="rangeThumb" class="range__thumb" >
-          <div ref="rangeValue" class="range__value">
-            <span class="range__value-number">{{ bp.position }}</span>
-          </div>
-        </div>
+    <div>
+      <div class="config-item">
+        <span>精度:</span>
+        <ProgressBar
+            v-model="precision"
+            :width="40"
+            :min="0"
+            :max="10"
+            :step="1"
+        ></ProgressBar>
+      </div>
+      <div class="config-item">
+        <span :style="{
+          width:'55px'
+        }">最小值:</span>
+        <InputForNumber text="min" :width="100" v-model="min.visualMapMin">
+        </InputForNumber>
+      </div>
+      <div class="config-item">
+        <span :style="{
+          width:'55px'
+        }">最大值:</span>
+        <InputForNumber text="Max" :width="100" v-model="max.visualMapMax">
+        </InputForNumber>
       </div>
     </div>
 
+    <div>
+      <div class="config-item">
+        <span>等分:</span>
+        <CheckBox v-model="isEq"></CheckBox>
+      </div>
+      <div class="config-item">
+        <span :style="{
+          width:'65px'
+        }">左开右闭</span>
+        <SelectButton v-model="max.visualMode"></SelectButton>
+        <span :style="{
+          width:'80px'
+        }">左闭右开</span>
+      </div>
+      <div class="options">
+        <AddButton @click="addBreakpointBefore($event)">添加分界点</AddButton>
+        <DeleteButton @click="removeBreakpoint">删除分界点</DeleteButton>
+      </div>
+    </div>
+    <div>
+
+      <!-- 进度条容器 -->
+      <div class="progress-bar" ref="progressBar">
+        <!-- 颜色分段 -->
+        <div
+            v-for="(segment, index) in colorSegments"
+            :key="index"
+            class="color-segment"
+            @click.stop="changeSegmentColor(index, $event)"
+            :style="{
+          left: segment.start + '%',
+          width: (segment.end - segment.start) + '%',
+          backgroundColor: segment.color
+        }"></div>
+
+        <!-- 断点组件 -->
+        <div
+            v-for="(bp, index) in sortedBreakpoints"
+            :key="index"
+            class="breakpoint"
+            :style="{
+            left: bp.position + '%',
+          }"
+            @mousedown="startDragging(index, $event)"
+        >
+          <div v-if="index === draggingIndex" id="range-thumb" ref="rangeThumb" class="range__thumb">
+            <div ref="rangeValue" class="range__value">
+              <span class="range__value-number">{{ calcActualValue(bp.position) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
 
   </div>
 </template>
 
 <script setup>
 import {ref, reactive, computed, onMounted, watch} from 'vue';
-import AddButton from "./AddButton.vue";
-import DeleteButton from "./DeleteButton.vue";
+import DeleteButton from "../svg/DeleteButton.vue";
+import AddButton from "../svg/AddButton.vue";
+import CheckBox from "../box/CheckBox.vue";
+import emitter from "../../emitter/emitter.js";
+import SelectButton from "./SelectButton.vue";
+import ProgressBar from "./ProgressBar.vue";
+import InputForNumber from "../box/InputForNumber.vue";
 
-const currentMoveIndex = ref(-1)
+const props = defineProps({
+  defaultColor: {
+    type: String,
+    required: true
+  },
+  min: {type: Object},
+  max: {type: Object},
+  modelValue: Array
+})
 
+const emit = defineEmits(['update:modelValue']);
+
+const isEq = ref(false)
+const mode = ref(false)
+const precision = ref(0)
 // 响应式引用
 const progressBar = ref(null);
 const draggingIndex = ref(null);
 
 
-// 初始断点数据（包含位置和颜色）
 const breakpoints = reactive([
-  {position: 0, color: '#FF6B6B'},
+  {position: 0, color: props.defaultColor},
   {position: 100, color: '#4ECDC4'}
 ]);
+
 
 const colorSegments = computed(() => {
   return sortedBreakpoints.value.slice(0, -1).map((bp, i) => ({
     start: bp.position,
-    end: sortedBreakpoints.value[i+1].position,
+    end: sortedBreakpoints.value[i + 1].position,
     color: bp.color
   }));
 });
@@ -75,9 +134,21 @@ const sortedBreakpoints = computed(() => {
   return [...breakpoints].sort((a, b) => a.position - b.position);
 });
 
+// 生成v-model数据
+const modelValue = computed(() => {
+  return sortedBreakpoints.value.slice(0, -1).map((bp, index) => {
+    const current = calcActualValue(bp.position);
+    const next = calcActualValue(sortedBreakpoints.value[index + 1].position);
+
+    return props.max.visualMode
+        ? {gte: current, lt: next, color: bp.color}
+        : {gt: current, lte: next, color: bp.color};
+  })
+})
+
 // 开始拖拽
 const startDragging = (index, e) => {
-  if (index === 0 || index === breakpoints.length -1) return
+  if (index === 0 || index === breakpoints.length - 1 || isEq.value) return
   draggingIndex.value = index;
   const mouseMoveHandler = (e) => {
     if (draggingIndex.value === null) return;
@@ -108,41 +179,158 @@ const startDragging = (index, e) => {
   window.addEventListener('mouseup', mouseUpHandler);
 };
 
-// 生成随机颜色
-const getRandomColor = () => {
-  return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-};
-
 // 在最后两个断点中间添加新断点
-const addBreakpointBetweenLastTwo = () => {
-  if (sortedBreakpoints.value.length < 2) return;
-
-  const lastIndex = sortedBreakpoints.value.length - 1;
-  const prevLast = sortedBreakpoints.value[lastIndex - 1];
-  const currentLast = sortedBreakpoints.value[lastIndex];
-
-  const newPosition = (prevLast.position + currentLast.position) / 2;
-
-  breakpoints.push({
-    position: newPosition,
-    color: getRandomColor()
-  });
-  console.log(breakpoints)
+const addBreakpointBefore = (event) => {
+  emitter.emit('show-menu-color',
+      {
+        x: event.clientX,
+        y: event.clientY,
+        handle: (color) => {
+          addBreakpoint(color)
+        }
+      })
 };
 
-// 删除倒数第二个断点（确保至少保留2个）
-const removeSecondLastBreakpoint = () => {
+// 修改后的添加断点方法
+const addBreakpoint = (color) => {
+  const middlePoints = breakpoints.slice(1, -1);
+  const newCount = middlePoints.length + 1;
+  const positions = calculateEqualPositions(newCount);
+
+  // 保留原有颜色顺序并添加新颜色
+  const newMiddle = positions.map((pos, index) => ({
+    position: pos,
+    color: index < middlePoints.length ? middlePoints[index].color : color
+  }));
+
+  // 更新断点数组
+  breakpoints.splice(1, middlePoints.length, ...newMiddle);
+};
+
+// 修改后的删除断点方法
+const removeBreakpoint = () => {
   if (breakpoints.length <= 2) return;
 
-  // 找到倒数第二个断点的索引
-  const indexToRemove = sortedBreakpoints.value.length - 1;
-  breakpoints.splice(indexToRemove, 1);
+  const middlePoints = breakpoints.slice(1, -1);
+  const newCount = middlePoints.length - 1;
+  if (newCount < 0) return;
+
+  const positions = calculateEqualPositions(newCount);
+
+  // 保留剩余颜色
+  const newMiddle = positions.map((pos, index) => ({
+    position: pos,
+    color: middlePoints[index].color
+  }));
+
+  breakpoints.splice(1, middlePoints.length, ...newMiddle);
 };
 
+// 添加颜色修改方法
+const changeSegmentColor = (segmentIndex, event) => {
+  // 找到对应的断点索引（颜色由左侧断点决定）
+  const breakpointIndex = segmentIndex;
+
+  emitter.emit('show-menu-color', {
+    x: event.clientX,
+    y: event.clientY,
+    handle: (newColor) => {
+      // 更新对应断点的颜色
+      const sorted = sortedBreakpoints.value;
+      const originalIndex = breakpoints.findIndex(
+          bp => bp === sorted[breakpointIndex]
+      );
+      if (originalIndex > -1) {
+        breakpoints[originalIndex].color = newColor;
+      }
+    }
+  });
+};
+
+// 计算等分位置
+const calculateEqualPositions = (count) => {
+  return Array.from({length: count}, (_, i) => (i + 1) * (100 / (count + 1)));
+};
+
+// 计算实际值（带精度）
+const calcActualValue = (position) => {
+  const value = props.min.visualMapMin + (props.max.visualMapMax - props.min.visualMapMin) * (position / 100);
+  return Number(value.toFixed(precision.value));
+
+}
+
+// 监听数据变化
+watch(modelValue, (val) => {
+
+  emit('update:modelValue', val);
+
+}, {deep: true})
+
+// 添加等分模式监听
+watch(isEq, (newVal) => {
+  if (newVal) {
+    const middleCount = breakpoints.length - 2;
+    const positions = calculateEqualPositions(middleCount);
+    breakpoints.forEach((bp, index) => {
+      if (index > 0 && index < breakpoints.length - 1) {
+        bp.position = positions[index - 1];
+      }
+    });
+  }
+});
+// 添加对modelValue的监听
+onMounted(() =>  {
+  if (!props.modelValue || props.modelValue.length === 0) return;
+
+  // 退出等分模式以确保断点位置可自定义
+  isEq.value = false;
+
+  console.log(props.modelValue)
+
+  const minVal = props.min.visualMapMin;
+  const maxVal = props.max.visualMapMax;
+  const range = maxVal - minVal;
+  if (range <= 0) return;
+
+  const newBreakpoints = [];
+
+  if (!props.modelValue[0]){
+    // 处理第一个断点
+    newBreakpoints.push({
+      position: 0,
+      color: props.defaultColor
+    });
+  }else {
+    // 处理第一个断点
+    newBreakpoints.push({
+      position: 0,
+      color: props.modelValue[0].color
+    });
+  }
 
 
-// 组件挂载后初始化图表
-onMounted(() => {
+  // 处理中间断点
+  props.modelValue.forEach((item,index) => {
+    if (index ===props.modelValue.length - 1) return
+
+    const rightValue = props.max.visualMode ? item.lt : item.lte;
+    const position = ((rightValue - minVal) / range) * 100;
+    newBreakpoints.push({
+      position,
+      color: props.modelValue[index+1].color
+    });
+  });
+
+    // 添加最后一个断点
+    newBreakpoints.push({
+      position: 100,
+      color: props.defaultColor
+    });
+
+
+
+  // 更新breakpoints数组
+  breakpoints.splice(0, breakpoints.length, ...newBreakpoints);
 
 });
 
@@ -150,23 +338,32 @@ onMounted(() => {
 
 <style scoped>
 .container {
-  padding: 20px;
+  padding: 0 0 20px 0;
   display: grid;
-  gap: 20px;
+
+  > div {
+    display: flex;
+    gap: 20px;
+    align-items: center
+  }
+
+  gap: 10px;
+  align-items: center;
+  width: 500px;
 }
 
-.options{
+.options {
   display: flex;
-  gap: 20px;
+  gap: 10px;
 }
 
 .progress-bar {
+  margin-left: 10px;
   position: relative;
   width: 100%;
   height: 8px;
   border-radius: 10px;
   cursor: pointer;
-  margin-bottom: 10px;
   background-color: var(--1-background-color);
 }
 
@@ -189,7 +386,7 @@ onMounted(() => {
   user-select: none;
   top: 4px;
   z-index: 2;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   background-color: var(--font-color);
 }
 
@@ -216,5 +413,27 @@ onMounted(() => {
   transform: rotate(45deg);
   color: var(--font-color);
   font-size: 17px;
+}
+
+.config-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  span {
+    font-weight: bolder;
+    width: 37px;
+  }
+}
+
+/* 添加指针样式 */
+.color-segment {
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* 可选：添加hover效果 */
+.color-segment:hover {
+  filter: brightness(1.1);
 }
 </style>

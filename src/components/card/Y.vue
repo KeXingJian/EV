@@ -99,11 +99,7 @@ const showOption4Type = (event) => {
       console.log('轴类型切换',target)
       target.type = index
       checkAxis(target,1)
-      Ss.value.forEach(item=>{
-        if (item.isLoad && item.V.id === target.id){
-          seriesChange(item)
-        }
-      })
+
     }
   })
 }
@@ -117,7 +113,7 @@ const showOption4Var = (event) => {
     handle: (index,target)=>{
       console.log('轴字段切换',target)
       target.field = index
-      allSeriesCheck()
+      allSeriesCheck(target.G.id)
     }
   })
 }

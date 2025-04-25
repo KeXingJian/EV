@@ -1,32 +1,26 @@
 <template>
   <div class="bar-chart">
     <RadioBox
-        v-model="scatterType"
+        v-model="item.scatterConfig.type"
         :options="scatterTypeSelect"
         name="scatterTypeSelect"></RadioBox>
   </div>
-  <div class="bubble-option" :class="{idBubble:idBubble}">
-    <div>
-      <div class="config-item" :class="{
-    }"
-      >
-        <span>气泡映射:</span>
-        <Option></Option>
+    <div class="config-item"
+    >
+      <div class="button-top" @click.stop="showOption4MapField">
+        <div class="box">
+             <span>
+             气泡映射:
+            </span>
+          <span class="option-value">
+                {{ currentField }}
+            </span>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="config-item">
-    <span>轴中心化:</span>
-    <MultipleChoiceBox
-        v-model="axisValues"
-        :options=axisSelect
-        name="selectedValues"
-    />
-
-  </div>
   <div class="config-item">
     <span>函数表达式:</span>
-    <InputBox></InputBox>
+    <InputBox text="y = f(x)" :width="100"></InputBox>
   </div>
 
 
@@ -35,50 +29,95 @@
 <script setup>
 
 import RadioBox from "../box/RadioBox.vue";
-import {ref, watch} from "vue";
-import Option from "../button/Option.vue";
-import MultipleChoiceBox from "../box/MultipleChoiceBox.vue";
+import {computed, watch} from "vue";
 import InputBox from "../box/InputBox.vue";
+import emitter from "../../emitter/emitter.js";
+import {storeToRefs} from "pinia";
+import {useOptionConfig} from "../../store/OptionConfig.js";
+import {getFieldDetails, x0y} from "../../utils/BeautifyUtils.js";
+import {getData,getData3} from "../../utils/CheckUtils.js"
 
-const idBubble = ref(false)
-const scatterType = ref(1)
+const props = defineProps({
+  item: {
+    type: Object,
+    required: true
+  }
+})
+
+const {echartsOptions,fileData} = storeToRefs(useOptionConfig())
+
 const scatterTypeSelect = [
   {
-    value: 1,
+    value: 0,
     label: '散点'
   },
   {
-    value: 2,
+    value: 1,
     label: '气泡'
   }
 ]
 
-const axisValues = ref([])
-const axisSelect = ref([
-  {label: 'X轴', value: 1},
-  {label: 'Y轴', value: 2},
-])
+const fieldSelect = computed(() => {
+    return fileData.value.columnStats.filter(item=>item.type === 'number').map(item=>{
+      return {
+        index: item.index,
+        label: item.field
+      }
+    })
+})
 
-watch(scatterType, (newScatter) => {
-  if (newScatter === 2) {
-    idBubble.value = true
+const currentField = computed(() => {
+  if (props.item.scatterConfig.mapField===-1) return '未定义'
+  return fileData.value.columnStats.find(item=>item.index===props.item.scatterConfig.mapField).field;
+})
 
-  } else {
-    idBubble.value = false
+const showOption4MapField = (event) => {
+  emitter.emit('show-options',{
+    x: event.clientX,
+    y: event.clientY,
+    target: props.item,
+    options: fieldSelect.value,
+    handle: (index,target)=>{
+      console.log('轴字段切换',target)
+      target.scatterConfig.mapField = index
+    }
+  })
+}
+
+watch(props.item, (newVal) => {
+  //专有无需重构
+  console.log(newVal)
+  const target = echartsOptions.value.series.find(i => i.id === newVal.id)
+
+  x0y(newVal, echartsOptions, target)
+
+  if (newVal.scatterConfig.type === 1 && newVal.scatterConfig.mapField !==-1){
+    const {max,min} = getFieldDetails(newVal.scatterConfig.mapField)
+    target.data = getData3(newVal.H.field,newVal.V.field,newVal.scatterConfig.mapField,newVal.D)
+    target.symbolSize =  function (val) {
+      return 40*((val[2]-min) / (max-min)) +20;
+    }
+  }else {
+    target.data = getData(newVal.H.field,newVal.V.field,newVal.D)
+    target.symbolSize = function (val) {
+      return 10;
+    }
   }
 
+  console.log('系列更新触发合并', echartsOptions.value)
+  emitter.emit('merge-option')
 })
+
 </script>
 
 <style scoped>
 .bar-chart {
   display: grid;
-  gap: 20px;
 }
 
 .config-item {
   display: flex;
-  gap: 20px;
+  gap: 10px;
   align-items: center;
 }
 
@@ -87,21 +126,17 @@ span {
 }
 
 
-.bubble-option {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: 300ms ease-in-out;
+.box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
 
-  > div {
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  .option-value {
+    cursor: pointer;
+    color: var(--active-color);
   }
-
 }
 
-.idBubble.bubble-option {
-  grid-template-rows: 1fr;
-}
 </style>

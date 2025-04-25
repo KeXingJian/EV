@@ -65,6 +65,7 @@ const handleDrop = () => {
 
     const gridSet = getGridSet()
     echartsOptions.value.grid = gridSet[Gs.value.length-1].map(i=>i.item)
+
     console.log('变更echartsOptions.grid',echartsOptions.value.grid)
 
     reloadGraph()

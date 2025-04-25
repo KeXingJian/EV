@@ -11,7 +11,7 @@
 
 <script setup>
 import * as echarts from 'echarts';
-import {onUnmounted, ref} from "vue";
+import {onMounted, onUnmounted, ref} from "vue";
 import Close from "../svg/Close.vue";
 import emitter from "../../emitter/emitter.js";
 import {storeToRefs} from "pinia";
@@ -45,6 +45,8 @@ const option = {
         shadowColor: 'rgba(0, 0, 0, 0.5)'
       }
     },
+    animationType:'scale',
+    animationDuration:500,
     radius: ['20%', '80%'],
     label: { show: true, position: 'inside', color: '#fff', fontWeight: 'bolder' },
     labelLine: { show: false },
@@ -71,8 +73,8 @@ const showMenu = (args)=> {
   target = args.target
 
   localIsShowMenu.value = true
-  myChart = echarts.init(container.value,null, { renderer: 'svg' });
-  myChart.setOption(option); // 强制重新渲染
+
+  myChart.setOption(option,{ notMerge: true }); // 强制重新渲染
 
   // 添加点击事件监听
   myChart.on('click', handleChartClick);
@@ -80,7 +82,7 @@ const showMenu = (args)=> {
 
 const close = ()=>{
   localIsShowMenu.value = false
-  myChart.dispose()
+  myChart.setOption({},{ notMerge: true }); // 强制重新渲染
 }
 
 const {gIndex,hIndex,vIndex,sIndex,Gs,Hs,Vs,Ss,echartsOptions} = storeToRefs(useOptionConfig())
@@ -130,11 +132,13 @@ const menuHandlers = {
       symbol: true,
       position: false,
       offset: 0,
+      sa: 0,
+      ea:360
     })
     close();
   },
   '系列': () => {
-    Ss.value.push({
+    const newSeries = {
       id: ++sIndex.value,
       name: 'S'+sIndex.value,
       G: target,
@@ -142,31 +146,46 @@ const menuHandlers = {
       H:null,
       V:null,
       isLoad:false,
-      color: '#FF3D3D',
+      color: '#FF4081',
       type: 0, //0折线,1柱状,2极坐标,3饼图,4散点,5雷达
-      areaColor: '#FF3D3D',
+      areaColor: '#FF4081',
       isLabel: false,
+      pieces: [],
       lineConfig: {
         lineType: 0,  //直线,曲线,折线
         startPoint: -1,
         isArea: false,
         isLayer: false,
-        pieces: [],
-        outOfRange: '#FF3D3D',
+      },
+      scatterConfig: {
+        type: 0,
+        mapField: -1,
       },
       barConfig:{
 
       },
       pieConfig: {
-
-      },
-      scatterConfig: {
-
+        isRose: false,
+        roseType: 0, //0,半径
+        borderRadius: 10,
+        padAngle: 2,
+        position: 0, //内嵌
+        labelLine: true,
+        pi: 0,
+        po: 80,
+        pt:50,
+        pl:50,
       },
       radarConfig: {
 
       }
-    })
+    }
+
+    if (target.type === 0 || target.type === 1) newSeries.type = 0
+
+
+
+    Ss.value.push(newSeries)
     close();
   },
   '图': () => {
@@ -175,11 +194,14 @@ const menuHandlers = {
       return
     }
     const gridSet = getGridSet()
+
     Gs.value.push({
       id:++gIndex.value,
       name: 'G'+gIndex.value,
       isLoad:false,
       gridIndex: Gs.value.length,
+      polarIndex: Gs.value.length,
+      stackType:false,
       type: 0,//x为0,极为1,饼为2,雷3
       t:0,
       b:0,
@@ -187,11 +209,19 @@ const menuHandlers = {
       r:0,
       w:0,
       h:0,
+      pi:0,
+      po:88,
+      pl:50,
+      pt:50,
       isStack: false,
-      isLayer:false,
+      isStackAxisLoad: false,
+      isPolarAxisLoad:false,
+      polarType: false,
+
     })
     console.log('添加图')
     echartsOptions.value.grid = gridSet[Gs.value.length-1].map(i=>i.item)
+
     console.log('变更echartsOptions.grid',echartsOptions.value.grid)
     reloadGraph()
     close();
@@ -206,8 +236,11 @@ const handleChartClick = (params) => {
     }
   }
 };
+onMounted(()=>{
+  myChart = echarts.init(container.value,null, { renderer: 'svg' });
+  emitter.on('show-menu', showMenu)
+})
 
-emitter.on('show-menu', showMenu)
 
 onUnmounted(()=>{
   emitter.off('show-menu', showMenu)

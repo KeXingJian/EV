@@ -7,13 +7,12 @@
             <Database></Database>
             <div class="dataset-name" >
               <span>{{dataset.name}}</span>
-              <EditButton @click.stop=""></EditButton>
             </div>
             <div>
               <span>{{dataset.from}}</span>
             </div>
             <div>
-              <span>{{dataset.count}}</span>
+              <span>{{dataset.count }}</span>
             </div>
             <DropDown></DropDown>
           </div>
@@ -26,7 +25,6 @@
 
 <script setup>
 import DatasetEdit from "../card/DatasetEdit.vue";
-import EditButton from "../svg/EditButton.vue";
 import {VueDraggable} from "vue-draggable-plus";
 import DropDown from "../svg/DropDown.vue";
 import Database from "../svg/Database.vue";
@@ -40,6 +38,7 @@ const toggleDataset = (event) => {
 
 const {Ds} = storeToRefs(useOptionConfig())
 
+console.log(Ds.value)
 </script>
 
 <style scoped>

@@ -3,7 +3,7 @@
     <div class="t">
       <div class="r">
         <div class="config-item">
-          <span>显隐:</span>
+          <span>轴线:</span>
           <CheckBox v-model="item.show"></CheckBox>
         </div>
         <div class="config-item">
@@ -11,21 +11,21 @@
           <CheckBox v-model="item.tickLine"></CheckBox>
         </div>
         <div class="config-item">
-          <span>分割线:</span>
+          <span>割线:</span>
           <CheckBox v-model="item.splitLine"></CheckBox>
         </div>
         <div class="config-item">
           <span>标签:</span>
           <CheckBox v-model="item.labelShow"></CheckBox>
         </div>
-        <div class="config-item">
+        <div class="config-item" >
           <span v-if="type===0">朝左</span>
           <span v-else>朝下</span>
           <SelectButton v-model="item.symbol"></SelectButton>
           <span v-if="type===0">朝右</span>
           <span v-else>朝上</span>
         </div>
-        <div class="config-item">
+        <div class="config-item" v-if="item.G.type===0">
           <span v-if="type===0">靠上</span>
           <span v-else>靠左</span>
           <SelectButton v-model="item.position"></SelectButton>
@@ -34,7 +34,7 @@
         </div>
 
       </div>
-      <div class="l">
+      <div class="l" >
         <ColorPoint v-model="item.lineColor"><span>轴线:</span></ColorPoint>
         <ColorPoint v-model="item.labelColor"><span>标签:</span></ColorPoint>
         <ColorPoint v-model="item.textColor"><span>轴名称:</span></ColorPoint>
@@ -58,13 +58,35 @@
     </div>
 
     <div class="b">
-      <div class="config-item">
+      <div class="config-item" v-if="item.G===0">
         <span>偏移量:</span>
         <ProgressBar
             v-model="item.offset"
             :width="267"
             :min="0"
             :max="100"
+            :step="1"
+            unit=""
+        ></ProgressBar>
+      </div>
+      <div class="config-item" v-if="item.G.type===1 && type===1">
+        <span>起始角:</span>
+        <ProgressBar
+            v-model="item.sa"
+            :width="267"
+            :min="0"
+            :max="360"
+            :step="1"
+            unit=""
+        ></ProgressBar>
+      </div>
+      <div class="config-item" v-if="item.G.type===1 && type===1">
+        <span>结束角:</span>
+        <ProgressBar
+            v-model="item.ea"
+            :width="267"
+            :min="0"
+            :max="360"
             :step="1"
             unit=""
         ></ProgressBar>
@@ -78,7 +100,7 @@ import CheckBox from "../box/CheckBox.vue";
 import InputBox from "../box/InputBox.vue";
 import ProgressBar from "../button/ProgressBar.vue";
 import ColorPoint from "../button/ColorPoint.vue";
-import {watch} from "vue";
+import {onMounted, watch} from "vue";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
 import emitter from "../../emitter/emitter.js";
@@ -99,13 +121,18 @@ const {echartsOptions} = storeToRefs(useOptionConfig())
 
 watch(props.item,(newVal)=>{
   let target = null
-  if (props.type===0){
+  if (newVal.G.type ===0 &&props.type===0){
     target = echartsOptions.value.xAxis.find(i=>i.id===props.item.id)
-
-  }else {
+  }else if (newVal.G.type ===0 && props.type===1){
     target = echartsOptions.value.yAxis.find(i=>i.id===props.item.id)
-
+  }else if (newVal.G.type ===1 && props.type===0){
+    target = echartsOptions.value.radiusAxis.find(i=>i.id===props.item.id)
+  }else if (newVal.G.type ===1 && props.type===1){
+    target = echartsOptions.value.angleAxis.find(i=>i.id===props.item.id)
+    target.startAngle = newVal.sa
+    target.endAngle = newVal.ea
   }
+
   target.name = newVal.axisName
   target.nameTextStyle.color = newVal.textColor
   target.axisLabel.show = newVal.labelShow
@@ -122,9 +149,13 @@ watch(props.item,(newVal)=>{
   target.inverse = !newVal.symbol
   target.offset = newVal.offset
 
-  console.log('轴更新触发合并')
+  console.log('轴更新触发合并',target)
   emitter.emit('merge-option')
 },{ deep: false })
+
+onMounted(()=>{
+  console.log(props.item)
+})
 </script>
 
 

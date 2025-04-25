@@ -19,10 +19,57 @@
     --transition-color: linear-gradient(#212121, #212121) padding-box,
     linear-gradient(145deg, transparent 35%, #e81cff, #ff3d3d) border-box;
 
+    --info-color:  #0d6e6e;
+    --info-activate-color: #15ccbe;
+
+    --warn-color: rgb(250 204 21);
+    --warn-activate-color: rgb(141, 56, 0);
+
+    --error-color: #dc2626;
+    --error-activate-color: #ff3d3d;
+
 }
 
 .resizable-r {
     background: var(--2-background-color);
     height: calc(100vh - 80px) !important;
     overflow: hidden;
+}
+
+.ag-theme-quartz ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+.ag-theme-quartz ::-webkit-scrollbar-track {
+    background: #0d1f2d; /* 与主题背景色一致 */
+    border-radius: 10px;
+}
+
+.ag-theme-quartz ::-webkit-scrollbar-thumb {
+    background: #1d2e3d; /* 与表头背景色一致 */
+    border-radius: 10px;
+    border: 2px solid #0d1f2d;
+}
+
+.ag-theme-quartz ::-webkit-scrollbar-thumb:hover {
+    background: #C9D6DF; /* 与前景色呼应 */
+}
+
+
+.header-cell input {
+    width: 100%;
+    background: var(--2-background-color);
+    color: var(--font-color);
+    border: none;
+    padding: 4px;
+}
+
+.header-cell {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    justify-content: center;
 }

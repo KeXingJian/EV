@@ -16,7 +16,6 @@
         :name="'lineTypeSelect'+item.id"
     ></RadioBox>
     <div class="config-item" :class="{inactivation:item.lineConfig.lineType!==2}">
-      <span>启折点:</span>
       <RadioBox
           v-model="item.lineConfig.startPoint"
           :options="startPointType"
@@ -36,6 +35,7 @@ import { startPoints} from "../../utils/ChartUtils.js";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
 import emitter from "../../emitter/emitter.js";
+import {x0y} from "../../utils/BeautifyUtils.js";
 
 const props = defineProps({
   item: {
@@ -80,11 +80,10 @@ watch(props.item, (newVal) => {
   //专有无需重构
   console.log(newVal)
   const target = echartsOptions.value.series.find(i=>i.id===newVal.id)
-  target.itemStyle.color = newVal.color
 
-  target.label.show = newVal.isLabel
+  x0y(newVal,echartsOptions,target)
 
-  target.smooth = newVal.lineConfig.lineType === 1;
+  target.smooth = newVal.lineConfig.lineType === 1 ? 0.5 : 0
 
   if (newVal.lineConfig.lineType === 2) target.step = startPoints[newVal.lineConfig.startPoint]
   else target.step=''
@@ -92,10 +91,9 @@ watch(props.item, (newVal) => {
   if (newVal.lineConfig.isArea) target.areaStyle = {color: newVal.areaColor}
   else target.areaStyle = null
 
-  console.log('系列更新触发合并')
+  console.log('系列更新触发合并',echartsOptions.value)
   emitter.emit('merge-option')
-
-},)
+})
 </script>
 
 
@@ -119,8 +117,6 @@ watch(props.item, (newVal) => {
   display: flex;
   gap: 20px;
 }
-
-
 
 
 .inactivation {

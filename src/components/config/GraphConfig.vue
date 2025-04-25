@@ -5,10 +5,10 @@
         :options="seriesTypeSelect"
         :name="'seriesTypeSelect'+item.id"
     ></RadioBox>
-    <div>
+    <div v-if="item.type!==2">
       <div class="left">
         <span>边距</span>
-        <div class="config-item">
+        <div class="config-item" v-if="item.type===0">
           <span>上:</span>
           <ProgressBar
               v-model="item.t"
@@ -19,18 +19,7 @@
               unit="%"
           ></ProgressBar>
         </div>
-        <div class="config-item">
-          <span>下:</span>
-          <ProgressBar
-              v-model="item.b"
-              :width="190"
-              :min="0"
-              :max="100"
-              :step="0.1"
-              unit="%"
-          ></ProgressBar>
-        </div>
-        <div class="config-item">
+        <div class="config-item" v-if="item.type===0">
           <span>左:</span>
           <ProgressBar
               v-model="item.l"
@@ -41,10 +30,10 @@
               unit="%"
           ></ProgressBar>
         </div>
-        <div class="config-item">
-          <span>右:</span>
+        <div class="config-item" v-if="item.type===1">
+          <span>上:</span>
           <ProgressBar
-              v-model="item.r"
+              v-model="item.pt"
               :width="190"
               :min="0"
               :max="100"
@@ -52,12 +41,23 @@
               unit="%"
           ></ProgressBar>
         </div>
+        <div class="config-item" v-if="item.type===1">
+          <span>左:</span>
+          <ProgressBar
+              v-model="item.pl"
+              :width="190"
+              :min="0"
+              :max="100"
+              :step="0.1"
+              unit="%"
+          ></ProgressBar>
+        </div>
+
       </div>
 
       <div class="right">
         <span>大小</span>
-
-        <div class="config-item">
+        <div class="config-item" v-if="item.type===0">
           <span>宽:</span>
           <ProgressBar
               v-model="item.w"
@@ -68,7 +68,7 @@
               unit="%"
           ></ProgressBar>
         </div>
-        <div class="config-item">
+        <div class="config-item" v-if="item.type===0">
           <span>高:</span>
           <ProgressBar
               v-model="item.h"
@@ -79,47 +79,85 @@
               unit="%"
           ></ProgressBar>
         </div>
+        <div class="config-item" v-if="item.type===1">
+          <span>内径:</span>
+          <ProgressBar
+              v-model="item.pi"
+              :width="190"
+              :min="0"
+              :max="100"
+              :step="0.1"
+              unit="%"
+          ></ProgressBar>
+        </div>
+        <div class="config-item" v-if="item.type===1">
+          <span>外径:</span>
+          <ProgressBar
+              v-model="item.po"
+              :width="190"
+              :min="0"
+              :max="100"
+              :step="0.1"
+              unit="%"
+          ></ProgressBar>
+        </div>
 
-        <div class="config-item b" :class="{
+      </div>
+
+    </div>
+    <div class="o" v-if="item.type!==2">
+      <div class="config-item " :class="{
           inactivation: item.type===2 || item.type===3
         }">
-          <span>堆叠化:</span>
-          <CheckBox v-model="item.isStack"
-                    :inactivation="item.type===2 || item.type===3"
-          ></CheckBox>
-        </div>
-        <div class="config-item b"
-             :class="{
-              inactivation: item.type===2 || item.type===3
+        <span>堆叠化</span>
+        <CheckBox v-model="item.isStack"
+                  :inactivation="item.type===2 || item.type===3"
+        ></CheckBox>
+      </div>
+      <section class="config-item "
+               :class="{
+              inactivation: item.type !==0
              }"
-        >
-          <span>分层化:</span>
-          <CheckBox v-model="item.isLayer"
-                    :inactivation="item.type===2 || item.type===3"
-          ></CheckBox>
-        </div>
-      </div>
-    </div>
+               v-if="item.type ===0"
+      >
+        <span>纵堆叠</span>
+        <select-button v-model="item.stackType"
+                       :inactivation="item.type !==0">
 
-    <section class="ProgressBarArea" :class="{ isLayer:item.type===0 || item.type===1 && item.isLayer}">
-      <div>
-        <ProgressBarArea></ProgressBarArea>
-      </div>
-    </section>
+        </select-button>
+        <span>横堆叠</span>
+      </section>
+      <section class="config-item "
+               v-if="item.type ===1"
+               :class="{
+              inactivation: item.type !==1
+             }"
+      >
+          <span :style="{
+            width: '66px'
+          }">纵轴数化</span>
+        <select-button v-model="item.polarType"
+                       :inactivation="item.type !== 1 ">
+        </select-button>
+        <span :style="{
+            width: '66px'
+          }">横轴数化</span>
+      </section>
+    </div>
   </div>
 </template>
 
 <script setup>
 import ProgressBar from "../button/ProgressBar.vue";
 import {computed, toRefs, watch} from "vue";
-import {buildGrid, seriesChange, unloadAxis, unloadSeries} from "../../utils/CheckUtils.js";
+import {buildGrid, buildPolar, seriesChange, unloadAxis, unloadSeries} from "../../utils/CheckUtils.js";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
 import emitter from "../../emitter/emitter.js";
 import CheckBox from "../box/CheckBox.vue";
-import {addHForType0, addVForType0} from "../../utils/ChartUtils.js";
-import ProgressBarArea from "../button/ProgressBarArea.vue";
 import RadioBox from "../box/RadioBox.vue";
+import SelectButton from "../button/SelectButton.vue";
+import {unload4Stack, unloadGraphHasLoadItem} from "../../utils/ChartUtils.js";
 
 const props = defineProps({
   item: {
@@ -139,16 +177,12 @@ const seriesTypeSelect = [
   },
   {
     value: 2,
-    label: '半径&角度系'
+    label: '无系图(饼图)'
   },
-  {
-    value: 3,
-    label: '雷达系'
-  }
 ]
 
 // 将 item 转换为响应式引用
-const {isStack,type} = toRefs(props.item);
+const {isStack, type, stackType,polarType} = toRefs(props.item);
 
 const {echartsOptions, Ss, Vs, Hs} = storeToRefs(useOptionConfig())
 
@@ -164,8 +198,28 @@ const buildPosition = computed(() => {
   )
 })
 
+const buildPosition4Polar = computed(() => {
+
+  return buildPolar(
+      props.item.pi,
+      props.item.po,
+      props.item.pl,
+      props.item.pt,
+  )
+})
+
 watch(buildPosition, (newVal) => {
   echartsOptions.value.grid[props.item.gridIndex] = newVal
+  console.log('图更新触发合并')
+  emitter.emit('merge-option')
+})
+watch(buildPosition4Polar, (newVal) => {
+  const target = echartsOptions.value.polar.find(i=>i.id===props.item.id)
+
+  if(!target) return
+
+  target.radius = newVal.radius
+  target.center = newVal.center
   console.log('图更新触发合并')
   emitter.emit('merge-option')
 })
@@ -173,92 +227,20 @@ watch(buildPosition, (newVal) => {
 watch(isStack, (newVal) => {
   if (newVal) {
     console.log('令图堆叠')
-    console.log('找出所有已加载的系列并卸载,决定加载什么轴作为,数值轴合并轴')
-    let hc = 0
-    let vc = 0
-    Ss.value.filter(i => i.isLoad && i.G.id === props.item.id).forEach((i) => {
-      if (i.H.type === 1) hc++
-      if (i.V.type === 1) vc++
-      unloadSeries(i)
-    })
-
-    Hs.value.filter(i => i.isLoad && i.G.id === props.item.id).forEach((i) => {
-      unloadAxis(i, 0)
-    })
-
-    Vs.value.filter(i => i.isLoad && i.G.id === props.item.id).forEach((i) => {
-      unloadAxis(i, 1)
-    })
-
-    const stackAxis = {
-      id: -1 + props.item.name,
-      name: '堆叠轴-' + props.item.name,
-      G: props.item,
-      isLoad: true,
-      field: -1,
-      type: 1,
-      axisName: '堆叠轴',
-      unit: '',
-      textColor: '#fff',
-      labelColor: '#fff',
-      lineColor: '#0D6E6E',
-      tickLine: false,
-      splitLine: false,
-      textShow: true,
-      show: true,
-      symbol: true,
-      position: false,
-      offset: 0,
-    }
-
-    console.log('添加堆叠轴')
-    if (hc > vc) { //倾向加载V轴
-      props.item.stackAxisType = 0
-      Hs.value.push(stackAxis)
-
-      console.log('载入堆叠轴')
-      addHForType0(stackAxis, echartsOptions)
-    } else {
-      props.item.stackAxisType = 1
-      Vs.value.push(stackAxis)
-      console.log('载入堆叠轴')
-      addVForType0(stackAxis, echartsOptions)
-    }
+    console.log('找出所有已加载的系列并卸载')
+    unloadGraphHasLoadItem(props.item, Ss, Hs, Vs)
 
     console.log("重载系列")
     Ss.value.filter(i => i.G.id === props.item.id).forEach((i) => {
       seriesChange(i)
     })
-
   } else {
     console.log("卸载相关系列")
     Ss.value.filter(i => i.isLoad && i.G.id === props.item.id).forEach((i) => {
       unloadSeries(i)
     })
-    console.log('从echartsOptions卸载堆叠轴')
-    if (props.item.stackAxisType === 0) {
-      echartsOptions.value.xAxis = echartsOptions.value.xAxis.filter(i => i.id !== -1 + props.item.name,)
-
-      console.log('从映射配置中移除')
-      Hs.value = Hs.value.filter(item =>
-          item.id !== -1 + props.item.name,
-      )
-
-    } else if (props.item.stackAxisType === 1) {
-      echartsOptions.value.yAxis = echartsOptions.value.yAxis.filter(i => i.id !== -1 + props.item.name,)
-
-      console.log('从映射配置中移除')
-      Vs.value = Vs.value.filter(item =>
-          item.id !== -1 + props.item.name,
-      )
-    }
-    props.item.stackAxisType = -1
-
-    console.log('查看H轴', Hs.value)
-    console.log('查看V轴', Vs.value)
-
+    unload4Stack(props.item.stackType, Hs, Vs, echartsOptions, props)
     console.log("重载系列")
-
     Ss.value.filter(i => i.G.id === props.item.id).forEach((i) => {
       seriesChange(i)
     })
@@ -266,15 +248,57 @@ watch(isStack, (newVal) => {
   }
 }, {deep: false})
 
-watch(type, (newVal) =>{
-  Ss.value.forEach(i => {
-    if (newVal===0 || newVal===1) {
-      i.type = 0
-    }else if(newVal===2 || newVal===3) {
-      i.type = newVal+1
-    }
+watch(type, (newVal) => {
 
+  console.log('卸载所有相关系列')
+  Ss.value.filter(i => i.isLoad && i.G.id === props.item.id).forEach(i => {
+    if (newVal === 0 || newVal === 1) {
+      i.type = 0
+    } else if (newVal === 2 || newVal === 3) {
+      i.type = newVal + 1
+    }
+    unloadSeries(i)
   })
+
+  console.log('卸载所有相关H')
+  Hs.value.filter(i => i.isLoad && i.G.id === props.item.id).forEach((i) => {
+    unloadAxis(i, 0)
+  })
+
+  console.log('卸载所有相关V')
+  Vs.value.filter(i => i.isLoad && i.G.id === props.item.id).forEach((i) => {
+    unloadAxis(i, 1)
+  })
+
+
+
+  console.log('重载相关系列')
+  Ss.value.filter(i => i.G.id === props.item.id).forEach((i) => {
+    seriesChange(i)
+  })
+
+})
+
+watch(stackType, (newVal) => {
+  if (!props.item.isStack) return
+  console.log('令图堆叠')
+  console.log('找出所有已加载的系列并卸载')
+  unloadGraphHasLoadItem(props.item, Ss, Hs, Vs)
+  console.log("重载系列")
+  Ss.value.filter(i => i.G.id === props.item.id).forEach((i) => {
+    seriesChange(i)
+  })
+
+})
+
+watch(polarType, (newVal) => {
+  console.log('找出所有已加载的系列并卸载')
+  unloadGraphHasLoadItem(props.item, Ss, Hs, Vs)
+  console.log("重载系列")
+  Ss.value.filter(i => i.G.id === props.item.id).forEach((i) => {
+    seriesChange(i)
+  })
+
 })
 </script>
 
@@ -284,12 +308,10 @@ watch(type, (newVal) =>{
   > div {
     padding: 15px 8px;
     display: flex;
-    grid-template-columns: 50% 50%;
     max-width: 500px;
-    gap: 20px;
+    gap: 10px;
     background-color: var(--2-background-color);
   }
-
   display: grid;
   position: relative;
   background-color: var(--2-background-color);
@@ -316,35 +338,24 @@ watch(type, (newVal) =>{
   display: flex;
   gap: 20px;
   flex-direction: column;
+  span{
+    width: 37px;
+  }
 }
 
 .config-item {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
 }
 
+.o{
+  display: flex;
+  justify-content: space-between;
+}
 
 span {
   font-weight: bolder;
-}
-
-.ProgressBarArea {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: 300ms ease-in-out;
-
-  > div {
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-}
-
-.isLayer.ProgressBarArea {
-  grid-template-rows: 1fr;
 }
 
 .inactivation {

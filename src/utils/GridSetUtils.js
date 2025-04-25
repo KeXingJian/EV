@@ -1,4 +1,4 @@
-import {buildGrid} from "./CheckUtils.js";
+import {buildGrid, buildPolar} from "./CheckUtils.js";
 
 export const getGridSet = () => {
     return [
@@ -120,5 +120,47 @@ export const getGridSet = () => {
                 }
             }
         ]
+    ]
+}
+
+export const getPolarSet = () => {
+    return [
+        {
+            item: buildPolar(0, 50, 25, 25),
+            args: {
+                pi: 0,
+                po: 50,
+                pl: 25,
+                pt: 25
+            }
+        },
+        {
+            item: buildPolar(0, 50, 60, 25),
+            args: {
+                pi: 0,
+                po: 50,
+                pl: 60,
+                pt: 25
+            }
+        },
+        {
+            item: buildPolar(0, 50, 25, 70),
+            args: {
+                pi: 0,
+                po: 50,
+                pl: 25,
+                pt: 70
+            }
+        },
+        {
+            item: buildPolar(0, 50, 60, 70),
+            args: {
+                pi: 0,
+                po: 50,
+                pl: 60,
+                pt: 70
+            }
+        }
+
     ]
 }

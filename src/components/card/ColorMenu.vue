@@ -10,7 +10,7 @@
 
 <script setup>
 import * as echarts from 'echarts';
-import {computed, onUnmounted, ref} from "vue";
+import {computed, onMounted, onUnmounted, ref} from "vue";
 import emitter from "../../emitter/emitter.js";
 import {useOptionConfig} from "../../store/OptionConfig.js";
 import {storeToRefs} from "pinia";
@@ -49,6 +49,8 @@ const option = {
           shadowColor: 'rgba(0, 0, 0, 0.5)'
         }
       },
+      animationType:'scale',
+      animationDuration:500,
       radius: ['10%', '35%'],
       label: { show: true, position: 'inside', color: '#fff', fontWeight: 'bolder' },
       labelLine: {show: false},
@@ -81,7 +83,7 @@ const showMenu = (args) => {
 
   handle = args.handle
   localIsShowMenu.value = true
-  myChart = echarts.init(container.value,null, { renderer: 'svg' });
+
   option.series[0].data.length = 0
   colorSet.value.forEach((item, index) => {
     option.series[0].data.push({
@@ -102,7 +104,7 @@ const showMenu = (args) => {
 
 const close = () => {
   localIsShowMenu.value = false
-  myChart.dispose()
+  myChart.setOption({},{ notMerge: true })
 }
 
 const handleChartClick = (params) => {
@@ -156,8 +158,11 @@ const handleChartHover = (params) => {
   myChart.setOption(option); // 强制重新渲染
 }
 
-emitter.on('show-menu-color', showMenu)
 
+onMounted(()=>{
+  emitter.on('show-menu-color', showMenu)
+  myChart = echarts.init(container.value);
+})
 onUnmounted(() => {
   emitter.off('show-menu-color', showMenu)
 })

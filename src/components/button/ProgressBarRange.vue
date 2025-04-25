@@ -42,8 +42,7 @@
 
 <script setup>
 import {ref, reactive, computed, onMounted, watch} from 'vue';
-import AddButton from "./AddButton.vue";
-import DeleteButton from "./DeleteButton.vue";
+
 
 const props = defineProps({
   inactivation:{

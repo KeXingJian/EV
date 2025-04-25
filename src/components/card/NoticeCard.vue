@@ -1,7 +1,3 @@
-<script setup>
-import CloseButton from "../svg/CloseButton.vue";
-</script>
-
 <template>
   <div class="notifications-container">
     <div class="alert">
@@ -12,18 +8,59 @@ import CloseButton from "../svg/CloseButton.vue";
           </svg>
         </div>
         <div class="alert-prompt-wrap">
-          <p class="text-sm text-yellow-700">
-            Your trial 18 years of life has expired. Continue by working your sweat off or
-            <a class="alert-prompt-link" href="#">Upgrade To Premium</a>
+          <p class="text-sm text-yellow-700"
+             :style="{
+                color: `${color}`
+             }"
+          >
+            {{msg}}
+
+            <a class="alert-prompt-link"
+               @click.prevent=""
+               :style="{
+                  color: `${activeColor}`
+               }"
+            >{{ link }}</a>
           </p>
         </div>
         <div class="flex-shrink-0">
-         <CloseButton></CloseButton>
+         <CloseButton @click="toSign"></CloseButton>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<script setup>
+import CloseButton from "../svg/CloseButton.vue";
+
+const props = defineProps({
+  color:{
+    type: String,
+    required: true,
+  },
+  activeColor: {
+    type: String,
+    required: true,
+  },
+  msg:{
+    type: String,
+    required: true,
+  },
+  link:{
+    type: String,
+    required: false,
+  },
+  signFor:{
+    type: Function,
+    required: false,
+  }
+})
+const toSign = ()=>{
+  props.signFor()
+}
+</script>
+
 
 <style scoped>
 .notifications-container {
@@ -61,17 +98,13 @@ svg {
 
 .alert-prompt-wrap p{
   margin-left: 0.75rem;
-  color: rgb(250 204 21) ;
+
 }
 
 .alert-prompt-link {
   font-weight: 500;
-  color: rgb(141, 56, 0);
   text-decoration: underline;
-}
-
-.alert-prompt-link:hover {
-  color: rgb(250 204 21) !important;
+  cursor: pointer;
 }
 
 </style>

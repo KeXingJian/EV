@@ -17,9 +17,9 @@
             :value="modelValue"
             type="range"
             class="range__input"
-            min="0"
-            max="100"
-            step="1"
+            :min="min"
+            :max="max"
+            :step="step"
             @input="handleInput"
             @mouseup="showRange"
         />

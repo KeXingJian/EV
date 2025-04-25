@@ -66,7 +66,11 @@ const {Ds,Hs,Vs,Ss} = storeToRefs(useOptionConfig())
 
 const horizontalAxisSelect = computed(() => {
   //同图横轴
-  const targetH = Hs.value.filter(i=>i.G.id===props.modelItem.G.id)
+  const targetH = Hs.value.filter(
+      i=>i.G.id===props.modelItem.G.id &&
+      i.id !==-1 + props.modelItem.G.name &&
+      i.id !==-2 + props.modelItem.G.name
+  )
   return targetH.map(item =>{
       return {
         index: item,
@@ -76,7 +80,11 @@ const horizontalAxisSelect = computed(() => {
 })
 
 const verticalAxisAxisSelect = computed(() => {
-  const targetV = Vs.value.filter(i=>i.G.id===props.modelItem.G.id)
+  const targetV = Vs.value.filter(
+      i=>i.G.id===props.modelItem.G.id &&
+      i.id !==-1 + props.modelItem.G.name &&
+      i.id !==-2 + props.modelItem.G.name
+  )
   return targetV.map(item =>{
     return {
       index: item,

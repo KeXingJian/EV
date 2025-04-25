@@ -14,7 +14,6 @@
       <h3>贡献</h3>
     </div>
     <div class="about-item">
-
       <h3>联系</h3>
     </div>
   </div>
@@ -23,7 +22,7 @@
 
 <style scoped>
 .top-div{
-  display: flex;
+  display: grid;
   margin: 40px 20px;
   justify-content: space-between;
 }

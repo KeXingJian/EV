@@ -49,9 +49,6 @@ const loadedSeries = computed(()=>{
   return Ss.value.filter(i=>i.isLoad)
 })
 
-
-
-
 </script>
 
 
