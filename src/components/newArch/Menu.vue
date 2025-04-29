@@ -16,8 +16,8 @@ import Close from "../svg/Close.vue";
 import emitter from "../../emitter/emitter.js";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
-import {reloadGraph} from "../../utils/CheckUtils.js";
-import {getGridSet} from "../../utils/GridSetUtils.js";
+import {getGrid, getPolar} from "../../utils/newArch/Position.js";
+import {loadAxis} from "../../utils/newArch/AxisUtis.js";
 
 const container = ref(null);
 const cancel = ref(null)
@@ -25,8 +25,6 @@ const localIsShowMenu = ref(false);
 let myChart = null
 
 const colors = ['#0D6E6E', '#FF3D3D', '#4a9d9c', '#0D6E6E'];
-
-let target = null
 
 const option = {
   animation: true, // 确保动画开启
@@ -53,10 +51,10 @@ const option = {
     itemStyle: { borderRadius: 8, borderWidth: 2 },
     type: 'pie',
     data: [
-      { value: 13, name: '横轴', itemStyle: { color: colors[0] } },
-      { value: 12, name: '纵轴', itemStyle: { color: colors[1] } },
-      { value: 11, name: '系列', itemStyle: { color: colors[2] } },
-      { value: 10, name: '图', itemStyle: { color: colors[3] } }
+
+      { value: 12, name: 'X0Y系', itemStyle: { color: colors[1] } },
+      { value: 11, name: '极坐标系', itemStyle: { color: colors[2] } },
+      { value: 13, name: '系列', itemStyle: { color: colors[0] } },
     ],
     roseType: 'area'
   }]
@@ -70,7 +68,6 @@ const showMenu = (args)=> {
   cancel.value.style.top = `${args.y - 20}px`
   cancel.value.style.left = `${args.x - 20}px`
 
-  target = args.target
 
   localIsShowMenu.value = true
 
@@ -85,147 +82,162 @@ const close = ()=>{
   myChart.setOption({},{ notMerge: true }); // 强制重新渲染
 }
 
-const {gIndex,hIndex,vIndex,sIndex,Gs,Hs,Vs,Ss,echartsOptions} = storeToRefs(useOptionConfig())
+const {Cs,Ss,echartsOptions,cIndex,sIndex} = storeToRefs(useOptionConfig())
 
 // 定义菜单项处理器
 const menuHandlers = {
-  '横轴': () => {
-    Hs.value.push({
-      id: ++hIndex.value,
-      name:'H'+hIndex.value,
-      G: target,
+  'X0Y系': () => {
+    const c = {
+      id: ++cIndex.value,
+      name: 'C'+cIndex.value,
+      type: 0, //0:x0y系;1:极坐标系;2无系
+      grid: getGrid(),
       isLoad:false,
-      field: -1,
-      type: 0,
-      axisName: '',
-      unit: '',
-      textColor: '#fff',
-      labelColor: '#fff',
-      lineColor: '#0D6E6E',
-      tickLine: false,
-      splitLine: false,
-      labelShow: true,
-      show: true,
-      symbol: true,
-      position: true,
-      offset: 0,
-    })
+      axisType: false, //横轴为类目
+      isStack: false,
+      H:{
+        name: 'H'+cIndex.value,
+        axisName: 'H'+cIndex.value,
+        unit: '',
+        textColor: '#000', //轴名称
+        tickLine: false, //标线
+        splitLine: false, //隔线
+
+        labelColor: '#000', //下标
+        labelShow: true, //下标
+
+        lineColor: '#0D6E6E', //轴线
+        show: true, //轴线
+
+        symbol: true, //向右
+        position: true, //下
+
+        offset: 0,
+      },
+      V:{
+        name: 'V'+cIndex.value,
+        axisName: 'V'+cIndex.value,
+        unit: '',
+        textColor: '#000', //轴名称
+        tickLine: false, //标线
+        splitLine: false, //隔线
+
+        labelColor: '#000', //下标
+        labelShow: true, //下标
+
+        lineColor: '#0D6E6E', //轴线
+        show: true, //轴线
+
+        symbol: true, //向上
+        position: false, //左
+
+        offset: 0,
+      }
+
+    }
+    Cs.value.push(c)
+    loadAxis(c,echartsOptions)
     close();
   },
-  '纵轴': () => {
-    Vs.value.push({
-      id: ++vIndex.value,
-      name:'V'+vIndex.value,
-      G: target,
+  '极坐标系': () => {
+    const c = {
+      id: ++cIndex.value,
+      name: 'C'+cIndex.value,
+      type: 1, //0:x0y系;1:极坐标系;2无系
+      polar: getPolar(),
       isLoad:false,
-      field: -1,
-      type: 1,
-      axisName: '',
-      unit: '',
-      textColor: '#fff',
-      labelColor: '#fff',
-      lineColor: '#0D6E6E',
-      labelShow: true,
-      tickLine: false,
-      splitLine: false,
-      show: true,
-      symbol: true,
-      position: false,
-      offset: 0,
-      sa: 0,
-      ea:360
-    })
+      axisType: false, //横轴为类目
+      isStack: false,
+      H:{
+        name: 'H'+cIndex.value,
+        axisName: 'H'+cIndex.value,
+        unit: '',
+        textColor: '#000', //轴名称
+        tickLine: false, //标线
+        splitLine: false, //隔线
+
+        labelColor: '#000', //下标
+        labelShow: true, //下标
+
+        lineColor: '#0D6E6E', //轴线
+        show: true, //轴线
+
+        symbol: true, //向右
+        position: true, //下
+
+      },
+      V:{
+        name: 'V'+cIndex.value,
+        axisName: 'V'+cIndex.value,
+        unit: '',
+        textColor: '#000', //轴名称
+        tickLine: false, //标线
+        splitLine: false, //隔线
+
+        labelColor: '#000', //下标
+        labelShow: true, //下标
+
+        lineColor: '#0D6E6E', //轴线
+        show: true, //轴线
+
+        symbol: true, //向上
+        position: false, //左
+
+        sa: 0,
+        ea: 360
+      }
+    }
+    Cs.value.push(c)
+    loadAxis(c,echartsOptions)
     close();
   },
   '系列': () => {
-    const newSeries = {
+    const s = {
       id: ++sIndex.value,
       name: 'S'+sIndex.value,
-      G: target,
-      D: null,
-      H:null,
-      V:null,
-      isLoad:false,
+      seriesName: 'S'+sIndex.value,
+      C:null,
+      category: -1,
+      number: -1,
+      isLoad: false,
       color: '#FF4081',
-      type: 0, //0折线,1柱状,2极坐标,3饼图,4散点,5雷达
+      type: 0, //0折线,1柱状,2散点,3饼图,4雷达
       areaColor: '#FF4081',
+
       isLabel: false,
-      pieces: [],
+      labelColor: '#000',
+
       lineConfig: {
         lineType: 0,  //直线,曲线,折线
-        startPoint: -1,
+        startPoint: 0,
         isArea: false,
-        isLayer: false,
+      },
+      barConfig: {
+        borderRadius: 5,
+        barGap: 5,
+        barWidth: 40,
       },
       scatterConfig: {
         type: 0,
         mapField: -1,
+        range: [20,50],
+        size: 20,
       },
-      barConfig:{
 
-      },
       pieConfig: {
         isRose: false,
         roseType: 0, //0,半径
         borderRadius: 10,
-        padAngle: 2,
+        padAngle: 0,
         position: 0, //内嵌
         labelLine: true,
-        pi: 0,
-        po: 80,
-        pt:50,
-        pl:50,
+        polar: getPolar()
       },
-      radarConfig: {
-
-      }
     }
-
-    if (target.type === 0 || target.type === 1) newSeries.type = 0
-
-
-
-    Ss.value.push(newSeries)
+    Ss.value.push(s)
     close();
   },
-  '图': () => {
-    if (Gs.value.length===4){
-      close();
-      return
-    }
-    const gridSet = getGridSet()
 
-    Gs.value.push({
-      id:++gIndex.value,
-      name: 'G'+gIndex.value,
-      isLoad:false,
-      gridIndex: Gs.value.length,
-      polarIndex: Gs.value.length,
-      stackType:false,
-      type: 0,//x为0,极为1,饼为2,雷3
-      t:0,
-      b:0,
-      l:0,
-      r:0,
-      w:0,
-      h:0,
-      pi:0,
-      po:88,
-      pl:50,
-      pt:50,
-      isStack: false,
-      isStackAxisLoad: false,
-      isPolarAxisLoad:false,
-      polarType: false,
-
-    })
-    console.log('添加图')
-    echartsOptions.value.grid = gridSet[Gs.value.length-1].map(i=>i.item)
-
-    console.log('变更echartsOptions.grid',echartsOptions.value.grid)
-    reloadGraph()
-    close();
-  }
 };
 
 const handleChartClick = (params) => {
@@ -235,7 +247,8 @@ const handleChartClick = (params) => {
       handler();
     }
   }
-};
+}
+
 onMounted(()=>{
   myChart = echarts.init(container.value,null, { renderer: 'svg' });
   emitter.on('show-menu', showMenu)

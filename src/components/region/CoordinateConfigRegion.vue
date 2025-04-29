@@ -1,8 +1,8 @@
 <template>
-  <div class="graph-container">
+  <div class="axis-container">
     <div class="header" @click="toggleDataset($event)">
       <div class="header-left">
-        <span>图</span>
+        <span>坐标系</span>
       </div>
       <div class="header-right">
         <DropDown @click.stop></DropDown>
@@ -10,18 +10,20 @@
     </div>
     <div class="options">
       <div>
-        <div class="graph" v-for="item in Gs" :key="item.id">
-          <div class="graph-header" @click="toggleDataset($event)">
-            <div class="graph-header-left">
-              <span>{{item.name}}</span>
+        <div class="axis"v-for="item in Cs.filter(i=>i.id!==-1)"
+             :key="item.id"
+        >
+          <div class="axis-header" @click="toggleDataset($event)">
+            <div class="axis-header-left">
+              <span>{{ item.name }}</span>
             </div>
-            <div class="graph-header-right">
+            <div class="axis-header-right">
               <DropDown @click.stop></DropDown>
             </div>
           </div>
-          <div class="graph-body">
+          <div class="axis-body">
             <div>
-              <GraphConfig :item="item"></GraphConfig>
+              <CoordinateSystem :item="item"></CoordinateSystem>
             </div>
           </div>
         </div>
@@ -31,17 +33,19 @@
 </template>
 
 <script setup>
-import GraphConfig from "../config/GraphConfig.vue";
+
 import DropDown from "../svg/DropDown.vue";
+
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
+import CoordinateSystem from "../newArch/CoordinateSystem.vue";
 
 const toggleDataset = (event) => {
   event.currentTarget.nextElementSibling.classList.toggle('show')
   event.currentTarget.classList.toggle('rotate')
 }
+const {Cs} = storeToRefs(useOptionConfig())
 
-const {Gs} = storeToRefs(useOptionConfig())
 </script>
 
 
@@ -51,16 +55,14 @@ const {Gs} = storeToRefs(useOptionConfig())
   display: grid;
   grid-template-rows: 0fr;
   transition: 300ms ease-in-out;
-
   >div{
     overflow: hidden;
     display: flex;
     flex-direction: column;
-
   }
 }
 
-.rotate.header .header-right,.rotate.graph-header .graph-header-right{
+.rotate.header .header-right,.rotate.axis-header .axis-header-right{
   svg:last-child {
     rotate: 180deg;
   }
@@ -82,21 +84,18 @@ const {Gs} = storeToRefs(useOptionConfig())
   background-color: var(--theme-hover-color);
 }
 
-.graph-header{
+
+.axis-header{
+  position: relative;
   padding: 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   transition: 300ms ease-in-out;
   background-color: var(--2-background-color);
-  position: relative;
 }
 
-.graph-header:hover{
-  background-color: var(--hover-color);
-}
-
-.graph-header:after{
+.axis-header:after{
   content: '';
   width: 100%;
   position: absolute;
@@ -113,7 +112,11 @@ const {Gs} = storeToRefs(useOptionConfig())
   );
 }
 
-.graph-body{
+.axis-header:hover{
+  background-color: var(--hover-color);
+}
+
+.axis-body{
   display: grid;
   grid-template-rows: 0fr;
   transition: 300ms ease-in-out;

@@ -19,8 +19,11 @@
         class="br"
         @mousedown="startResize"
     ></div>
-    <HeaderNav></HeaderNav>
-    <Table></Table>
+    <HeaderNav v-model="selectedIndex"></HeaderNav>
+    <KeepAlive>
+      <component :is="components[selectedIndex]"></component>
+    </KeepAlive>
+
   </div>
 </template>
 
@@ -30,19 +33,21 @@ import RightFloatButton from "../button/RightFloatButton.vue";
 
 import Table from "./Table.vue";
 import HeaderNav from "./HeaderNav.vue";
+import Enchiridion from "./Enchiridion.vue";
 const isOpen = ref(false);
 const width = ref(0);
-const minWidth = 40;
+const minWidth = 0;
 const maxWidth = 1200;
 const isResizing = ref(false);
 
-
+const components = [Enchiridion, Table]; // 组件顺序对应菜单项顺序
+const selectedIndex = ref(0); // 默认选中第一个组件
 
 const startResize = (e) => {
   isResizing.value = true;
   document.addEventListener('mousemove', handleMouseMove);
   document.addEventListener('mouseup', stopResize);
-};
+}
 
 // 新增：处理窗口大小变化
 const handleWindowResize = () => {
@@ -53,21 +58,21 @@ const handleWindowResize = () => {
     const newWidth = windowWidth * 0.5;
     width.value = Math.max(minWidth, Math.min(maxWidth, newWidth));
   }
-};
+}
 
 const handleMouseMove = (e) => {
   if (!isResizing.value) return;
 
   const newWidth = window.innerWidth - e.clientX;
   width.value = Math.max(minWidth, Math.min(maxWidth, newWidth));
-};
+}
 
 const stopResize = () => {
   isResizing.value = false;
   document.removeEventListener('mousemove', handleMouseMove);
   document.removeEventListener('mouseup', stopResize);
 
-};
+}
 
 onMounted(()=>{
   window.addEventListener('resize', handleWindowResize);
@@ -104,6 +109,8 @@ onBeforeUnmount(() => {
 }
 .top-div{
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: 105px 1fr;
 }
+
+
 </style>

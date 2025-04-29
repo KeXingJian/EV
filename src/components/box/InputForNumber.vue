@@ -70,7 +70,7 @@ const handleBlur = () => {
 }
 /* styling of Input */
 .input {
-  color: #fff;
+  color: var(--font-color);
   font-size: 0.9rem;
   background-color: transparent;
   width: 100%;

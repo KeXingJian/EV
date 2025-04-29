@@ -31,11 +31,11 @@ import RadioBox from "../box/RadioBox.vue";
 import { watch} from "vue";
 import CheckBox from "../box/CheckBox.vue";
 import ColorPoint from "../button/ColorPoint.vue";
-import { startPoints} from "../../utils/ChartUtils.js";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
 import emitter from "../../emitter/emitter.js";
 import {x0y} from "../../utils/BeautifyUtils.js";
+import {startPoints} from "../../utils/newArch/Check4Series.js";
 
 const props = defineProps({
   item: {

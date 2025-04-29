@@ -18,10 +18,22 @@
         </div>
       </div>
     </div>
-  <div class="config-item">
+  <div class="config-item" v-if="false">
     <span>函数表达式:</span>
     <InputBox text="y = f(x)" :width="100"></InputBox>
   </div>
+
+  <div class="config-item" v-if="item.scatterConfig.type === 1">
+    <span>范围:</span>
+    <ProgressBarRange v-model="item.scatterConfig.range"></ProgressBarRange>
+  </div>
+  <div class="config-item" v-else>
+    <span>大小:</span>
+    <ProgressBar v-model="item.scatterConfig.size" :width="200"></ProgressBar>
+  </div>
+
+
+
 
 
 </template>
@@ -35,7 +47,9 @@ import emitter from "../../emitter/emitter.js";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
 import {getFieldDetails, x0y} from "../../utils/BeautifyUtils.js";
-import {getData,getData3} from "../../utils/CheckUtils.js"
+import {getDataForSimpleSeries} from "../../utils/newArch/Check4Series.js";
+import ProgressBarRange from "../button/ProgressBarRange.vue";
+import ProgressBar from "../button/ProgressBar.vue";
 
 const props = defineProps({
   item: {
@@ -91,17 +105,16 @@ watch(props.item, (newVal) => {
 
   x0y(newVal, echartsOptions, target)
 
+  getDataForSimpleSeries(target,newVal)
+
   if (newVal.scatterConfig.type === 1 && newVal.scatterConfig.mapField !==-1){
     const {max,min} = getFieldDetails(newVal.scatterConfig.mapField)
-    target.data = getData3(newVal.H.field,newVal.V.field,newVal.scatterConfig.mapField,newVal.D)
     target.symbolSize =  function (val) {
-      return 40*((val[2]-min) / (max-min)) +20;
+      return (newVal.scatterConfig.range[1]-newVal.scatterConfig.range[0]) *((val[2]-min) / (max-min)) +newVal.scatterConfig.range[0];
     }
   }else {
-    target.data = getData(newVal.H.field,newVal.V.field,newVal.D)
-    target.symbolSize = function (val) {
-      return 10;
-    }
+    target.symbolSize = newVal.scatterConfig.size;
+
   }
 
   console.log('系列更新触发合并', echartsOptions.value)

@@ -15,14 +15,14 @@
         <span :style="{
           width:'55px'
         }">最小值:</span>
-        <InputForNumber text="min" :width="100" v-model="min.visualMapMin">
+        <InputForNumber text="min" :width="100" v-model="map.min">
         </InputForNumber>
       </div>
       <div class="config-item">
         <span :style="{
           width:'55px'
         }">最大值:</span>
-        <InputForNumber text="Max" :width="100" v-model="max.visualMapMax">
+        <InputForNumber text="Max" :width="100" v-model="map.max">
         </InputForNumber>
       </div>
     </div>
@@ -36,7 +36,7 @@
         <span :style="{
           width:'65px'
         }">左开右闭</span>
-        <SelectButton v-model="max.visualMode"></SelectButton>
+        <SelectButton v-model="map.mode"></SelectButton>
         <span :style="{
           width:'80px'
         }">左闭右开</span>
@@ -102,13 +102,14 @@ const props = defineProps({
   },
   min: {type: Object},
   max: {type: Object},
+  map: {type: Object},
+
   modelValue: Array
 })
 
 const emit = defineEmits(['update:modelValue']);
 
 const isEq = ref(false)
-const mode = ref(false)
 const precision = ref(0)
 // 响应式引用
 const progressBar = ref(null);
@@ -140,7 +141,7 @@ const modelValue = computed(() => {
     const current = calcActualValue(bp.position);
     const next = calcActualValue(sortedBreakpoints.value[index + 1].position);
 
-    return props.max.visualMode
+    return props.map.mode
         ? {gte: current, lt: next, color: bp.color}
         : {gt: current, lte: next, color: bp.color};
   })
@@ -254,7 +255,7 @@ const calculateEqualPositions = (count) => {
 
 // 计算实际值（带精度）
 const calcActualValue = (position) => {
-  const value = props.min.visualMapMin + (props.max.visualMapMax - props.min.visualMapMin) * (position / 100);
+  const value = props.map.min + (props.map.max - props.map.min) * (position / 100);
   return Number(value.toFixed(precision.value));
 
 }
@@ -279,7 +280,7 @@ watch(isEq, (newVal) => {
   }
 });
 // 添加对modelValue的监听
-onMounted(() =>  {
+onMounted(() => {
   if (!props.modelValue || props.modelValue.length === 0) return;
 
   // 退出等分模式以确保断点位置可自定义
@@ -287,20 +288,20 @@ onMounted(() =>  {
 
   console.log(props.modelValue)
 
-  const minVal = props.min.visualMapMin;
-  const maxVal = props.max.visualMapMax;
+  const minVal = props.map.min;
+  const maxVal = props.map.max;
   const range = maxVal - minVal;
   if (range <= 0) return;
 
   const newBreakpoints = [];
 
-  if (!props.modelValue[0]){
+  if (!props.modelValue[0]) {
     // 处理第一个断点
     newBreakpoints.push({
       position: 0,
       color: props.defaultColor
     });
-  }else {
+  } else {
     // 处理第一个断点
     newBreakpoints.push({
       position: 0,
@@ -310,23 +311,22 @@ onMounted(() =>  {
 
 
   // 处理中间断点
-  props.modelValue.forEach((item,index) => {
-    if (index ===props.modelValue.length - 1) return
+  props.modelValue.forEach((item, index) => {
+    if (index === props.modelValue.length - 1) return
 
-    const rightValue = props.max.visualMode ? item.lt : item.lte;
+    const rightValue = props.map.mode ? item.lt : item.lte;
     const position = ((rightValue - minVal) / range) * 100;
     newBreakpoints.push({
       position,
-      color: props.modelValue[index+1].color
+      color: props.modelValue[index + 1].color
     });
   });
 
-    // 添加最后一个断点
-    newBreakpoints.push({
-      position: 100,
-      color: props.defaultColor
-    });
-
+  // 添加最后一个断点
+  newBreakpoints.push({
+    position: 100,
+    color: props.defaultColor
+  });
 
 
   // 更新breakpoints数组
@@ -399,7 +399,7 @@ onMounted(() =>  {
   visibility: visible;
   width: 40px;
   height: 40px;
-  background: linear-gradient(95deg, var(--1-background-color) -7%, var(--1-theme-color) 112%);
+  background:  var(--theme-hover-color);
   position: absolute;
   top: -47px;
   left: -11px;
@@ -413,6 +413,7 @@ onMounted(() =>  {
   transform: rotate(45deg);
   color: var(--font-color);
   font-size: 17px;
+  text-align: center;
 }
 
 .config-item {

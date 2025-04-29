@@ -2,7 +2,7 @@
   <div class="field-manage">
     <div class="index">
       <span class="head">索引</span>
-      <div v-for="(item,index) in fields.map(item => item.index)" :key="index" class="index-item">
+      <div v-for="(item,index) in fileData.columnStats.map(item => ExcelColumnMap.getLetter(item.index+1))" :key="index" class="index-item">
         <span>
            {{ item }}
         </span>
@@ -10,7 +10,7 @@
     </div>
     <div class="file">
       <span class="head">字段</span>
-      <div v-for="(item,index) in fields.map(item => item.field)" :key="index" class="file-item">
+      <div v-for="(item,index) in fileData.columnStats.map(item => item.field)" :key="index" class="file-item">
        <span>
            {{ item }}
         </span>
@@ -18,7 +18,7 @@
     </div>
     <div class="type">
       <span class="head">类型</span>
-      <div v-for="(item,index) in fields.map(item => item.type)" :key="index" class="type-item">
+      <div v-for="(item,index) in fileData.columnStats.map(item => item.type)" :key="index" class="type-item">
         <span>
            {{ item }}
         </span>
@@ -26,7 +26,7 @@
     </div>
     <div class="sole">
       <span class="head">唯一性</span>
-      <div v-for="(item,index) in fields.map(item => item.isSole)" :key="index" class="type-item">
+      <div v-for="(item,index) in fileData.columnStats.map(item => item.isUnique)" :key="index" class="type-item">
         <Check v-if="item"></Check>
         <Close v-else></Close>
       </div>
@@ -43,18 +43,6 @@ import ExcelColumnMap from "../../utils/ExcelColumnMapUtils.js";
 
 const {fileData} = storeToRefs(useOptionConfig())
 
-const fields = ref([])
-
-onMounted(()=>{
-  fileData.value.columnStats.forEach(item  =>{
-    fields.value.push({
-      index: ExcelColumnMap.getLetter(item.index+1),
-      field: item.field,
-      type: item.type,
-      isSole: item.isUnique,
-    })
-  })
-})
 </script>
 
 <style scoped>

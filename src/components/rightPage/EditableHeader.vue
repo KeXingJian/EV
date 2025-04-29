@@ -10,7 +10,7 @@
         @keydown.enter="saveChanges"
         @keydown.esc="cancelEditing"
     />
-    <CloseButton @click="deleteField" v-if="isEditing"></CloseButton>
+    <CloseButton @click="deleteField"></CloseButton>
   </div>
 </template>
 
@@ -56,6 +56,8 @@ const deleteField =()=>{
   const columnIndex = parseInt(colId.replace('col', ''), 10)
   props.params.deleteField(columnIndex)
 }
+
+
 </script>
 
 <style scoped>

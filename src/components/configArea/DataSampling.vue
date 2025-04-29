@@ -1,7 +1,10 @@
 <template>
   <div class="datasets-container">
     <ul>
-      <vue-draggable v-model="Ds">
+      <vue-draggable
+          v-model="safeDs"
+          :serialize="false"
+      >
         <li class="dataset" v-for="dataset in Ds" :key="dataset.id">
           <div class="dataset-head" @click="toggleDataset($event)">
             <Database></Database>
@@ -30,13 +33,38 @@ import DropDown from "../svg/DropDown.vue";
 import Database from "../svg/Database.vue";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
+import {ref, watchEffect} from "vue";
 
 const toggleDataset = (event) => {
   event.currentTarget.nextElementSibling.classList.toggle('show')
   event.currentTarget.classList.toggle('rotate')
 }
 
-const {Ds} = storeToRefs(useOptionConfig())
+const {Ds,Ss} = storeToRefs(useOptionConfig())
+
+// 创建一个安全副本（剥离响应性并处理循环引用）
+const safeDs = ref([]);
+
+watchEffect(() => {
+  try {
+    // 使用自定义克隆函数处理循环引用
+    safeDs.value = cloneWithoutCircular(Ds.value);
+  } catch (error) {
+    console.error('克隆数据失败:', error);
+  }
+});
+
+// 自定义克隆函数（处理循环引用）
+function cloneWithoutCircular(obj) {
+  const seen = new WeakSet();
+  return JSON.parse(JSON.stringify(obj, (key, value) => {
+    if (typeof value === 'object' && value !== null) {
+      if (seen.has(value)) return; // 跳过已处理的循环引用
+      seen.add(value);
+    }
+    return value;
+  }));
+}
 
 console.log(Ds.value)
 </script>

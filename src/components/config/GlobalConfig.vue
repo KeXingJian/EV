@@ -9,6 +9,12 @@
       </div>
       <div class="config-item">
         <span
+            style="width: 50px"
+        >分层化:</span>
+        <CheckBox v-model="global.isLayer"></CheckBox>
+      </div>
+      <div class="config-item" v-if="false">
+        <span
             style="width: 60px"
         >svg渲染:</span>
         <CheckBox v-model="global.isSvg"></CheckBox>
@@ -201,6 +207,13 @@
         </div>
       </div>
     </div>
+
+    <div class="b">
+      <div class="config-item" v-show="global.isLayer">
+       <ProgressBarArea default-color="#FF4081"  :map="global.visualMap" v-model="global.visualMap.pieces"></ProgressBarArea>
+      </div>
+
+    </div>
   </div>
 </template>
 
@@ -214,6 +227,7 @@ import ColorPoint from "../button/ColorPoint.vue";
 import InputBox from "../box/InputBox.vue";
 import {legendStyleSelect, legendTypeSelect} from "../../utils/BeautifyUtils.js";
 import emitter from "../../emitter/emitter.js";
+import ProgressBarArea from "../button/ProgressBarArea.vue";
 
 const {global, echartsOptions} = storeToRefs(useOptionConfig())
 
@@ -236,7 +250,7 @@ const currentStyle = computed(() => {
 })
 
 watch(global, (nweVal) => {
-  console.log(nweVal)
+
   echartsOptions.value.large = nweVal.isLarge
 
 
@@ -269,7 +283,17 @@ watch(global, (nweVal) => {
   echartsOptions.value.backgroundColor = nweVal.backGround
 
 
-  emitter.emit('merge-option')
+  if (nweVal.isLayer){
+    echartsOptions.value.visualMap = {
+      pieces: nweVal.visualMap.pieces,
+      dimension: 1
+    }
+  }else {
+    echartsOptions.value.visualMap = undefined
+  }
+
+
+  emitter.emit('load-chart')
 
 }, {deep: true})
 </script>
@@ -282,7 +306,7 @@ watch(global, (nweVal) => {
   padding: 20px 4px;
 }
 
-.t {
+.t,.b {
   display: flex;
   gap: 20px;
   align-items: center;

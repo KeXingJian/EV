@@ -9,7 +9,7 @@
             <CloseButton @click="deleteFilter(dataset,index)"></CloseButton>
           </button>
           <AddButton v-if="!isAddFilter" @click="isAddFilter=true"></AddButton>
-          <form v-if="isAddFilter" @submit="applyFilter" class="form" :style="{
+          <form v-if="isAddFilter" @submit.prevent="applyFilter" class="form" :style="{
               width: `150px`
           }">
             <input
@@ -34,7 +34,7 @@
             <CloseButton @click="deleteGroup(group.child,index)"></CloseButton>
           </button>
           <AddButton v-if="!isAddGroup" @click="isAddGroup=true"></AddButton>
-          <form v-if="isAddGroup" @submit="createGroup" class="form" :style="{
+          <form v-if="isAddGroup" @submit.prevent="createGroup" class="form" :style="{
               width: `150px`
           }">
             <input
@@ -69,8 +69,8 @@ import Bar from "./Bar.vue";
 import {useOptionConfig} from "../../store/OptionConfig.js";
 import {ref} from "vue";
 import CheckButton from "../svg/CheckButton.vue";
-import {allSeriesCheckByD, seriesChange, unloadAxis, unloadSeries} from "../../utils/CheckUtils.js";
 import {storeToRefs} from "pinia";
+import {checkSeries, unloadSeries} from "../../utils/newArch/Check4Series.js";
 
 
 const props = defineProps({
@@ -87,14 +87,14 @@ const currentExpressionFilter = ref('')
 const currentExpressionGroup = ref('')
 const store = useOptionConfig()
 
-const {Ds, Ss, Hs, Vs, echartsOptions,Gs} = storeToRefs(useOptionConfig())
+const {Ds, Ss, echartsOptions} = storeToRefs(useOptionConfig())
 
 const applyFilter = () => {
   const isOK = store.applyFilter(props.dataset, currentExpressionFilter.value)
   if (isOK) {
     currentExpressionFilter.value = ''
     isAddFilter.value = false
-    allSeriesCheckByD()
+    Ss.value.filter(i=>i.isLoad).forEach(i=>checkSeries(i,echartsOptions))
   }
 
 }
@@ -105,7 +105,7 @@ const createGroup = () => {
   if (isOK) {
     currentExpressionGroup.value = ''
     isAddGroup.value = false
-    allSeriesCheckByD()
+    Ss.value.filter(i=>i.isLoad).forEach(i=>checkSeries(i,echartsOptions))
   }
 
 
@@ -114,7 +114,7 @@ const createGroup = () => {
 const deleteFilter = (dataset, i) => {
   dataset.filterConditions = dataset.filterConditions.filter((item, index) => index !== i)
   store.refreshDataset(dataset.id)
-  allSeriesCheckByD()
+  Ss.value.filter(i=>i.isLoad).forEach(i=>checkSeries(i,echartsOptions))
 }
 
 const deleteGroup = (child, index) => {
@@ -123,33 +123,15 @@ const deleteGroup = (child, index) => {
   toDeleteNode(child, deleteIs, index)
   console.log('节点删除完毕', Ds.value)
   //忽略以下代码
-  console.log('系列为零,清除所有轴')
-  echartsOptions.value.xAxis.length = 0
-  echartsOptions.value.yAxis.length = 0
-  echartsOptions.value.radiusAxis.length = 0
-  echartsOptions.value.angleAxis.length = 0
-  echartsOptions.value.polar.length = 0
-  echartsOptions.value.series.length = 0
-
-  Gs.value.forEach(i=>{
-    i.isStackAxisLoad = false
+  Ss.value.forEach(i=>{
+    const needDelete = deleteIs.includes(i.D.id)
+    if (needDelete){
+      i.D =null
+      if (i.isLoad){
+        unloadSeries(i,echartsOptions)
+      }
+    }
   })
-
-  Hs.value.forEach(item => {
-    item.isLoad = false
-  })
-  Vs.value.forEach(item => {
-    item.isLoad = false
-  })
-  console.log('重载相关系列')
-  Ss.value.forEach((i) => {
-    i.isLoad = false
-
-    if (deleteIs.includes(i.D.id)) i.D = null
-
-    seriesChange(i)
-  })
-
 }
 
 const toDeleteNode = (child, ids, i) => {
@@ -264,7 +246,7 @@ const deleteGroupCondition = (child, i) => {
 
 /* styling of Input */
 .input {
-  color: #fff;
+  color: var(--font-color);
   font-size: 0.9rem;
   background-color: transparent;
   width: 100%;

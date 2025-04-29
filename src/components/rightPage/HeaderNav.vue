@@ -18,12 +18,16 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import {ref, computed, onMounted, watch} from 'vue'
 
 const props = defineProps({
   items: {
     type: Array,
     default: () => ['使用手册', '数据编辑']
+  },
+  modelValue: { // 新增v-model prop
+    type: Number,
+    default: 0
   }
 })
 
@@ -34,6 +38,8 @@ const currentIndicator = ref({ left: 0, width: 0 })
 
 const menuItems = ref([...props.items])
 
+const emits = defineEmits(['update:modelValue']) // 声明事件
+
 const indicatorStyle = computed(() => ({
   left: `${currentIndicator.value.left}px`,
   width: `${currentIndicator.value.width}px`,
@@ -41,7 +47,7 @@ const indicatorStyle = computed(() => ({
 }))
 
 const setActive = (index, event) => {
-  activeIndex.value = index
+  emits('update:modelValue', index) // 触发v-model更新
   isChanged.value = !isChanged.value
 
   const target = event.target
@@ -51,15 +57,23 @@ const setActive = (index, event) => {
   }
 }
 
-onMounted(() => {
-  // 初始化第一个菜单项的指示器位置
-  const firstItem = navElement.value.querySelector('a')
-  if (firstItem) {
+const updateIndicator = (index) => {
+  const items = navElement.value.querySelectorAll('span')
+  if (items[index]) {
     currentIndicator.value = {
-      left: firstItem.offsetLeft,
-      width: firstItem.offsetWidth
+      left: items[index].offsetLeft,
+      width: items[index].offsetWidth
     }
   }
+}
+
+onMounted(() => {
+  updateIndicator(props.modelValue) // 使用prop初始化
+})
+
+// 监听modelValue变化更新指示器
+watch(() => props.modelValue, (newVal) => {
+  updateIndicator(newVal)
 })
 </script>
 

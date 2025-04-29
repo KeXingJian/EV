@@ -1,14 +1,14 @@
 <template>
   <div class="series-config">
 
-    <div class="chart-select" v-if="item.G.type===0 || item.G.type===1">
+    <div class="chart-select" v-if="item.C.type===0 || item.C.type===1">
       <RadioBox
           v-model="item.type"
           :options="GraphTypeSelect"
           :name="'GraphTypeSelect'+item.id"
       ></RadioBox>
     </div>
-    <div class="t-1" v-if="item.G.type===0 || item.G.type===1">
+    <div class="t-1" v-if="item.C.type===0 || item.C.type===1">
       <div class="config-item">
         <span>标签:</span>
         <CheckBox v-model="item.isLabel"></CheckBox>
@@ -19,7 +19,7 @@
       </div>
       <div class="config-item">
 
-        <InputBox width="100" text="text" v-model="item.name"></InputBox>
+        <InputBox width="100" text="text" v-model="item.seriesName"></InputBox>
       </div>
     </div>
     <component :is="currentView" :item="item"></component>
@@ -35,12 +35,14 @@ import PieChartL from "../GrpahType/PieChartL.vue";
 import ScatterChartL from "../GrpahType/ScatterChartL.vue";
 import CheckBox from "../box/CheckBox.vue";
 import ColorPoint from "../button/ColorPoint.vue";
-import {chartType} from "../../utils/ChartUtils.js";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
 import emitter from "../../emitter/emitter.js";
 import ProgressBarArea from "../button/ProgressBarArea.vue";
 import InputBox from "../box/InputBox.vue";
+import {getFieldDetails} from "../../utils/BeautifyUtils.js";
+import {chartType} from "../../utils/newArch/Check4Series.js";
+
 
 const props = defineProps({
   item: {
@@ -87,12 +89,19 @@ watch(type, (newVal) =>{
   target.type = chartType[newVal]
   if (newVal !==2){
     target.symbolSize = undefined
+  }else {
+    if (props.item.scatterConfig.type === 1 && props.item.scatterConfig.mapField !== -1) {
+      const {max, min} = getFieldDetails(props.item.scatterConfig.mapField)
+      target.symbolSize =  function (val) {
+        return (props.item.scatterConfig.range[1]-props.item.scatterConfig.range[0]) *((val[2]-min) / (max-min)) +props.item.scatterConfig.range[0];
+      }
+    } else {
+      target.symbolSize = props.item.scatterConfig.size;
+    }
   }
   console.log('类型变更,触发合并',target)
   emitter.emit('merge-option')
 })
-
-
 </script>
 
 <style scoped>

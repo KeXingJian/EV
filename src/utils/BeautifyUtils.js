@@ -4,7 +4,7 @@ import {useOptionConfig} from "../store/OptionConfig.js";
 export const x0y = (newVal,echartsOptions,target)=>{
     target.itemStyle.color = newVal.color
     target.label.show = newVal.isLabel
-    target.name = newVal.name
+    target.name = newVal.seriesName
 }
 
 export const getFieldDetails = (mapIndex)=>{
@@ -14,8 +14,6 @@ export const getFieldDetails = (mapIndex)=>{
 
 
 export const legendTypeSelect = ['horizontal','vertical']
-
-export const fontFamilySelect = ['sans-serif','serif','monospace','Arial','Courier New']
 
 export const legendStyleSelect = [
     {index:'circle',label:'圆形'},

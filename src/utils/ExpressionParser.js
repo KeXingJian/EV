@@ -1,4 +1,6 @@
+
 export function parseCondition(expression, columnStats) {
+
     // 增强正则表达式，明确捕获不同类型值
     const validationRegExp = /^([A-Z]+)\s*(=|!=|<=|>=|<|>)\s*(?:'([^']*)'|([+-]?\d+\.?\d*)|(true|false))$/;
     const match = expression.match(validationRegExp);
@@ -58,17 +60,29 @@ export function parseCondition(expression, columnStats) {
     };
 }
 
-export const createFilter = (condition) => {
-    return (record) => {
-        const fieldValue = record[condition.field]
-        switch(condition.operator) {
-            case '=': return fieldValue === condition.value
-            case '!=': return fieldValue !== condition.value
-            case '<': return fieldValue < condition.value
-            case '<=': return fieldValue <= condition.value
-            case '>': return fieldValue > condition.value
-            case '>=': return fieldValue >= condition.value
-            default: return false
+export const createFilter =  (condition) => {
+
+
+    return (record, index) => {
+        const fieldValue = String(record[condition.field]);
+
+        switch (condition.operator) {
+            case 'like':
+                return condition.indexs.includes(index)
+            case '=':
+                return fieldValue === condition.value
+            case '!=':
+                return fieldValue !== condition.value
+            case '<':
+                return fieldValue < condition.value
+            case '<=':
+                return fieldValue <= condition.value
+            case '>':
+                return fieldValue > condition.value
+            case '>=':
+                return fieldValue >= condition.value
+            default:
+                return false
         }
     }
 }

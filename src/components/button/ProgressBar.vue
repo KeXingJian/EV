@@ -156,7 +156,7 @@ function showRange() {
   visibility: hidden;
   width: 40px;
   height: 40px;
-  background: linear-gradient(95deg, var(--1-background-color) -7%, var(--1-theme-color) 112%);
+  background:  var(--theme-hover-color);
   position: absolute;
   top: -47px;
   left: -14px;

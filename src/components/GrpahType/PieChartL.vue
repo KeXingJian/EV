@@ -56,7 +56,7 @@
         <div class="config-item">
           <span>上:</span>
           <ProgressBar
-              v-model="item.pieConfig.pt"
+              v-model="item.pieConfig.polar.pt"
               :width="175"
               :min="0"
               :max="100"
@@ -67,7 +67,7 @@
         <div class="config-item">
           <span>左:</span>
           <ProgressBar
-              v-model="item.pieConfig.pl"
+              v-model="item.pieConfig.polar.pl"
               :width="175"
               :min="0"
               :max="100"
@@ -91,7 +91,7 @@
         <div class="config-item">
           <span>内径:</span>
           <ProgressBar
-              v-model="item.pieConfig.pi"
+              v-model="item.pieConfig.polar.pi"
               :width="175"
               :min="0"
               :max="100"
@@ -102,7 +102,7 @@
         <div class="config-item">
           <span>外径:</span>
           <ProgressBar
-              v-model="item.pieConfig.po"
+              v-model="item.pieConfig.polar.po"
               :width="175"
               :min="0"
               :max="100"
@@ -135,8 +135,7 @@ import ColorPoint from "../button/ColorPoint.vue";
 import emitter from "../../emitter/emitter.js";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
-import {labelTypeForPosition, roseTypeSelect} from "../../utils/ChartUtils.js";
-import {buildPolar, getPieData} from "../../utils/CheckUtils.js";
+import {buildPolar, labelTypeForPosition, roseTypeSelect} from "../../utils/newArch/Position.js";
 
 const props = defineProps({
   item: {
@@ -179,13 +178,13 @@ watch(props.item, (newVal) => {
   target.padAngle = newVal.pieConfig.padAngle
 
   target.label.position = labelTypeForPosition[newVal.pieConfig.position]
-
+  target.labelLine.show = newVal.pieConfig.labelLine
 
   const position = buildPolar(
-      newVal.pieConfig.pi,
-      newVal.pieConfig.po,
-      newVal.pieConfig.pl,
-      newVal.pieConfig.pt
+      newVal.pieConfig.polar.pi,
+      newVal.pieConfig.polar.po,
+      newVal.pieConfig.polar.pl,
+      newVal.pieConfig.polar.pt
   )
   target.radius = position.radius
   target.center = position.center

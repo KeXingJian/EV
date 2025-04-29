@@ -20,6 +20,7 @@
           color="#15ccbe"
           :msg="item.msg"
           :link="item.link"
+          :active="item.active"
           :sign-for="()=>{
             info.splice(index,1);
           }"
@@ -86,7 +87,8 @@ const type = ref(0)
 .notice-head {
   border: 1px solid var(--hover-color);
   padding: 4px;
-  height: 42px
+  height: 42px;
+  transition: 300ms ease-in-out;
 }
 
 .notice-head:hover {

@@ -1,5 +1,5 @@
 <template>
-  <div class="container" :class="{inactivation:inactivation}">
+  <div class="container">
 
     <!-- 进度条容器 -->
     <div
@@ -43,25 +43,26 @@
 <script setup>
 import {ref, reactive, computed, onMounted, watch} from 'vue';
 
-
 const props = defineProps({
-  inactivation:{
-    type: Boolean,
-    required: true
+  modelValue: {
+    type: Array,
+    default: () => [0, 100]
   }
-
 })
+
+const emit = defineEmits(['update:modelValue']);
 
 // 响应式引用
 const progressBar = ref(null);
 const draggingIndex = ref(null);
 
 
-// 初始断点数据（包含位置和颜色）
+// 断点数据（始终包含两个断点）
 const breakpoints = reactive([
-  {position: 0, color: '#15ccbe'},
-  {position: 100, color: '#4ECDC4'}
-]);
+  { position: props.modelValue[0], color: '#15ccbe' },
+  { position: props.modelValue[1], color: '#4ECDC4' }
+])
+
 
 const colorSegments = computed(() => {
   return sortedBreakpoints.value.slice(0, -1).map((bp, i) => ({
@@ -70,6 +71,15 @@ const colorSegments = computed(() => {
     color: bp.color
   }));
 });
+
+// 监听 modelValue 变化更新断点位置
+watch(() => props.modelValue, (newVal) => {
+  if (Array.isArray(newVal) && newVal.length === 2) {
+    breakpoints[0].position = Math.min(newVal[0], newVal[1]);
+    breakpoints[1].position = Math.max(newVal[0], newVal[1]);
+  }
+});
+
 
 // 计算属性：保持断点排序
 const sortedBreakpoints = computed(() => {
@@ -97,6 +107,12 @@ const startDragging = (index, e) => {
 
     sortedBreakpoints.value[draggingIndex.value].position = newPosition;
 
+    // 触发 v-model 更新
+    emit('update:modelValue', [
+      sortedBreakpoints.value[0].position,
+      sortedBreakpoints.value[1].position
+    ]);
+
   };
 
   const mouseUpHandler = () => {
@@ -110,10 +126,6 @@ const startDragging = (index, e) => {
 };
 
 
-// 组件挂载后初始化图表
-onMounted(() => {
-
-});
 
 </script>
 
@@ -138,7 +150,6 @@ onMounted(() => {
   border-radius: 10px;
   height: 100%;
   top: 0;
-  transition: all 0.3s;
   z-index: 1;
 }
 
@@ -165,7 +176,7 @@ onMounted(() => {
   visibility: visible;
   width: 40px;
   height: 40px;
-  background: linear-gradient(95deg, var(--1-background-color) -7%, var(--1-theme-color) 112%);
+  background: linear-gradient(95deg, var(--1-theme-color) -7%, var(--1-theme-color) 112%);
   position: absolute;
   top: -47px;
   left: -11px;
@@ -181,15 +192,4 @@ onMounted(() => {
   font-size: 17px;
 }
 
-.inactivation{
-  cursor: not-allowed;
-  .breakpoint{
-    background-color: var(--inactivation-color) !important;
-    cursor: not-allowed !important;
-  }
-  .color-segment{
-    background-color: var(--inactivation-color) !important;
-    cursor: not-allowed !important;
-  }
-}
 </style>

@@ -14,6 +14,7 @@
     "axios": "^1.8.3",
     "echarts": "^5.6.0",
     "file-saver": "^2.0.5",
+    "jieba-wasm": "^2.2.0",
     "mitt": "^3.0.1",
     "pinia": "^3.0.1",
     "vue": "^3.5.13",
@@ -25,6 +26,8 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.1",
-    "vite": "^6.2.0"
+    "vite": "^6.2.0",
+    "vite-plugin-javascript-obfuscator": "^3.1.0",
+    "vite-plugin-sitemap": "^0.8.0"
   }
 }

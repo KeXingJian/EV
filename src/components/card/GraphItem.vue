@@ -1,33 +1,20 @@
 <template>
   <div class="graph-item">
-    <div class="header" @click="toggleDataset($event)">
+    <div class="header" >
       <div class="header-left">
         <Canvas></Canvas>
       </div>
       <div class="header-right">
-        <AddButton @click.stop="addAxis($event)"></AddButton>
-        <DropDown @click.stop></DropDown>
+        <AddButton @click="add"></AddButton>
       </div>
     </div>
-    <section class="Ys">
+    <section class="Ys show">
       <div>
-        <div class="x">
-          <X v-for="(axis,index) in H"
-             :key="index"
-             :model-item="axis"
-          ></X>
-        </div>
-        <div class="y">
-          <Y v-for="(axis,index) in V"
-             :key="index"
-             :model-item="axis"
-          ></Y>
+        <div class="c">
+          <C v-for="c in Cs.filter(i=>i.id!==-1)" :key="c.id" :model-item="c"></C>
         </div>
         <div class="s">
-          <Series v-for="(series,index) in S"
-                   :key="index"
-                   :model-item="series"
-          ></Series>
+          <S v-for="s in Ss" :key="s.id" :model-item="s"></S>
         </div>
       </div>
     </section>
@@ -35,62 +22,20 @@
 </template>
 
 <script setup>
-import DropDown from "../svg/DropDown.vue";
 import Canvas from "../svg/Canvas.vue";
 import AddButton from "../svg/AddButton.vue";
-import X from "./X.vue";
-import Y from "./Y.vue";
-import Series from "./S.vue";
 import emitter from "../../emitter/emitter.js";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
-import {computed} from "vue";
+import S from "../newArch/S.vue";
+import C from "../newArch/C.vue";
 
-const toggleDataset = (event) => {
-  event.currentTarget.nextElementSibling.classList.toggle('show')
-  event.currentTarget.classList.toggle('rotate')
-}
-
-const props = defineProps({
-  graph: {
-    type: Object,
-    required: true,
-  }
-})
-
-const {Hs, Vs, Ss} = storeToRefs(useOptionConfig())
-
-const H = computed(() => {
-  return Hs.value.filter(h => {
-    if (!h || !h.G) return false
-    return h.id !==-1+h.G.name &&
-        h.G.id === props.graph.id &&
-        h.id !== -2+h.G.name
-  })
-})
-
-const V = computed(() => {
-  return Vs.value.filter(v => {
-    if (!v || !v.G) return false
-    return v.id !==-1+v.G.name &&
-        v.G.id === props.graph.id &&
-        v.id !== -2+v.G.name
-  })
-})
-
-const S = computed(() => {
-  return Ss.value.filter(s => {
-    if (!s || !s.G) return false
-    return s.G.id === props.graph.id
-  })
-})
-
-const addAxis = (event) => {
+const {Ss,Cs} = storeToRefs(useOptionConfig())
+const add = (event) => {
   emitter.emit('show-menu',
       {
         x: event.clientX,
         y: event.clientY,
-        target: props.graph
       }
   )
 }
@@ -100,7 +45,7 @@ const addAxis = (event) => {
 <style scoped>
 
 .graph-item {
-  overflow: hidden;
+  overflow: scroll;
   cursor: pointer;
   display: grid;
 
@@ -120,6 +65,10 @@ const addAxis = (event) => {
   .header:hover {
     background-color: var(--theme-hover-color);
   }
+}
+
+.graph-item::-webkit-scrollbar{
+  display: none;
 }
 
 .rotate.header .header-right {
@@ -150,7 +99,7 @@ svg {
   grid-template-rows: 1fr;
 }
 
-.x, .y, .s {
+.c, .s {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -158,9 +107,9 @@ svg {
   margin-top: 30px;
 }
 
-.x:before, .y:before, .s:before {
+.c:before,  .s:before {
   top: -28px;
-  content: '横轴';
+  content: '坐标系';
   position: absolute;
   border-radius: 10px;
   width: 99%;
@@ -168,15 +117,12 @@ svg {
   font-weight: bolder;
 }
 
-.y:before {
-  content: '纵轴';
-}
 
 .s:before {
   content: '系列';
 }
 
-.x:after, .y:after {
+.c:after {
   content: '';
   position: absolute;
   height: 2px;

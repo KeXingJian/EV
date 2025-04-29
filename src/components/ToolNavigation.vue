@@ -1,26 +1,32 @@
 
 <template>
-  <nav id="sidebar">
-    <ul>
-      <li v-for="(menu,index) in menus" :key="index" :class="{active: menu.path=== $route.path}">
-        <router-link :to="menu.path">
-          <div class="svg-box ">
-            <svg xmlns="http://www.w3.org/2000/svg"
-                 height="24px"
-                 viewBox="0 -960 960 960"
-                 width="24px"
-                 fill="#e8eaed">
-              <path :d="menu.icon"/>
-            </svg>
+  <div class="top-div">
+    <nav id="sidebar">
+      <ul>
+        <li v-for="(menu,index) in menus" :key="index" :class="{active: menu.path=== $route.path}">
+          <router-link :to="menu.path">
+            <div class="svg-box ">
+              <svg xmlns="http://www.w3.org/2000/svg"
+                   height="24px"
+                   viewBox="0 -960 960 960"
+                   width="24px"
+                   fill="#e8eaed">
+                <path :d="menu.icon"/>
+              </svg>
 
-          </div>
-          <span>{{menu.name}}</span>
-        </router-link>
-      </li>
-    </ul>
-  </nav>
+            </div>
+            <span>{{menu.name}}</span>
+          </router-link>
+        </li>
+      </ul>
+    </nav>
+    <ThemeChangeButton></ThemeChangeButton>
+  </div>
+
 </template>
 <script setup>
+import ThemeChangeButton from "./button/ThemeChangeButton.vue";
+
 const menus = [
     {
         name: '数据取样',
@@ -41,8 +47,17 @@ const menus = [
 </script>
 
 <style scoped>
-#sidebar {
+.top-div{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
   border-right: 1px solid var(--2-background-color);
+  padding-bottom: 10px;
+}
+
+#sidebar {
+
 }
 
 #sidebar ul {

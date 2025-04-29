@@ -16,7 +16,7 @@
             {{msg}}
 
             <a class="alert-prompt-link"
-               @click.prevent=""
+               @click.prevent="active"
                :style="{
                   color: `${activeColor}`
                }"
@@ -52,6 +52,10 @@ const props = defineProps({
     required: false,
   },
   signFor:{
+    type: Function,
+    required: false,
+  },
+  active:{
     type: Function,
     required: false,
   }

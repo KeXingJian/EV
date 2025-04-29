@@ -1,28 +1,19 @@
 <script setup>
 
+import VAD from "../AD/VAD.vue";
 </script>
 
 <template>
 <div class="top-div">
   <h1>EV</h1>
   <div class="about-container">
-
-    <div class="about-item">
-      <h3>作者</h3>
-    </div>
-    <div class="about-item">
-      <h3>贡献</h3>
-    </div>
-    <div class="about-item">
-      <h3>联系</h3>
-    </div>
   </div>
 </div>
 </template>
 
 <style scoped>
 .top-div{
-  display: grid;
+  display: flex;
   margin: 40px 20px;
   justify-content: space-between;
 }
@@ -33,7 +24,7 @@ h1{
   font-size: 200px;
   line-height: 100%;
   font-weight: bold;
-  background-image: linear-gradient(135deg, var(--theme-hover-color), var(--hover-color));
+  background-image: radial-gradient(circle at 100% 107%, #ff89cc 0%, #9cb8ec 30%, #00ffee 60%, #62c2fe 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

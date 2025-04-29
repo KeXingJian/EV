@@ -47,6 +47,7 @@ const isDragging = ref(false)
 const startY = ref(0)
 const startTop = ref(0)
 const currentTop = ref(0)
+const hasDragged = ref(false) // 新增拖拽状态标记
 
 // 计算球体样式
 const ballStyle = computed(() => ({
@@ -59,10 +60,11 @@ const ballStyle = computed(() => ({
 
 // 添加点击处理
 const handleClick = () => {
-  if (!isDragging.value) {
+  if (!isDragging.value && !hasDragged.value) {
     emit('click')
   }
   isDragging.value = false
+  hasDragged.value = false
 }
 
 // 初始化位置
@@ -73,6 +75,7 @@ const initPosition = () => {
 // 拖拽处理
 const startDrag = (e) => {
   isDragging.value = true
+  hasDragged.value = false // 重置拖拽标记
   startY.value = e.clientY
   startTop.value = currentTop.value
   emit('dragStart')
@@ -83,6 +86,7 @@ const startDrag = (e) => {
 
 const handleTouchStart = (e) => {
   isDragging.value = true
+  hasDragged.value = false // 重置拖拽标记
   startY.value = e.touches[0].clientY
   startTop.value = currentTop.value
   emit('dragStart')
@@ -102,6 +106,11 @@ const onTouchDrag = (e) => {
 }
 
 const updatePosition = (clientY) => {
+  const deltaY = Math.abs(clientY - startY.value)
+  if (deltaY > 2) { // 移动超过2像素视为拖拽操作
+    hasDragged.value = true
+  }
+
   const newTop = startTop.value + (clientY - startY.value)
   const maxTop = window.innerHeight - props.size
   currentTop.value = Math.min(Math.max(0, newTop), maxTop)

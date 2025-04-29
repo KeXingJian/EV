@@ -1,7 +1,6 @@
 <template>
     <div class="top-div">
-      <GraphConfigRegion></GraphConfigRegion>
-      <AxisConfigRegion></AxisConfigRegion>
+      <CoordinateConfigRegion></CoordinateConfigRegion>
       <SeriesConfigRegion></SeriesConfigRegion>
       <PaletteConfigRegion></PaletteConfigRegion>
       <GlobalConfigRegion></GlobalConfigRegion>
@@ -9,11 +8,10 @@
 </template>
 
 <script setup>
-import GraphConfigRegion from "../region/GraphConfigRegion.vue";
-import AxisConfigRegion from "../region/AxisConfigRegion.vue";
 import GlobalConfigRegion from "../region/GlobalConfigRegion.vue";
 import SeriesConfigRegion from "../region/SeriesConfigRegion.vue";
 import PaletteConfigRegion from "../region/PaletteConfigRegion.vue";
+import CoordinateConfigRegion from "../region/CoordinateConfigRegion.vue";
 </script>
 
 <style scoped>

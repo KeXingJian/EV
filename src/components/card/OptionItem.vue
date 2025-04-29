@@ -33,7 +33,6 @@ const showOptions  = (args)=>{
   target = args.target;
   handle = args.handle;
   show.value = true;
-
 }
 
 const toOption = (item)=>{
@@ -62,10 +61,15 @@ ul{
   list-style-type: none;
   z-index: 9999;
   display: block;
+  max-height: 400px;
+  overflow-y: scroll;
+}
+
+ul::-webkit-scrollbar{
+  display: none;
 }
 
 .option-item{
-
   padding: 10px;
   background: var(--1-background-color);
   cursor: pointer;
@@ -73,6 +77,7 @@ ul{
   align-items: center;
   justify-content: center;
   transition: 300ms ease-in-out;
+  height: 40px;
   button{
     transition: 300ms ease-in-out;
     cursor: pointer;
