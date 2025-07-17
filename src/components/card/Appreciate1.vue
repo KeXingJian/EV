@@ -1,6 +1,6 @@
 <template>
   <div v-show="isShow" class="dialog" @click="isShow = false">
-    <img src="/src/assets/contact.jpg" alt="contact me" />
+    <img src="/src/assets/appreciate1.jpg" alt="appreciate1" />
   </div>
 </template>
 
@@ -14,10 +14,10 @@ const show = ()=>{
   isShow.value = true
 }
 
-emitter.on('contact', show)
+emitter.on('appreciate1', show)
 
 onUnmounted(() => {
-  emitter.off('contact', show)
+  emitter.off('appreciate1', show)
 })
 </script>
 

@@ -12,7 +12,7 @@ import emitter from "../emitter/emitter.js";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../store/OptionConfig.js";
 
-const {echartsOptions,Ss,Cs,dataset} = storeToRefs(useOptionConfig())
+const {echartsOptions} = storeToRefs(useOptionConfig())
 
 const canvas = ref(null)
 
@@ -22,25 +22,22 @@ const resize = () => {
   myChart.resize()
 }
 
+
+
 const loadChart = ()=>{
-  console.log('加载图',echartsOptions.value)
+  //console.log('加载图',echartsOptions.value)
   myChart.setOption(echartsOptions.value,{ notMerge: true });
 }
 
 const mergeOption = ()=>{
-  console.log('合并图',echartsOptions.value)
-  console.log('合并图Ss',Ss.value)
-  console.log('合并图Cs',Cs.value)
-  console.log("Data",dataset.value.source)
-
   myChart.setOption(echartsOptions.value);
 }
 
 const handleChartClick = (params)=>{
 
-  if (params.seriesType!=='pie') return
+  if (!(params.seriesType==='pie' || params.seriesType==='funnel')) return
 
-  const target = echartsOptions.value.series.find(i=>  i.id+'' === params.seriesId)
+  const target = echartsOptions.value.series.find(i => i.id+'' === params.seriesId)
 
   if (!target) return
 
@@ -56,12 +53,25 @@ const handleChartClick = (params)=>{
   )
 }
 
+const handUpdateChart = (newData)=> {
+  echartsOptions.value.dataZoom.forEach((i,index)=>{
+    if (index===0 ||  index===1){
+      i.start = newData.batch[0].start
+      i.end = newData.batch[0].end
+    }else {
+      i.start = newData.batch[1].start
+      i.end = newData.batch[1].end
+    }
+  })
+}
+
 onMounted(()=>{
   emitter.on('resize', resize) // 新增
   emitter.on('load-chart', loadChart)
   emitter.on('merge-option',mergeOption)
   myChart = echarts.init(canvas.value)
   myChart.on('click', handleChartClick);
+  myChart.on('datazoom', handUpdateChart);
 })
 
 onUnmounted(() => {

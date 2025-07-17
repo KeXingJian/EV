@@ -16,7 +16,7 @@ const chooseColor = (event)=>{
         x: event.clientX,
         y: event.clientY,
         handle: (color)=>{
-          console.log(color)
+          //console.log(color)
           emit('update:modelValue',color)
         }
       })

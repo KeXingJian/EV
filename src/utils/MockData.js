@@ -1,8 +1,9 @@
 import {checkSeries} from "./newArch/Check4Series.js";
 import {loadAxis} from "./newArch/AxisUtis.js";
 
-export const getMockData = () => {
-    return [
+export const getMockData = (lang) => {
+
+    const mockData = [
         ['产品', '武汉', '长沙', '成都', '平均值'],
         [
             "A",
@@ -68,18 +69,22 @@ export const getMockData = () => {
             62.6
         ]
     ]
+
+    if(lang){
+        mockData[0] = ['Product', 'Los Angeles', 'New York', 'Washington', 'Average']
+    }
+
+    return mockData
 }
 
-export const getMockField = () => {
-    return ['产品', '武汉', '长沙', '成都', '平均值']
-}
+
 
 export const getMockSs1 = () => {
     return [
         {
             "id": 0,
             "name": "S0",
-            "seriesName": "武汉",
+            "seriesName": "S0",
             "C": null,
             "category": 0,
             "number": 1,
@@ -98,6 +103,7 @@ export const getMockSs1 = () => {
                 borderRadius: 5,
                 barGap: 5,
                 barWidth: 40,
+                isAuto: true,
             },
             "scatterConfig": {
                 "type": 0,
@@ -119,12 +125,30 @@ export const getMockSs1 = () => {
                     "pt": 49
                 }
             },
+            funnelConfig: {
+                position: {
+                    t: 7,
+                    b: 0,
+                    l: 8,
+                    r: 0,
+                    w: 85,
+                    h: 80
+                },
+                sort: 0, //升 无 降
+                gap: 2,
+                labelPosition: 0, //左,中,右
+                align: 1 //左,中,右
+            },
+            radarConfig: {
+                isArea: false,
+                areaColor: '#FF4081'
+            },
             "D": null
         },
         {
             "id": 1,
             "name": "S1",
-            "seriesName": "长沙",
+            "seriesName": "S1",
             "C": null,
             "category": 0,
             "number": 2,
@@ -143,6 +167,7 @@ export const getMockSs1 = () => {
                 borderRadius: 5,
                 barGap: 5,
                 barWidth: 40,
+                isAuto: true,
             },
             "scatterConfig": {
                 "type": 0,
@@ -164,12 +189,30 @@ export const getMockSs1 = () => {
                     "pt": 49
                 }
             },
+            funnelConfig: {
+                position: {
+                    t: 7,
+                    b: 0,
+                    l: 8,
+                    r: 0,
+                    w: 85,
+                    h: 80
+                },
+                sort: 0, //升 无 降
+                gap: 2,
+                labelPosition: 0, //左,中,右
+                align: 1 //左,中,右
+            },
+            radarConfig: {
+                isArea: false,
+                areaColor: '#FF4081'
+            },
             "D": null
         },
         {
             "id": 2,
             "name": "S2",
-            "seriesName": "成都",
+            "seriesName": "S2",
             "C": null,
             "category": 0,
             "number": 3,
@@ -188,6 +231,7 @@ export const getMockSs1 = () => {
                 borderRadius: 5,
                 barGap: 5,
                 barWidth: 40,
+                isAuto: true,
             },
             "scatterConfig": {
                 "type": 0,
@@ -209,12 +253,30 @@ export const getMockSs1 = () => {
                     "pt": 55
                 }
             },
+            funnelConfig: {
+                position: {
+                    t: 7,
+                    b: 0,
+                    l: 8,
+                    r: 0,
+                    w: 85,
+                    h: 80
+                },
+                sort: 0, //升 无 降
+                gap: 2,
+                labelPosition: 0, //左,中,右
+                align: 1 //左,中,右
+            },
+            radarConfig: {
+                isArea: false,
+                areaColor: '#FF4081'
+            },
             "D":null
         },
         {
             "id": 3,
             "name": "S3",
-            "seriesName": "平均值",
+            "seriesName": "S3",
             "C": null,
             "category": 0,
             "number": 4,
@@ -233,6 +295,7 @@ export const getMockSs1 = () => {
                 borderRadius: 5,
                 barGap: 5,
                 barWidth: 40,
+                isAuto: true,
             },
             "scatterConfig": {
                 "type": 0,
@@ -253,6 +316,24 @@ export const getMockSs1 = () => {
                     "pl": 41,
                     "pt": 41
                 }
+            },
+            funnelConfig: {
+                position: {
+                    t: 7,
+                    b: 0,
+                    l: 8,
+                    r: 0,
+                    w: 85,
+                    h: 80
+                },
+                sort: 0, //升 无 降
+                gap: 2,
+                labelPosition: 0, //左,中,右
+                align: 1 //左,中,右
+            },
+            radarConfig: {
+                isArea: false,
+                areaColor: '#FF4081'
             },
             "D": null
         }
@@ -282,7 +363,8 @@ export const getMockSs2 = () => {
             "barConfig": {
                 "borderRadius": 0,
                 "barGap": 5,
-                "barWidth": 12
+                "barWidth": 12,
+                isAuto: true,
             },
             "scatterConfig": {
                 "type": 0,
@@ -306,6 +388,24 @@ export const getMockSs2 = () => {
                     "pl": 55,
                     "pt": 55
                 }
+            },
+            funnelConfig: {
+                position: {
+                    t: 7,
+                    b: 0,
+                    l: 8,
+                    r: 0,
+                    w: 85,
+                    h: 80
+                },
+                sort: 0, //升 无 降
+                gap: 2,
+                labelPosition: 0, //左,中,右
+                align: 1 //左,中,右
+            },
+            radarConfig: {
+                isArea: false,
+                areaColor: '#FF4081'
             },
             "D": null
         },
@@ -330,7 +430,8 @@ export const getMockSs2 = () => {
             "barConfig": {
                 "borderRadius": 0,
                 "barGap": 5,
-                "barWidth": 12
+                "barWidth": 12,
+                isAuto: true,
             },
             "scatterConfig": {
                 "type": 0,
@@ -355,6 +456,24 @@ export const getMockSs2 = () => {
                     "pt": 55
                 }
             },
+            funnelConfig: {
+                position: {
+                    t: 7,
+                    b: 0,
+                    l: 8,
+                    r: 0,
+                    w: 85,
+                    h: 80
+                },
+                sort: 0, //升 无 降
+                gap: 2,
+                labelPosition: 0, //左,中,右
+                align: 1 //左,中,右
+            },
+            radarConfig: {
+                isArea: false,
+                areaColor: '#FF4081'
+            },
             "D":null
         }
     ]
@@ -371,7 +490,7 @@ export const getMockSs3 = () => {
             "number": 1,
             "isLoad": false,
             "color": "#00FFF0",
-            "type": 0,
+            "type": 1,
             "areaColor": "#FF4081",
             "isLabel": false,
             "labelColor": "#000",
@@ -383,7 +502,8 @@ export const getMockSs3 = () => {
             "barConfig": {
                 "borderRadius": 5,
                 "barGap": 5,
-                "barWidth": 40
+                "barWidth": 40,
+                isAuto: false,
             },
             "scatterConfig": {
                 "type": 0,
@@ -408,6 +528,24 @@ export const getMockSs3 = () => {
                     "pt": 48
                 }
             },
+            funnelConfig: {
+                position: {
+                    t: 7,
+                    b: 0,
+                    l: 8,
+                    r: 0,
+                    w: 85,
+                    h: 80
+                },
+                sort: 0, //升 无 降
+                gap: 2,
+                labelPosition: 0, //左,中,右
+                align: 1 //左,中,右
+            },
+            radarConfig: {
+                isArea: false,
+                areaColor: '#FF4081'
+            },
             "D": null
         },
         {
@@ -419,7 +557,7 @@ export const getMockSs3 = () => {
             "number": 2,
             "isLoad": false,
             "color": "#FF4081",
-            "type": 0,
+            "type": 1,
             "areaColor": "#FF4081",
             "isLabel": false,
             "labelColor": "#000",
@@ -431,7 +569,8 @@ export const getMockSs3 = () => {
             "barConfig": {
                 "borderRadius": 5,
                 "barGap": 5,
-                "barWidth": 40
+                "barWidth": 40,
+                isAuto: false,
             },
             "scatterConfig": {
                 "type": 0,
@@ -455,6 +594,24 @@ export const getMockSs3 = () => {
                     "pl": 54,
                     "pt": 54
                 }
+            },
+            funnelConfig: {
+                position: {
+                    t: 7,
+                    b: 0,
+                    l: 8,
+                    r: 0,
+                    w: 85,
+                    h: 80
+                },
+                sort: 0, //升 无 降
+                gap: 2,
+                labelPosition: 0, //左,中,右
+                align: 1 //左,中,右
+            },
+            radarConfig: {
+                isArea: false,
+                areaColor: '#FF4081'
             },
             "D":null
         }
@@ -484,7 +641,8 @@ export const getMockSs4 = () => {
             "barConfig": {
                 "borderRadius": 5,
                 "barGap": 5,
-                "barWidth": 40
+                "barWidth": 40,
+                isAuto: true,
             },
             "scatterConfig": {
                 "type": 0,
@@ -496,18 +654,36 @@ export const getMockSs4 = () => {
                 "size": 20
             },
             "pieConfig": {
-                "isRose": true,
+                "isRose": false,
                 "roseType": 1,
                 "borderRadius": 5,
                 "padAngle": 1,
                 "position": 0,
                 "labelLine": true,
                 "polar": {
-                    "pi": 0,
-                    "po": 40,
+                    "pi": 10,
+                    "po": 33,
                     "pl": 50,
                     "pt": 50
                 }
+            },
+            funnelConfig: {
+                position: {
+                    t: 7,
+                    b: 0,
+                    l: 8,
+                    r: 0,
+                    w: 85,
+                    h: 80
+                },
+                sort: 0, //升 无 降
+                gap: 2,
+                labelPosition: 0, //左,中,右
+                align: 1 //左,中,右
+            },
+            radarConfig: {
+                isArea: false,
+                areaColor: '#FF4081'
             },
             "D": null
         },
@@ -532,7 +708,8 @@ export const getMockSs4 = () => {
             "barConfig": {
                 "borderRadius": 5,
                 "barGap": 5,
-                "barWidth": 40
+                "barWidth": 40,
+                isAuto: true,
             },
             "scatterConfig": {
                 "type": 0,
@@ -556,6 +733,24 @@ export const getMockSs4 = () => {
                     "pl": 50,
                     "pt": 50
                 }
+            },
+            funnelConfig: {
+                position: {
+                    t: 7,
+                    b: 0,
+                    l: 8,
+                    r: 0,
+                    w: 85,
+                    h: 80
+                },
+                sort: 0, //升 无 降
+                gap: 2,
+                labelPosition: 0, //左,中,右
+                align: 1 //左,中,右
+            },
+            radarConfig: {
+                isArea: false,
+                areaColor: '#FF4081'
             },
             "D": null
         }
@@ -586,7 +781,8 @@ export const getMockSs5 = () => {
             "barConfig": {
                 "borderRadius": 5,
                 "barGap": 5,
-                "barWidth": 40
+                "barWidth": 40,
+                isAuto: true,
             },
             "scatterConfig": {
                 "type": 0,
@@ -610,6 +806,24 @@ export const getMockSs5 = () => {
                     "pl": 55,
                     "pt": 55
                 }
+            },
+            funnelConfig: {
+                position: {
+                    t: 7,
+                    b: 0,
+                    l: 8,
+                    r: 0,
+                    w: 85,
+                    h: 80
+                },
+                sort: 0, //升 无 降
+                gap: 2,
+                labelPosition: 0, //左,中,右
+                align: 1 //左,中,右
+            },
+            radarConfig: {
+                isArea: false,
+                areaColor: '#FF4081'
             },
             "D": null
         },
@@ -621,9 +835,9 @@ export const getMockSs5 = () => {
             "category": 0,
             "number": 2,
             "isLoad": false,
-            "color": "#A7FFE4",
+            "color": "#7579E7",
             "type": 0,
-            "areaColor": "#A7FFE4",
+            "areaColor": "#7579E7",
             "isLabel": false,
             "labelColor": "#000",
             "lineConfig": {
@@ -634,7 +848,8 @@ export const getMockSs5 = () => {
             "barConfig": {
                 "borderRadius": 5,
                 "barGap": 5,
-                "barWidth": 40
+                "barWidth": 40,
+                isAuto: true,
             },
             "scatterConfig": {
                 "type": 0,
@@ -659,6 +874,24 @@ export const getMockSs5 = () => {
                     "pt": 55
                 }
             },
+            funnelConfig: {
+                position: {
+                    t: 7,
+                    b: 0,
+                    l: 8,
+                    r: 0,
+                    w: 85,
+                    h: 80
+                },
+                sort: 0, //升 无 降
+                gap: 2,
+                labelPosition: 0, //左,中,右
+                align: 1 //左,中,右
+            },
+            radarConfig: {
+                isArea: false,
+                areaColor: '#FF4081'
+            },
             "D": null
         },
         {
@@ -669,9 +902,9 @@ export const getMockSs5 = () => {
             "category": 0,
             "number": 2,
             "isLoad": false,
-            "color": "#FF4081",
+            "color": "#0D7377",
             "type": 0,
-            "areaColor": "#FF4081",
+            "areaColor": "#0D7377",
             "isLabel": false,
             "labelColor": "#000",
             "lineConfig": {
@@ -682,7 +915,8 @@ export const getMockSs5 = () => {
             "barConfig": {
                 "borderRadius": 5,
                 "barGap": 5,
-                "barWidth": 40
+                "barWidth": 40,
+                isAuto: true,
             },
             "scatterConfig": {
                 "type": 0,
@@ -706,6 +940,24 @@ export const getMockSs5 = () => {
                     "pl": 46,
                     "pt": 46
                 }
+            },
+            funnelConfig: {
+                position: {
+                    t: 7,
+                    b: 0,
+                    l: 8,
+                    r: 0,
+                    w: 85,
+                    h: 80
+                },
+                sort: 0, //升 无 降
+                gap: 2,
+                labelPosition: 0, //左,中,右
+                align: 1 //左,中,右
+            },
+            radarConfig: {
+                isArea: false,
+                areaColor: '#FF4081'
             },
             "D": null
         }
@@ -735,7 +987,8 @@ export const getMockSs6 = () => {
             "barConfig": {
                 "borderRadius": 5,
                 "barGap": 5,
-                "barWidth": 40
+                "barWidth": 40,
+                isAuto: true,
             },
             "scatterConfig": {
                 "type": 1,
@@ -760,6 +1013,24 @@ export const getMockSs6 = () => {
                     "pt": 55
                 }
             },
+            funnelConfig: {
+                position: {
+                    t: 7,
+                    b: 0,
+                    l: 8,
+                    r: 0,
+                    w: 85,
+                    h: 80
+                },
+                sort: 0, //升 无 降
+                gap: 2,
+                labelPosition: 0, //左,中,右
+                align: 1 //左,中,右
+            },
+            radarConfig: {
+                isArea: false,
+                areaColor: '#FF4081'
+            },
             "D": null
         },
         {
@@ -783,7 +1054,8 @@ export const getMockSs6 = () => {
             "barConfig": {
                 "borderRadius": 5,
                 "barGap": 5,
-                "barWidth": 40
+                "barWidth": 40,
+                isAuto: true,
             },
             "scatterConfig": {
                 "type": 1,
@@ -808,6 +1080,24 @@ export const getMockSs6 = () => {
                     "pt": 55
                 }
             },
+            funnelConfig: {
+                position: {
+                    t: 7,
+                    b: 0,
+                    l: 8,
+                    r: 0,
+                    w: 85,
+                    h: 80
+                },
+                sort: 0, //升 无 降
+                gap: 2,
+                labelPosition: 0, //左,中,右
+                align: 1 //左,中,右
+            },
+            radarConfig: {
+                isArea: false,
+                areaColor: '#FF4081'
+            },
             "D": null
         },
         {
@@ -831,7 +1121,8 @@ export const getMockSs6 = () => {
             "barConfig": {
                 "borderRadius": 5,
                 "barGap": 5,
-                "barWidth": 40
+                "barWidth": 40,
+                isAuto: true,
             },
             "scatterConfig": {
                 "type": 1,
@@ -855,6 +1146,24 @@ export const getMockSs6 = () => {
                     "pl": 46,
                     "pt": 46
                 }
+            },
+            funnelConfig: {
+                position: {
+                    t: 7,
+                    b: 0,
+                    l: 8,
+                    r: 0,
+                    w: 85,
+                    h: 80
+                },
+                sort: 0, //升 无 降
+                gap: 2,
+                labelPosition: 0, //左,中,右
+                align: 1 //左,中,右
+            },
+            radarConfig: {
+                isArea: false,
+                areaColor: '#FF4081'
             },
             "D":null
         }
@@ -988,10 +1297,10 @@ export const getMockCs3 = () => {
                 "name": "H0",
                 "axisName": "H0",
                 "unit": "",
-                "textColor": "#000",
+                "textColor": "#f5f5f5",
                 "tickLine": false,
                 "splitLine": false,
-                "labelColor": "#000",
+                "labelColor": "#f5f5f5",
                 "labelShow": true,
                 "lineColor": "#0D6E6E",
                 "show": true,
@@ -1003,10 +1312,10 @@ export const getMockCs3 = () => {
                 "name": "V0",
                 "axisName": "V0",
                 "unit": "",
-                "textColor": "#000",
+                "textColor": "#f5f5f5",
                 "tickLine": false,
                 "splitLine": false,
-                "labelColor": "#000",
+                "labelColor": "#f5f5f5",
                 "labelShow": true,
                 "lineColor": "#0D6E6E",
                 "show": true,
@@ -1034,10 +1343,10 @@ export const getMockCs3 = () => {
                 "name": "H1",
                 "axisName": "H1",
                 "unit": "",
-                "textColor": "#000",
+                "textColor": "#f5f5f5",
                 "tickLine": false,
                 "splitLine": false,
-                "labelColor": "#000",
+                "labelColor": "#f5f5f5",
                 "labelShow": true,
                 "lineColor": "#0D6E6E",
                 "show": true,
@@ -1049,10 +1358,10 @@ export const getMockCs3 = () => {
                 "name": "V1",
                 "axisName": "V1",
                 "unit": "",
-                "textColor": "#000",
+                "textColor": "#f5f5f5",
                 "tickLine": false,
                 "splitLine": false,
-                "labelColor": "#000",
+                "labelColor": "#f5f5f5",
                 "labelShow": true,
                 "lineColor": "#0D6E6E",
                 "show": true,
@@ -1202,7 +1511,7 @@ export const handle1 = (Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)=>{
 
     global.value.title.text = ''
 
-    Cs.value.filter(i=>i.id!==-1).forEach(i=>loadAxis(i,echartsOptions))
+    Cs.value.filter(i=>i.id>-1).forEach(i=>loadAxis(i,echartsOptions))
     Ss.value.forEach(i=> {
         i.C = Cs.value[1]
         i.D = Ds.value[0]
@@ -1219,7 +1528,7 @@ export const handle2 = (Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)=>{
     echartsOptions.value.backgroundColor = '#1d2e3d'
 
 
-    Cs.value.filter(i=>i.id!==-1).forEach(i=>loadAxis(i,echartsOptions))
+    Cs.value.filter(i=>i.id>-1).forEach(i=>loadAxis(i,echartsOptions))
 
     Ss.value.forEach((i,index)=> {
         i.C = Cs.value[index+1]
@@ -1235,7 +1544,9 @@ export const handle3 = (Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)=>{
     Ss.value = getMockSs3()
     Cs.value = getMockCs3()
 
-    Cs.value.filter(i=>i.id!==-1).forEach(i=>loadAxis(i,echartsOptions))
+    echartsOptions.value.backgroundColor = '#1a1f2b'
+
+    Cs.value.filter(i=>i.id>-1).forEach(i=>loadAxis(i,echartsOptions))
 
     Ss.value.forEach((i,index)=> {
         i.C = Cs.value[index+1]
@@ -1250,10 +1561,16 @@ export const handle3 = (Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)=>{
 export const handle4 = (Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)=>{
     Ss.value = getMockSs4()
     Cs.value = getMockCs4()
-
+    const colors = getColors()
     Ss.value.forEach((i,index)=> {
         i.C = Cs.value[0]
         i.D = Ds.value[0]
+        checkSeries(i, echartsOptions)
+        const target = echartsOptions.value.series.find(item=>item.id===i.id)
+
+        target.data.forEach((d,index)=>{
+            d.itemStyle.color = colors[index]
+        })
         checkSeries(i, echartsOptions)
     })
 
@@ -1265,7 +1582,7 @@ export const handle5= (Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)=>{
     Ss.value = getMockSs5()
     Cs.value = getMockCs5()
 
-    Cs.value.filter(i=>i.id!==-1).forEach(i=>loadAxis(i,echartsOptions))
+    Cs.value.filter(i=>i.id>-1).forEach(i=>loadAxis(i,echartsOptions))
 
     Ss.value.forEach((i,index)=> {
         i.C = Cs.value[1]
@@ -1310,9 +1627,9 @@ export const handle6= (Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)=>{
         dimension: 1
     }
 
-    Cs.value.filter(i=>i.id!==-1).forEach(i=>loadAxis(i,echartsOptions))
+    Cs.value.filter(i=>i.id>-1).forEach(i=>loadAxis(i,echartsOptions))
 
-    Ss.value.forEach((i,index)=> {
+    Ss.value.forEach((i)=> {
         i.C = Cs.value[1]
         i.D = Ds.value[0]
         checkSeries(i, echartsOptions)
@@ -1320,4 +1637,18 @@ export const handle6= (Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)=>{
 
     sIndex.value = 2
     cIndex.value = 0
+}
+
+const getColors = ()=>{
+    return [
+        "#00E5FF",
+        "#FF74B1",
+        "#0D6E6E",
+        "#0D1F2D",
+        "#1d2e3d",
+        "#F6416C",
+        "#00fff0",
+        "#ff004d",
+        "#6930C3"
+    ]
 }

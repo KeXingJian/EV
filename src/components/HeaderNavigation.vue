@@ -1,8 +1,8 @@
 <template>
   <section>
-    <a @click.prevent="test" class="logo">
+    <a class="logo">
       EXCEL<span>VISION.</span>
-      <span class="label">测试版</span>
+      <span class="label">v1.1.0</span>
     </a>
 
     <div class="header-right">
@@ -13,7 +13,7 @@
           ref="fileInput"
           hidden
       >
-      <button class="cta-btn" @click="triggerFileInput">导入Excel</button>
+      <button class="cta-btn" @click="triggerFileInput">{{ $t('import') }}</button>
     </div>
   </section>
 </template>
@@ -23,19 +23,15 @@ import {ref} from 'vue';
 import * as XLSX from 'xlsx';
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../store/OptionConfig.js";
-import {analyzeColumns2, detectRowCount} from "../utils/ExcelUtils.js";
+import {analyzeColumns2} from "../utils/ExcelUtils.js";
 import emitter from "../emitter/emitter.js";
 import {pushMsg} from "../utils/MsgUtils.js";
 import {init} from "../utils/newArch/InitUtils.js";
-import {searchDocuments, uploadDocuments} from "../api/EVsApi.js";
-import VAD from "./AD/VAD.vue";
-
-
+import {useI18n} from "vue-i18n";
+const { t } = useI18n()
 
 const fileInput = ref(null);
 
-
-const store = useOptionConfig()
 // 数据存储结构
 const {fileData, dataset, Ss, Ds} = storeToRefs(useOptionConfig())
 
@@ -48,10 +44,10 @@ const handleFileUpload = async (e) => {
   if (!file) return;
 
 
+  Ds.value = Ds.value.filter(i=>i.id===-1)
+
   if (!fileData.value.raw) cleanup()
 
-
-  // 新增前端处理逻辑
   const reader = new FileReader();
   reader.onload = async (e) => {
     const data = new Uint8Array(e.target.result);
@@ -67,10 +63,11 @@ const handleFileUpload = async (e) => {
     dataset.value.source = rawData.slice(1) // 存储原始数据（排除表头）
     dataset.value.dimension = fileData.value.columnStats.map(i => i.field)
 
-
     importDone()
   };
   reader.readAsArrayBuffer(file);
+
+
 
 
 };
@@ -78,8 +75,11 @@ const handleFileUpload = async (e) => {
 const importDone = () => {
   if (fileData.value.columnStats) {
     pushMsg(0, generateAnalysisReport(fileData.value.columnStats))
-    init()
     Ds.value[0].from = 'excel import'
+    Ds.value[0].groupCondition.length = 0
+    Ds.value[0].filterConditions.length = 0
+    Ds.value[0].filterConditions.filterChain = null
+    init()
     emitter.emit('load-chart')
   }
 
@@ -90,9 +90,9 @@ const generateAnalysisReport = (data) => {
 
   if (anomalies.length > 0) {
     const anomalyFields = anomalies.map(item => item.field);
-    return `您的数据解析完毕,共计${fileData.value.rowCount}条数据条目，但是发现字段[${anomalyFields.join(', ')}]下的条目存在数据类型不一致或为空的情况，在必要时刻将移除该条目`;
+    return `${t('Notice.B')}${fileData.value.rowCount}${t('Notice.C')}${anomalyFields.join(', ')}${t('Notice.D')}`;
   }
-  return `您的数据解析完毕${fileData.value.rowCount}条数据条目，可以开始构建系列啦!!!`;
+  return `${t('Notice.B')}${fileData.value.rowCount}${t('Notice.E')}`;
 }
 
 
@@ -102,11 +102,6 @@ const cleanup = () => {
     rowCount: 0,
     columnStats: []
   }
-}
-
-const test = async () => {
-  const res = await searchDocuments(1, '道德目标', true)
-  console.log(res.data)
 }
 
 // 页面关闭时自动清理
@@ -134,11 +129,7 @@ section {
   color: var(--1-theme-color);
 }
 
-.header-right {
-
-}
-
-.header-right button {
+.header-right .cta-btn {
   font-size: 18px;
   font-weight: bold;
   padding: 7px 25px;

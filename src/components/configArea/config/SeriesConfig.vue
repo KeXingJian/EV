@@ -1,20 +1,33 @@
 <template>
   <div class="series-config">
 
-    <div class="chart-select" v-if="item.C.type===0 || item.C.type===1">
+    <div class="chart-select" >
       <RadioBox
+          v-if="item.C.type===0 || item.C.type===1"
           v-model="item.type"
           :options="GraphTypeSelect"
+          :name="'GraphTypeSelect'+item.id"
+      ></RadioBox>
+      <RadioBox
+          v-else
+          v-model="item.type"
+          :options="GraphTypeSelect2"
           :name="'GraphTypeSelect'+item.id"
       ></RadioBox>
     </div>
     <div class="t-1" v-if="item.C.type===0 || item.C.type===1">
       <div class="config-item">
-        <span>标签:</span>
+        <span>{{ $t('label') }}</span>
         <CheckBox v-model="item.isLabel"></CheckBox>
       </div>
+      <div class="config-item" v-if="item.type===1">
+        <span :style="{
+          width: '77px'
+        }">{{ $t('autoWidth') }}</span>
+        <CheckBox v-model="item.barConfig.isAuto"></CheckBox>
+      </div>
       <div class="config-item">
-        <span>系列:</span>
+        <span>{{ $t('series') }}</span>
         <ColorPoint v-model="item.color"></ColorPoint>
       </div>
       <div class="config-item">
@@ -27,21 +40,22 @@
 </template>
 
 <script setup>
-import RadioBox from "../box/RadioBox.vue";
+import RadioBox from "../../box/RadioBox.vue";
 import {markRaw, shallowRef, toRefs, watch, watchEffect} from "vue";
-import LineChartL from "../GrpahType/LineChartL.vue";
-import BarChartL from "../GrpahType/BarChartL.vue";
-import PieChartL from "../GrpahType/PieChartL.vue";
-import ScatterChartL from "../GrpahType/ScatterChartL.vue";
-import CheckBox from "../box/CheckBox.vue";
-import ColorPoint from "../button/ColorPoint.vue";
+import LineChartL from "../../GrpahType/LineChartL.vue";
+import BarChartL from "../../GrpahType/BarChartL.vue";
+import PieChartL from "../../GrpahType/PieChartL.vue";
+import ScatterChartL from "../../GrpahType/ScatterChartL.vue";
+import CheckBox from "../../box/CheckBox.vue";
+import ColorPoint from "../../button/ColorPoint.vue";
 import {storeToRefs} from "pinia";
-import {useOptionConfig} from "../../store/OptionConfig.js";
-import emitter from "../../emitter/emitter.js";
-import ProgressBarArea from "../button/ProgressBarArea.vue";
-import InputBox from "../box/InputBox.vue";
-import {getFieldDetails} from "../../utils/BeautifyUtils.js";
-import {chartType} from "../../utils/newArch/Check4Series.js";
+import {useOptionConfig} from "../../../store/OptionConfig.js";
+import emitter from "../../../emitter/emitter.js";
+import InputBox from "../../box/InputBox.vue";
+import {getFieldDetails} from "../../../utils/BeautifyUtils.js";
+import {chartType} from "../../../utils/newArch/Check4Series.js";
+import FunnelChartL from "../../GrpahType/FunnelChartL.vue";
+
 
 
 const props = defineProps({
@@ -54,30 +68,42 @@ const props = defineProps({
 const GraphTypeSelect = [
   {
     value: 0,
-    label: "折线化",
+    label: "lineChart",
   },
   {
     value: 1,
-    label: '条形化'
+    label: 'barChart'
   },
   {
     value: 2,
-    label: '散点化'
+    label: 'scatterChart'
   },
+
+]
+const GraphTypeSelect2 = [
+  {
+    value: 3,
+    label: "pieChart",
+  },
+  {
+    value: 4,
+    label: 'funnelChart'
+  }
 ]
 
-const currentView = shallowRef(null) // [!code ++]
+const currentView = shallowRef(null)
 
 const {echartsOptions} = storeToRefs(useOptionConfig())
 
 const views = [
-  markRaw(LineChartL), // [!code ++]
-  markRaw(BarChartL),  // [!code ++]
-  markRaw(ScatterChartL), // [!code ++]
-  markRaw(PieChartL),  // [!code ++]
+  markRaw(LineChartL),
+  markRaw(BarChartL),
+  markRaw(ScatterChartL),
+  markRaw(PieChartL),
+  markRaw(FunnelChartL)
+
 ]
 
-// 用 watchEffect 替代 onMounted + watch 组合
 watchEffect(() => {
   currentView.value = views[props.item.type]
 })
@@ -87,9 +113,7 @@ const {type} = toRefs(props.item)
 watch(type, (newVal) =>{
   const target = echartsOptions.value.series.find(i=>i.id===props.item.id)
   target.type = chartType[newVal]
-  if (newVal !==2){
-    target.symbolSize = undefined
-  }else {
+  if (newVal===2){
     if (props.item.scatterConfig.type === 1 && props.item.scatterConfig.mapField !== -1) {
       const {max, min} = getFieldDetails(props.item.scatterConfig.mapField)
       target.symbolSize =  function (val) {
@@ -98,8 +122,10 @@ watch(type, (newVal) =>{
     } else {
       target.symbolSize = props.item.scatterConfig.size;
     }
+  }else {
+    target.symbolSize = undefined
   }
-  console.log('类型变更,触发合并',target)
+
   emitter.emit('merge-option')
 })
 </script>

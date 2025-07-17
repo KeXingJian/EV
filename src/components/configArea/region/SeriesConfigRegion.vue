@@ -2,7 +2,7 @@
   <div class="series-container">
     <div class="header" @click="toggleDataset($event)">
       <div class="header-left">
-        <span>系列</span>
+        <span>{{ $t('series') }}</span>
       </div>
       <div class="header-right">
         <DropDown @click.stop></DropDown>
@@ -32,10 +32,10 @@
 
 <script setup>
 
-import DropDown from "../svg/DropDown.vue";
+import DropDown from "../../svg/DropDown.vue";
 import SeriesConfig from "../config/SeriesConfig.vue";
 import {storeToRefs} from "pinia";
-import {useOptionConfig} from "../../store/OptionConfig.js";
+import {useOptionConfig} from "../../../store/OptionConfig.js";
 import {computed, watch} from "vue";
 
 const toggleDataset = (event) => {

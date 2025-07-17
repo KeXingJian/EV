@@ -35,6 +35,7 @@ const handleColorAdd = (e) => {
   const newColor = e.target.value.toUpperCase()
   if (!palettes.value[0].colors.includes(newColor)) {
     palettes.value[0].colors.push(newColor)
+    localStorage.setItem('my', JSON.stringify(palettes.value[0].colors))
   }
   // 清空输入值以便下次选择相同颜色也能触发change事件
   e.target.value = ''
@@ -42,6 +43,7 @@ const handleColorAdd = (e) => {
 
 const handleRemove = (index) => {
   palettes.value[0].colors.splice(index, 1)
+  localStorage.setItem('my', JSON.stringify(palettes.value[0].colors))
 }
 </script>
 

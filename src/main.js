@@ -5,6 +5,7 @@ import { createPinia } from 'pinia'
 import router from './router'
 import {AllCommunityModule, ModuleRegistry} from "ag-grid-community";
 import {DomainCheckPlugin} from "./plugins/dominCheck.js";
+import i18n from "./utils/i18n.js";
 
 
 const pinia = createPinia()
@@ -14,5 +15,5 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 app.use(pinia)
 app.use(router)
 app.use(DomainCheckPlugin)
-
+app.use(i18n)
 app.mount('#app')

@@ -1,8 +1,6 @@
 import {defineStore} from 'pinia'
 import {createFilter, parseCondition} from "../utils/ExpressionParser.js";
-import { getPolar} from "../utils/newArch/Position.js";
-
-
+import {getPolar} from "../utils/newArch/Position.js";
 export const useOptionConfig = defineStore('optionConfig', {
     state() {
         return {
@@ -16,7 +14,7 @@ export const useOptionConfig = defineStore('optionConfig', {
                 dimension: []
             },
             prevColumnStats: [], // 新增用于跟踪前一次状态
-
+            lang:false,//中文
             Ds: [
                 {
                     id: -1,
@@ -27,7 +25,6 @@ export const useOptionConfig = defineStore('optionConfig', {
                     groupCondition: [],
                     filterConditions: [],
                     filterChain: null,
-                    cachedData: [],
                     count: 0
                 }
             ],
@@ -36,7 +33,7 @@ export const useOptionConfig = defineStore('optionConfig', {
             cIndex: 0,
 
             global: {
-                isLayer:false,
+                isLayer: false,
                 isLarge: false,
                 isSvg: false,
                 pixelRatio: 1,
@@ -65,7 +62,8 @@ export const useOptionConfig = defineStore('optionConfig', {
                     color: '#000',
                 },
                 backGround: '#ffffff',
-                visualMap:{
+                visualMap: {
+                    type: false,
                     mode: false,
                     min: 0,
                     max: 100,
@@ -79,10 +77,10 @@ export const useOptionConfig = defineStore('optionConfig', {
                 }
             },
 
-            Cs:[
+            Cs: [
                 {
-                    id:-1,
-                    name: '饼图',
+                    id: -1,
+                    name: '无系',
                     type: 2, //0:x0y系;1:极坐标系;2无系
                     isStack: false,
                 },
@@ -98,12 +96,12 @@ export const useOptionConfig = defineStore('optionConfig', {
                         w: 85,
                         h: 80
                     },
-                    isLoad:false,
+                    isLoad: false,
                     axisType: false, //横轴为类目
                     isStack: false,
-                    H:{
+                    H: {
                         name: 'H0',
-                        axisName: 'H'+0,
+                        axisName: 'H' + 0,
                         unit: '',
                         textColor: '#000', //轴名称
                         tickLine: false, //标线
@@ -120,9 +118,9 @@ export const useOptionConfig = defineStore('optionConfig', {
 
                         offset: 0,
                     },
-                    V:{
+                    V: {
                         name: 'V0',
-                        axisName: 'V'+0,
+                        axisName: 'V' + 0,
                         unit: '',
                         textColor: '#000', //轴名称
                         tickLine: false, //标线
@@ -140,14 +138,13 @@ export const useOptionConfig = defineStore('optionConfig', {
                         offset: 0,
                     }
                 },
-
             ],
             Ss: [
                 {
                     id: 0,
                     name: 'S0',
                     seriesName: 'S0',
-                    C:null,
+                    C: null,
                     category: -1,
                     number: -1,
                     isLoad: false,
@@ -171,7 +168,7 @@ export const useOptionConfig = defineStore('optionConfig', {
                     scatterConfig: {
                         type: 0,
                         mapField: -1,
-                        range: [20,50],
+                        range: [20, 50],
                         size: 20,
                     },
 
@@ -184,6 +181,25 @@ export const useOptionConfig = defineStore('optionConfig', {
                         labelLine: true,
                         polar: getPolar()
                     },
+
+                    funnelConfig: {
+                        position: {
+                            t: 7,
+                            b: 0,
+                            l: 8,
+                            r: 0,
+                            w: 85,
+                            h: 80
+                        },
+                        sort: 0, //升 无 降
+                        gap: 2,
+                        labelPosition: 0, //左,中,右
+                        align: 1 //左,中,右
+                    },
+                    radarConfig: {
+                        isArea: false,
+                        areaColor: '#FF4081'
+                    }
                 }
             ],
             echartsOptions: {
@@ -193,7 +209,8 @@ export const useOptionConfig = defineStore('optionConfig', {
                         saveAsImage: {
                             type: 'png',
                             icon: 'path://M480-260q75 0 127.5-52.5T660-440q0-75-52.5-127.5T480-620q-75 0-127.5 52.5T300-440q0 75 52.5 127.5T480-260Zm0-80q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM160-120q-33 0-56.5-23.5T80-200v-480q0-33 23.5-56.5T160-760h126l74-80h240l74 80h126q33 0 56.5 23.5T880-680v480q0 33-23.5 56.5T800-120H160Zm0-80h640v-480H638l-73-80H395l-73 80H160v480Zm320-240Z',
-                            pixelRatio: 1
+                            pixelRatio: 1,
+                            excludeComponents: ['toolbox', 'dataZoom']
                         },
 
                     }
@@ -210,21 +227,50 @@ export const useOptionConfig = defineStore('optionConfig', {
                         realtime: true,
                         start: 30,
                         end: 70,
-                        xAxisIndex: 'all'
+                        xAxisIndex: 'all',
+                        radiusAxisIndex: 'all',
+                        yAxisIndex: 'all',
+                        angleAxisIndex: 'all',
+                        orient:'horizontal'
                     },
                     {
                         type: 'slider',
                         realtime: true,
                         start: 30,
                         end: 70,
-                        xAxisIndex: 'all'
+                        xAxisIndex: 'all',
+                        radiusAxisIndex: 'all',
+                        yAxisIndex: 'all',
+                        angleAxisIndex: 'all',
+                        orient:'horizontal'
+                    },
+                    {
+                        type: 'inside',
+                        realtime: true,
+                        start: 100,
+                        end: 100,
+                        xAxisIndex: 'all',
+                        radiusAxisIndex: 'all',
+                        yAxisIndex: 'all',
+                        angleAxisIndex: 'all',
+                        orient:'vertical'
+                    },
+                    {
+                        type: 'slider',
+                        realtime: true,
+                        start: 100,
+                        end: 100,
+                        xAxisIndex: 'all',
+                        radiusAxisIndex: 'all',
+                        yAxisIndex: 'all',
+                        angleAxisIndex: 'all',
+                        orient:'vertical'
                     }
                 ],
                 large: false,
-                grid: [
-
-                ],
+                grid: [],
                 polar: [],
+
                 title: [
                     {
                         top: '1%',
@@ -261,7 +307,7 @@ export const useOptionConfig = defineStore('optionConfig', {
             },
             palettes: [
                 {
-                    name: '我的',
+                    name: 'My',
                     isLove: true,
                     colors: ['#0D6E6E', '#afffff', '#0D1F2D', '#1d2e3d', '#FF3D3D', '#FFFFFF']
                 },
@@ -394,7 +440,7 @@ export const useOptionConfig = defineStore('optionConfig', {
         applyFilter(dataset, expression) {
             const condition = parseCondition(expression, this.fileData.columnStats)
             if (!condition) return false
-            console.log('表达式对象映射', condition)
+            //console.log('表达式对象映射', condition)
             dataset.filterConditions.push(condition)
             this.refreshDataset(dataset.id)
             return true
@@ -402,31 +448,31 @@ export const useOptionConfig = defineStore('optionConfig', {
 
         // 刷新数据集数据
         refreshDataset(datasetId) {
-             const dataset = this.Ds.find(i => i.id === datasetId)
-             if (!dataset) return
+            const dataset = this.Ds.find(i => i.id === datasetId)
+            if (!dataset) return
 
-             console.log('开始重载数据集', dataset)
-             const conditions = this.getInheritedConditions(dataset)
+            //console.log('开始重载数据集', dataset)
+            const conditions = this.getInheritedConditions(dataset)
 
-             const filterChain = conditions.map(cond =>
-                  createFilter(cond)
-             )
+            const filterChain = conditions.map(cond =>
+                createFilter(cond)
+            )
 
-             dataset.filterChain = filterChain
-             console.log('生成过滤链', filterChain)
+            dataset.filterChain = filterChain
+            //console.log('生成过滤链', filterChain)
 
-             // 应用过滤
-             dataset.count = this.dataset.source.filter((record, index) =>
-                 filterChain.every(filter => filter(record, index))
-             ).length
-             console.log('获得数据集', dataset)
+            // 应用过滤
+            dataset.count = this.dataset.source.filter((record, index) =>
+                filterChain.every(filter => filter(record, index))
+            ).length
 
-             // 级联更新子集
-             dataset.groupCondition.forEach(child => {
-                 console.log('重载子数据集', child)
-                 this.refreshDataset(child.child.id)
-             })
-         },
+
+            // 级联更新子集
+            dataset.groupCondition.forEach(child => {
+
+                this.refreshDataset(child.child.id)
+            })
+        },
 
         getInheritedConditions(dataset) {
             const conditions = []
@@ -435,23 +481,23 @@ export const useOptionConfig = defineStore('optionConfig', {
             conditions.unshift(...dataset.filterConditions)
             let childId = dataset.id
             let current = dataset.parent
-            while (current){
+            while (current) {
                 conditions.unshift(...current.filterConditions)
                 const child = current.groupCondition.find(i => i.child.id === childId)
-                console.log(child)
-                console.log(conditions)
+                //console.log(child)
+                //console.log(conditions)
                 conditions.push(child.condition)
                 childId = current.id
                 current = current.parent
             }
 
-            console.log('找到所有链路的过滤语句', conditions)
+            //console.log('找到所有链路的过滤语句', conditions)
             return conditions
         },
 
         createGroup(parent, expression) {
 
-            const condition =  parseCondition(expression, this.fileData.columnStats)
+            const condition = parseCondition(expression, this.fileData.columnStats)
             if (!condition) return false
 
             const newDataset = this.createDatasetNode(parent)
@@ -472,9 +518,9 @@ export const useOptionConfig = defineStore('optionConfig', {
             return true
         },
 
-        getDataFromD(dataset){
-            return this.dataset.source.filter((record,index) =>
-                dataset.filterChain.every(filter => filter(record,index))
+        getDataFromD(dataset) {
+            return this.dataset.source.filter((record, index) =>
+                dataset.filterChain.every(filter => filter(record, index))
             )
         },
 

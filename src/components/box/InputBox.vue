@@ -52,6 +52,7 @@ defineProps({
   padding-block: 0.7em;
   border: none;
   border-bottom: var(--border-height) solid var(--border-before-color);
+
 }
 /* styling of animated border */
 .input-border {

@@ -33,13 +33,14 @@
         <CheckBox v-model="isEq"></CheckBox>
       </div>
       <div class="config-item">
-        <span :style="{
-          width:'65px'
-        }">左开右闭</span>
+        <span>(x,y]</span>
         <SelectButton v-model="map.mode"></SelectButton>
-        <span :style="{
-          width:'80px'
-        }">左闭右开</span>
+        <span>[x,y)</span>
+      </div>
+      <div class="config-item">
+        <span>纵轴</span>
+        <SelectButton v-model="map.type"></SelectButton>
+        <span>横轴</span>
       </div>
       <div class="options">
         <AddButton @click="addBreakpointBefore($event)">添加分界点</AddButton>
@@ -286,7 +287,7 @@ onMounted(() => {
   // 退出等分模式以确保断点位置可自定义
   isEq.value = false;
 
-  console.log(props.modelValue)
+  //console.log(props.modelValue)
 
   const minVal = props.map.min;
   const maxVal = props.map.max;

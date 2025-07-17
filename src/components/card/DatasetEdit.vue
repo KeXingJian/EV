@@ -62,7 +62,7 @@
 <script setup>
 import CloseButton from "../svg/CloseButton.vue";
 import AddButton from "../svg/AddButton.vue";
-import FieldManage from "../region/FieldManage.vue";
+import FieldManage from "../configArea/region/FieldManage.vue";
 import Filter from "../svg/Filter.vue";
 import Group from "../svg/Group.vue";
 import Bar from "./Bar.vue";
@@ -100,7 +100,7 @@ const applyFilter = () => {
 }
 
 const createGroup = () => {
-  console.log(currentExpressionGroup.value)
+  //console.log(currentExpressionGroup.value)
   const isOK = store.createGroup(props.dataset, currentExpressionGroup.value)
   if (isOK) {
     currentExpressionGroup.value = ''
@@ -121,7 +121,7 @@ const deleteGroup = (child, index) => {
   const deleteIs = [] //忽略
 
   toDeleteNode(child, deleteIs, index)
-  console.log('节点删除完毕', Ds.value)
+  //console.log('节点删除完毕', Ds.value)
   //忽略以下代码
   Ss.value.forEach(i=>{
     const needDelete = deleteIs.includes(i.D.id)
@@ -138,7 +138,7 @@ const toDeleteNode = (child, ids, i) => {
 
   if (!child) return
 
-  console.log(child)
+  //console.log(child)
   child.groupCondition.forEach((item, index) => {
 
     toDeleteNode(item.child, ids, index) //递归

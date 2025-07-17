@@ -8,14 +8,14 @@
       <div class="button-top" @click.stop="">
         <div class="box">
             <span class="option-value">
-              {{ getCType() }}
+              {{ $t(getCType()) }}
             </span>
         </div>
       </div>
     </div>
-
+    <!-- 轴转化   -->
     <div class="axis"
-         v-if="modelItem.type!==2 && !modelItem.axisType"
+         v-if="modelItem.type<2 && !modelItem.axisType"
          @click="changeType"
     >
       <div class="L">
@@ -30,7 +30,7 @@
     </div>
     <div class="axis"
           @click="changeType"
-          v-else
+          v-if="modelItem.type<2 && modelItem.axisType"
     >
       <div class="L">
         <span v-if="modelItem.type===0">Y</span>
@@ -42,13 +42,33 @@
         <span v-if="modelItem.type===1">R</span>
       </div>
     </div>
-
+    <!-- 轴堆叠   -->
     <div
         class="stack"
+        v-if="modelItem.type<2"
     >
-      <span>堆叠化</span>
+      <span>{{ $t('stack') }}</span>
       <CheckBox v-model="modelItem.isStack"></CheckBox>
     </div>
+
+
+    <div
+        class="type"
+        v-if="modelItem.type === 3"
+    >
+      <div class="button-top">
+        <div class="box">
+             <span>
+             类目:
+            </span>
+          <span class="option-value-f">
+                {{currentVarC }}
+            </span>
+        </div>
+      </div>
+    </div>
+
+
     <div class="right">
       <CloseButton @click="deleteC"></CloseButton>
     </div>
@@ -63,7 +83,8 @@ import Swap from "../svg/Swap.vue";
 import {checkSeries} from "../../utils/newArch/Check4Series.js";
 import {changeAxisType, deleteAxis} from "../../utils/newArch/AxisUtis.js";
 import CheckBox from "../box/CheckBox.vue";
-import { toRefs, watch} from "vue";
+import {computed, toRefs, watch} from "vue";
+import emitter from "../../emitter/emitter.js";
 
 const props = defineProps({
   modelItem: {
@@ -72,7 +93,7 @@ const props = defineProps({
   },
 })
 
-const {Cs,Ss,echartsOptions} = storeToRefs(useOptionConfig())
+const {Cs,Ss,echartsOptions,fileData} = storeToRefs(useOptionConfig())
 
 const changeType = ()=>{
   props.modelItem.axisType = !props.modelItem.axisType
@@ -82,10 +103,15 @@ const changeType = ()=>{
 }
 
 const getCType = () => {
-  if (props.modelItem.type === 0) return 'x0y系'
-  else if (props.modelItem.type === 1) return '极坐标系'
-  else return '饼图'
+  if (props.modelItem.type === 0) return 'x0y'
+  else if (props.modelItem.type === 1) return 'polar'
+  else if (props.modelItem.type === 3) return '雷达系'
 }
+
+const currentVarC = computed(() => {
+  if (!props.modelItem.field || fileData.value.columnStats.length===0) return '未定义'
+  return fileData.value.columnStats[props.modelItem.field].field;
+})
 
 const deleteC = () => {
   deleteAxis(props.modelItem,Cs,Ss,echartsOptions)
@@ -93,8 +119,7 @@ const deleteC = () => {
 
 const {isStack} = toRefs(props.modelItem)
 
-watch(isStack,(newVal)=>{
-  console.log()
+watch(isStack,()=>{
   Ss.value.filter(i=> i.isLoad && i.C.id === props.modelItem.id)
       .forEach(i => checkSeries(i,echartsOptions))
 })
@@ -151,5 +176,15 @@ watch(isStack,(newVal)=>{
 
 .axis:hover {
   background-color: var(--3-background-color);
+}
+
+.box{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  .option-value-f{
+    color: var(--active-color);
+  }
 }
 </style>

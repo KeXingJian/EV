@@ -15,7 +15,7 @@
           @change="handleChange(option.value)"
           :disabled="inactivation"
       />
-      <p class="text">{{ option.label }}</p>
+      <p class="text">{{ $t(option.label) }}</p>
     </label>
   </div>
 </template>

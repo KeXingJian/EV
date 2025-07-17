@@ -10,7 +10,7 @@
       <div class="button-top" @click.stop="showOption4MapField">
         <div class="box">
              <span>
-             气泡映射:
+             {{ $t('bubbleMapping') }}
             </span>
           <span class="option-value">
                 {{ currentField }}
@@ -24,17 +24,13 @@
   </div>
 
   <div class="config-item" v-if="item.scatterConfig.type === 1">
-    <span>范围:</span>
+    <span>{{ $t('range') }}</span>
     <ProgressBarRange v-model="item.scatterConfig.range"></ProgressBarRange>
   </div>
   <div class="config-item" v-else>
-    <span>大小:</span>
+    <span>{{ $t('size') }}</span>
     <ProgressBar v-model="item.scatterConfig.size" :width="200"></ProgressBar>
   </div>
-
-
-
-
 
 </template>
 
@@ -50,6 +46,7 @@ import {getFieldDetails, x0y} from "../../utils/BeautifyUtils.js";
 import {getDataForSimpleSeries} from "../../utils/newArch/Check4Series.js";
 import ProgressBarRange from "../button/ProgressBarRange.vue";
 import ProgressBar from "../button/ProgressBar.vue";
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps({
   item: {
@@ -63,13 +60,15 @@ const {echartsOptions,fileData} = storeToRefs(useOptionConfig())
 const scatterTypeSelect = [
   {
     value: 0,
-    label: '散点'
+    label: 'splashes'
   },
   {
     value: 1,
-    label: '气泡'
+    label: 'bubble'
   }
 ]
+
+const { t } = useI18n()
 
 const fieldSelect = computed(() => {
     return fileData.value.columnStats.filter(item=>item.type === 'number').map(item=>{
@@ -81,7 +80,7 @@ const fieldSelect = computed(() => {
 })
 
 const currentField = computed(() => {
-  if (props.item.scatterConfig.mapField===-1) return '未定义'
+  if (props.item.scatterConfig.mapField===-1) return t('undefined')
   return fileData.value.columnStats.find(item=>item.index===props.item.scatterConfig.mapField).field;
 })
 
@@ -92,7 +91,7 @@ const showOption4MapField = (event) => {
     target: props.item,
     options: fieldSelect.value,
     handle: (index,target)=>{
-      console.log('轴字段切换',target)
+      //console.log('轴字段切换',target)
       target.scatterConfig.mapField = index
     }
   })
@@ -100,7 +99,7 @@ const showOption4MapField = (event) => {
 
 watch(props.item, (newVal) => {
   //专有无需重构
-  console.log(newVal)
+  //console.log(newVal)
   const target = echartsOptions.value.series.find(i => i.id === newVal.id)
 
   x0y(newVal, echartsOptions, target)
@@ -117,7 +116,7 @@ watch(props.item, (newVal) => {
 
   }
 
-  console.log('系列更新触发合并', echartsOptions.value)
+  //console.log('系列更新触发合并', echartsOptions.value)
   emitter.emit('merge-option')
 })
 

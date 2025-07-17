@@ -1,7 +1,7 @@
 <template>
   <div class="palette-config">
     <div class="palettes">
-      <div  class="palettes-item" v-for="palette in colorSet" :key="palette.name">
+      <div  class="palettes-item" v-for="(palette) in colorSet" :key="palette.name">
           <span>{{palette.name}}</span>
           <PaletteBox :points="palette.colors">
           </PaletteBox>
@@ -9,19 +9,19 @@
       </div>
     </div>
     <div class="own">
-      <span>自定义颜色集:</span>
+      <span>{{ $t('myColor') }}</span>
       <OwnPaletteBox></OwnPaletteBox>
     </div>
   </div>
 </template>
 
 <script setup>
-import PaletteBox from "../box/PaletteBox.vue";
-import FavoriteButton from "../button/FavoriteButton.vue";
+import PaletteBox from "../../box/PaletteBox.vue";
+import FavoriteButton from "../../button/FavoriteButton.vue";
 import {computed} from "vue";
-import OwnPaletteBox from "../box/OwnPaletteBox.vue";
+import OwnPaletteBox from "../../box/OwnPaletteBox.vue";
 import {storeToRefs} from "pinia";
-import {useOptionConfig} from "../../store/OptionConfig.js";
+import {useOptionConfig} from "../../../store/OptionConfig.js";
 
 const {palettes} = storeToRefs(useOptionConfig())
 

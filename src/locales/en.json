@@ -1,0 +1,213 @@
+{
+  "import": "Import",
+
+  "sampling": "Sampling",
+  "build": "building",
+  "beautify": "beautify",
+
+  "field": "Field",
+  "index": "Index",
+  "type": "Type",
+  "sole": "Sole",
+  "coordinate": "Coordinate System",
+  "series": "Series",
+  "palette": "Color Palette",
+  "globalConfiguration": "Global Configuration",
+
+  "horizontal": "Horizontal",
+  "vertical": "Vertical",
+  "axisLine": "AxisLine",
+  "axisName": "AxisName",
+  "labelLine": "LabelLine",
+  "splitLine": "SplitLine",
+  "label": "Label",
+  "unit": "Unit",
+  "offset": "Offset",
+
+  "toLeft": "To L",
+  "toRight": "To R",
+  "toTop": "To T",
+  "toBottom": "To B",
+
+  "stopTop": "Stop T",
+  "stopBottom": "Stop B",
+  "stopLeft": "Stop L",
+  "stopRight": "Stop R",
+
+  "width": "Width",
+  "height": "Height",
+
+  "topMargin": "TMargin",
+  "leftMargin": "LMargin",
+
+  "startAngle": "StartAngle",
+  "endAngle": "EndAngle",
+  "innerDiameter": "IDiameter",
+  "outerDiameter": "ODiameter",
+  "roundness": "Roundness",
+
+
+  "autoWidth": "AutoWidth",
+
+  "lineChart": "Line",
+  "barChart": "Bar",
+  "scatterChart": "Scatter",
+  "pieChart": "Pie",
+  "funnelChart": "Funnel",
+
+  "toArea": "Area",
+  "toRose": "Rose",
+
+  "splashes": "Splashes",
+  "bubble": "Bubble",
+  "bubbleMapping": "BubbleMapping",
+  "range": "Range",
+  "size": "Size",
+
+  "straight": "Straight",
+  "bending": "Bending",
+  "folded": "Folded",
+
+  "start": "Start",
+  "Middle": "Center",
+  "end": "End",
+
+  "left": "Left",
+  "right": "Right",
+
+  "asc": "Asc",
+  "desc": "Desc",
+  "none": "None",
+
+  "default": "Default",
+  "stop": "Stop",
+  "sort": "Sort",
+
+  "gap": "gap",
+
+  "undefined": "Undefined",
+
+  "area": "Area",
+  "radius": "radius",
+
+  "inner": "Inner",
+  "outer": "Outer",
+
+  "mappingWay": "MappingWay",
+  "labelType": "LabelType",
+  "myColor": "CustomColorSet",
+  "my": "My",
+
+  "Optimization": "Optimization",
+  "layering": "Layering",
+
+  "background": "Background",
+  "legend": "Legend",
+  "title": "Title",
+  "orientation": "Orient",
+  "shape": "Shape",
+
+  "centerHorizontally": "HCenter",
+  "verticalCenter": "VCenter",
+  "imageQuality": "Quality",
+
+  "weight": "Weight",
+  "text": "Text",
+
+  "contact": "Contact",
+  "appreciate": "Appreciate",
+  "legal":"Legal",
+  "privacyPolicy": "PrivacyPolicy",
+  "email": "email",
+  "alipay": "Alipay",
+  "wechat": "Wechat",
+
+  "manual": "Manual",
+  "dataEdition": "DataEdition",
+  "dataset": "Dataset",
+
+  "DSeries": {
+    "A": "Decide on the presentation of data items",
+    "B": " style",
+    "C": " and",
+    "D": " position",
+    "E": "(NoSeries only control the series display form)",
+    "F": "This is similar to the x in f(x)=y, where the field must have",
+    "G": " uniqueness",
+    "H": "(Sampling->ROOT can view the field information)",
+    "I": "For y among them, the field must be",
+    "J": " number",
+    "K": "Indicate the source of the data item"
+  },
+  "DC": {
+    "A": "The containers of the series can be adjusted in the 'beautify'",
+    "B": " size",
+    "D": " ,which can be regarded as a graph instance"
+  },
+  "Sampling": {
+    "A": "Expression",
+    "B": "Field Operator Literal(like:A > 0)",
+    "C": "Require",
+    "D": "Field must be",
+    "E": " capital",
+    "F": ";Operator:= != (not equal) >= <= > <;",
+    "G": "When field is a string",
+    "H": " Only = and != can be used and literal values must be ",
+    "I": "wrapped in single quotes",
+    "J": "(like:B = 'man')",
+    "K": "Filter",
+    "L": "Keep data that matches the expression",
+    "M": "Group",
+    "N": "Create a new dataset by adding the matching data in the dataset"
+
+  },
+
+  "DDataEdition": {
+    "A": "Double click",
+    "B": " to edit",
+    "C": "Data Item",
+    "D": "Only modify in the ",
+    "E": "source partition",
+    "F": ",press",
+    "G": " Enter",
+    "H": " after modification,and the value is",
+    "I": " centered",
+    "J": " to complete the modification.",
+    "K": "Notice",
+    "L": "Modification may cause the field to lose its uniqueness, so pay attention to the error notification bar; the uniqueness is determined by",
+    "M": " removing null values",
+    "N": " and then checking for duplicates; if there are duplicates, then the field is not unique, and vice versa;"
+  },
+
+  "DData": {
+    "A": "Data flow",
+    "B": "Imported data is parsed and stored in",
+    "C": " memory",
+    "D": ", and the data is stored locally and ",
+    "E": "not sent out through the network.\n",
+    "F": "Data deletion time",
+    "G": " Import new data or close (refresh) the page"
+  },
+
+  "source": "Source",
+  "addRow": "AddRow",
+  "addField": "AddField",
+  "number":"Number",
+  "string":"String",
+  "deleteRow": "DeleteRow",
+
+  "stack": "Stack",
+
+  "x0y": "X0Y",
+  "polar": "Polar",
+  "noSeries": "NoCoordinate",
+  "Notice": {
+    "A": "The sample charts are loaded for you to learn quickly. You can import data or right hover the hemisphere -> 'DataEdition' to edit data instantly.",
+    "B": "Your data has been parsed, with a total of ",
+    "C": " data entries. However, it is found that the data type of the entry under field [",
+    "D": "] is inconsistent or empty. The entry will be removed when necessary",
+    "E": " data items in total. You can start building the series!!!",
+    "F": "How to adjust the color of NoSeries: Click the corresponding area"
+  },
+  "copy": "You have copied the email contact"
+}

@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import GraphSelect from "../components/configArea/GraphSelect.vue";
 import DataSampling from "../components/configArea/DataSampling.vue";
 import ModelBuild from "../components/configArea/ModelBuild.vue";
 import Beautify from "../components/configArea/Beautify.vue";

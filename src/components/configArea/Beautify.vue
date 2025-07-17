@@ -8,10 +8,10 @@
 </template>
 
 <script setup>
-import GlobalConfigRegion from "../region/GlobalConfigRegion.vue";
-import SeriesConfigRegion from "../region/SeriesConfigRegion.vue";
-import PaletteConfigRegion from "../region/PaletteConfigRegion.vue";
-import CoordinateConfigRegion from "../region/CoordinateConfigRegion.vue";
+import GlobalConfigRegion from "./region/GlobalConfigRegion.vue";
+import SeriesConfigRegion from "./region/SeriesConfigRegion.vue";
+import PaletteConfigRegion from "./region/PaletteConfigRegion.vue";
+import CoordinateConfigRegion from "./region/CoordinateConfigRegion.vue";
 </script>
 
 <style scoped>

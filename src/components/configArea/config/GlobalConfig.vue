@@ -3,49 +3,41 @@
     <div class="t">
       <div class="config-item">
         <span
-            style="width: 100px"
-        >大量数据优化:</span>
+            style="width: auto"
+        >{{ $t('Optimization') }}</span>
         <CheckBox v-model="global.isLarge"></CheckBox>
       </div>
       <div class="config-item">
         <span
-            style="width: 50px"
-        >分层化:</span>
+            style="width: auto"
+        >{{ $t('layering') }}</span>
         <CheckBox v-model="global.isLayer"></CheckBox>
-      </div>
-      <div class="config-item" v-if="false">
-        <span
-            style="width: 60px"
-        >svg渲染:</span>
-        <CheckBox v-model="global.isSvg"></CheckBox>
       </div>
       <div class="config-item">
         <span
-            style="width: 40px"
-        >背景:</span>
+            style="width: auto"
+        >{{ $t('background') }}</span>
         <ColorPoint v-model="global.backGround"></ColorPoint>
       </div>
     </div>
     <div class="m">
       <div class="legend">
-        <span>图例</span>
+
         <div class="item">
-          <span>颜色:</span>
+          <span>{{ $t('legend') }}</span>
+          <CheckBox v-model="global.legend.show"></CheckBox>
           <ColorPoint v-model="global.legend.color"></ColorPoint>
         </div>
+
         <div class="item">
-          <span>显示:</span>
-          <CheckBox v-model="global.legend.show"></CheckBox>
-        </div>
-        <div class="item">
-          <span>朝向:</span>
+          <span>{{ $t('orientation') }}</span>
           <CheckBox v-model="global.legend.type"></CheckBox>
         </div>
         <div class="item">
           <div class="button-top" @click.stop="showLegendStyle">
             <div class="box">
              <span>
-             样式:
+             {{ $t('shape') }}
             </span>
               <span class="option-value">
                 {{ currentStyle }}
@@ -54,7 +46,7 @@
           </div>
         </div>
         <div class="item">
-          <span>大小:</span>
+          <span>{{ $t('size') }}</span>
           <ProgressBar
               v-model="global.legend.fontSize"
               :width="175"
@@ -65,7 +57,7 @@
           ></ProgressBar>
         </div>
         <div class="item">
-          <span>粗细:</span>
+          <span>{{ $t('weight') }}</span>
           <ProgressBar
               v-model="global.legend.fontWeight"
               :width="175"
@@ -76,7 +68,7 @@
           ></ProgressBar>
         </div>
         <div class="item">
-          <span>上:</span>
+          <span>{{ $t('topMargin') }}</span>
           <ProgressBar
               v-model="global.legend.t"
               :width="175"
@@ -87,7 +79,7 @@
           ></ProgressBar>
         </div>
         <div class="item">
-          <span>左:</span>
+          <span>{{ $t('leftMargin') }}</span>
           <ProgressBar
               v-model="global.legend.l"
               :width="175"
@@ -98,7 +90,7 @@
           ></ProgressBar>
         </div>
         <div class="item">
-          <span>宽:</span>
+          <span>{{ $t('width') }}</span>
           <ProgressBar
               v-model="global.legend.w"
               :width="175"
@@ -109,7 +101,7 @@
           ></ProgressBar>
         </div>
         <div class="item">
-          <span>高:</span>
+          <span>{{ $t('height') }}</span>
           <ProgressBar
               v-model="global.legend.h"
               :width="175"
@@ -121,26 +113,23 @@
         </div>
       </div>
       <div class="font">
-        <span>标题</span>
+
         <div class="item">
-          <span>颜色:</span>
+          <span>{{ $t('title') }}</span>
+          <CheckBox v-model="global.title.show"></CheckBox>
           <ColorPoint v-model="global.title.color"></ColorPoint>
         </div>
+
         <div class="item">
-          <span>显示:</span>
-          <CheckBox v-model="global.title.show"></CheckBox>
-        </div>
-        <div class="item">
-          <span
-          >水平居中:</span>
+          <span>{{ $t('centerHorizontally') }}</span>
           <CheckBox v-model="global.title.isJustify"></CheckBox>
         </div>
         <div class="item">
-          <span>垂直居中:</span>
+          <span>{{ $t('verticalCenter') }}</span>
           <CheckBox v-model="global.title.isAlign"></CheckBox>
         </div>
         <div class="config-item">
-          <span>文本:</span>
+          <span>{{ $t('text') }}</span>
           <input-box
               :width="175"
               text="text"
@@ -148,7 +137,7 @@
           ></input-box>
         </div>
         <div class="item">
-          <span>大小:</span>
+          <span>{{ $t('size') }}</span>
           <ProgressBar
               v-model="global.title.fontSize"
               :width="175"
@@ -159,7 +148,7 @@
           ></ProgressBar>
         </div>
         <div class="item">
-          <span>粗细:</span>
+          <span>{{ $t('weight') }}</span>
 
           <ProgressBar
               v-model="global.title.fontWeight"
@@ -172,7 +161,7 @@
 
         </div>
         <div class="item">
-          <span>上:</span>
+          <span>{{ $t('topMargin') }}</span>
           <ProgressBar
               v-model="global.title.t"
               :width="175"
@@ -184,7 +173,7 @@
 
         </div>
         <div class="item">
-          <span>左:</span>
+          <span>{{ $t('leftMargin') }}</span>
           <ProgressBar
               v-model="global.title.l"
               :width="175"
@@ -195,7 +184,7 @@
           ></ProgressBar>
         </div>
         <div class="item">
-          <span>图片质量:</span>
+          <span>{{ $t('imageQuality') }}</span>
           <ProgressBar
               v-model="global.pixelRatio"
               :width="175"
@@ -218,16 +207,16 @@
 </template>
 
 <script setup>
-import ProgressBar from "../button/ProgressBar.vue";
-import CheckBox from "../box/CheckBox.vue";
+import ProgressBar from "../../button/ProgressBar.vue";
+import CheckBox from "../../box/CheckBox.vue";
 import {storeToRefs} from "pinia";
-import {useOptionConfig} from "../../store/OptionConfig.js";
+import {useOptionConfig} from "../../../store/OptionConfig.js";
 import {computed, watch} from "vue";
-import ColorPoint from "../button/ColorPoint.vue";
-import InputBox from "../box/InputBox.vue";
-import {legendStyleSelect, legendTypeSelect} from "../../utils/BeautifyUtils.js";
-import emitter from "../../emitter/emitter.js";
-import ProgressBarArea from "../button/ProgressBarArea.vue";
+import ColorPoint from "../../button/ColorPoint.vue";
+import InputBox from "../../box/InputBox.vue";
+import {legendStyleSelect, legendTypeSelect} from "../../../utils/BeautifyUtils.js";
+import emitter from "../../../emitter/emitter.js";
+import ProgressBarArea from "../../button/ProgressBarArea.vue";
 
 const {global, echartsOptions} = storeToRefs(useOptionConfig())
 
@@ -286,7 +275,7 @@ watch(global, (nweVal) => {
   if (nweVal.isLayer){
     echartsOptions.value.visualMap = {
       pieces: nweVal.visualMap.pieces,
-      dimension: 1
+      dimension: nweVal.visualMap.type ? 0:1
     }
   }else {
     echartsOptions.value.visualMap = undefined
@@ -361,7 +350,7 @@ watch(global, (nweVal) => {
 
 span {
   font-weight: bolder;
-  width: 38px;
+  width:70px;
 }
 
 .font {
@@ -379,9 +368,6 @@ span {
     color: var(--active-color);
   }
 
-  .option-value{
-    width: 56px;
-  }
 }
 
 .button-top{

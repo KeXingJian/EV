@@ -6,7 +6,7 @@
         :class="{ active: activeIndex === index }"
         @click="setActive(index, $event)"
     >
-      {{ item }}
+      {{ $t(item) }}
     </span>
     <div
         id="indicator"
@@ -23,7 +23,7 @@ import {ref, computed, onMounted, watch} from 'vue'
 const props = defineProps({
   items: {
     type: Array,
-    default: () => ['使用手册', '数据编辑']
+    default: () => ['manual', 'dataEdition']
   },
   modelValue: { // 新增v-model prop
     type: Number,

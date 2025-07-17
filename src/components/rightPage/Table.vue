@@ -8,7 +8,7 @@
               active: currentSource === -1,
             }"
       >
-        <span>数据源</span>
+        <span>{{ $t('source') }}</span>
       </div>
       <div class="item"
            v-for="(item,index) in Ds"
@@ -22,11 +22,11 @@
       </div>
     </div>
     <div class="option">
-      <AddLongButton @click="addRow">添加行</AddLongButton>
-      <AddLongButton @click="startAddingField">添加字段</AddLongButton>
+      <AddLongButton @click="addRow">{{ $t('addRow') }}</AddLongButton>
+      <AddLongButton @click="startAddingField">{{ $t('addField') }}</AddLongButton>
       <select v-model="selectedType" class="type-select" v-if="isAddingField">
-        <option value="number">数字</option>
-        <option value="string">字符串</option>
+        <option value="number">{{ $t('number') }}</option>
+        <option value="string">{{ $t('string') }}</option>
       </select>
       <form @submit="confirmAddField" v-if="isAddingField">
         <input-box
@@ -38,7 +38,7 @@
 
       <CheckButton @click="confirmAddField" v-if="isAddingField"></CheckButton>
       <CloseButton @click="cancelAddField" v-if="isAddingField"></CloseButton>
-      <DeleteLongButton v-if="currentSource===-1 && deleteIndex.length!==0" @click="deleteSelectedRows">删除行</DeleteLongButton>
+      <DeleteLongButton v-if="currentSource===-1 && deleteIndex.length!==0" @click="deleteSelectedRows">{{ $t('deleteRow') }}</DeleteLongButton>
     </div>
     <ag-grid-vue
         :rowData="rowData"

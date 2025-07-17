@@ -1,7 +1,7 @@
 <template>
   <div class="field-manage">
     <div class="index">
-      <span class="head">索引</span>
+      <span class="head">{{ $t('index') }}</span>
       <div v-for="(item,index) in fileData.columnStats.map(item => ExcelColumnMap.getLetter(item.index+1))" :key="index" class="index-item">
         <span>
            {{ item }}
@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="file">
-      <span class="head">字段</span>
+      <span class="head">{{ $t('field') }}</span>
       <div v-for="(item,index) in fileData.columnStats.map(item => item.field)" :key="index" class="file-item">
        <span>
            {{ item }}
@@ -17,7 +17,7 @@
       </div>
     </div>
     <div class="type">
-      <span class="head">类型</span>
+      <span class="head">{{ $t('type') }}</span>
       <div v-for="(item,index) in fileData.columnStats.map(item => item.type)" :key="index" class="type-item">
         <span>
            {{ item }}
@@ -25,7 +25,7 @@
       </div>
     </div>
     <div class="sole">
-      <span class="head">唯一性</span>
+      <span class="head">{{ $t('sole') }}</span>
       <div v-for="(item,index) in fileData.columnStats.map(item => item.isUnique)" :key="index" class="type-item">
         <Check v-if="item"></Check>
         <Close v-else></Close>
@@ -35,11 +35,11 @@
 </template>
 <script setup>
 import {onMounted, ref} from "vue";
-import Close from "../svg/Close.vue";
-import Check from "../svg/Check.vue";
+import Close from "../../svg/Close.vue";
+import Check from "../../svg/Check.vue";
 import {storeToRefs} from "pinia";
-import {useOptionConfig} from "../../store/OptionConfig.js";
-import ExcelColumnMap from "../../utils/ExcelColumnMapUtils.js";
+import {useOptionConfig} from "../../../store/OptionConfig.js";
+import ExcelColumnMap from "../../../utils/ExcelColumnMapUtils.js";
 
 const {fileData} = storeToRefs(useOptionConfig())
 

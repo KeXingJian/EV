@@ -1,40 +1,73 @@
 <script setup>
+import emitter from "../../emitter/emitter.js";
+import {onMounted, onUnmounted, ref} from "vue";
+import {useOptionConfig} from "../../store/OptionConfig.js";
+import {storeToRefs} from "pinia";
+
+const doc = ref(null)
+const {lang} = storeToRefs(useOptionConfig())
+
+const scrollToBottom = ()=>{
+  if (doc) {
+    // 使用 scrollTo 实现平滑滚动
+    doc.value.scrollTo({
+      top: doc.value.scrollHeight,
+      behavior: 'smooth'
+    })
+  }
+}
+
+onMounted(() => {
+  emitter.on("scroll-to-bottom", scrollToBottom);
+})
+
+onUnmounted(()=>{
+  emitter.off("scroll-to-bottom");
+})
 
 </script>
 
 <template>
-  <div class="doc">
+  <div ref="doc" class="doc">
     <div class="container">
-      <h2>系列</h2>
+      <h2>{{ $t('series') }}</h2>
       <span>
-        <span class="im">坐标系</span>: 决定数据项展现<span class="im">形式</span>和<span class="im">位置</span>(饼图不是坐标系,仅令数据项以饼图展示)<br>
-        <span class="im">类目</span>: 这类似f(x)=y,中的x,字段必须具有<span class="im">唯一性</span>(数据取样->ROOT可以查看字段信息)<br>
-        <span class="im">数值</span>: 为其中的y,字段必须为<span class="im">数字</span><br>
-        <span class="im">数据集</span>: 表示数据项来源
+        <span class="im">C({{ $t('coordinate') }})</span>: {{ $t('DSeries.A') }}<span class="im t">{{ $t('DSeries.B') }}</span>{{ $t('DSeries.C') }}<span class="im t">{{ $t('DSeries.D') }}</span>{{ $t('DSeries.E') }}<br>
+        <span class="im">X</span>: {{ $t('DSeries.F') }}<span class="im t">{{ $t('DSeries.G') }}</span>{{ $t('DSeries.H') }}<br>
+        <span class="im">Y</span>: {{ $t('DSeries.I') }}<span class="im t">{{ $t('DSeries.J') }}</span><br>
+        <span class="im">D({{ $t('dataset') }})</span>: {{ $t('DSeries.K') }}
       </span>
     </div>
     <div class="container">
-      <h2>坐标系</h2>
+      <h2>{{ $t('coordinate') }}</h2>
       <span>
-        是坐标轴的容器;在美化处可以调整<span class="im">定位</span>定位与<span class="im">大小</span>(饼图在对应系列中),可以被认为一个图实例
+        {{ $t('DC.A') }}<span class="im t">{{ $t('DSeries.D') }}</span>{{ $t('DSeries.C') }}<span class="im t">{{ $t('DC.B') }}</span>{{ $t('DC.D') }}
       </span>
     </div>
     <div class="container">
-      <h2>数据取样</h2>
+      <h2>{{ $t('sampling') }}</h2>
       <span>
-        <span class="im">表示式</span>: 字段 操作符 字面值(如:A>0)<br>
-        <span class="im">要求</span>: 字段必须为<span class="im">大写</span>;操作符:= !=(表不等于) >= <= > <;字段<span class="im">为字符串时</span>只能使用 =和!=且字面值必须使用<span class="im">单引号包裹</span>(如:B='男')<br>
-        <span class="im">过滤</span>: 保留符合表达式的数据<br>
-        <span class="im">分组</span>: 将数据集中符合的数据新建数据集<br>
+        <span class="im">{{ $t('Sampling.A') }}</span>: {{ $t('Sampling.B') }}<br>
+        <span class="im">{{ $t('Sampling.C') }}</span>: {{ $t('Sampling.D') }}<span class="im t">{{ $t('Sampling.E') }}</span>{{ $t('Sampling.F') }}<span class="im t">{{ $t('Sampling.G') }}</span>{{ $t('Sampling.H') }}<span class="im t">{{ $t('Sampling.I') }}</span>{{ $t('Sampling.J') }}<br>
+        <span class="im">{{ $t('Sampling.K') }}</span>: {{ $t('Sampling.L') }}<br>
+        <span class="im">{{ $t('Sampling.M') }}</span>: {{ $t('Sampling.N') }}<br>
       </span>
-      <img src="../svg/1.svg" alt="Diagram">
+      <img v-if="lang" src="/src/assets/zh.png" alt="zh">
+      <img v-else src="/src/assets/en.png" alt="en">
     </div>
     <div class="container">
-      <h2>数据编辑</h2>
+      <h2>{{ $t('dataEdition') }}</h2>
       <span>
-        <span class="im">字段</span>: <span class="im">双击</span>即可编辑<br>
-        <span class="im">数据项</span>: 修改完后<span class="im">回车</span>,令值<span class="im">居中</span>视为修改完成<br>
-        <span class="im">注意</span>: 修改可能导致字段唯一性丢失,留意错误通知栏;唯一性判断方式是<span class="im">剔除空值</span>,再进行查重;若重复则不具备唯一性,亦然反之;
+        <span class="im">{{ $t('field') }}</span>: <span class="im t">{{ $t('DDataEdition.A') }}</span>{{ $t('DDataEdition.B') }}<br>
+        <span class="im">{{ $t('DDataEdition.C') }}</span>: {{ $t('DDataEdition.D') }}<span class="im t">{{ $t('DDataEdition.E') }}</span>{{ $t('DDataEdition.F') }}<span class="im t">{{ $t('DDataEdition.G') }}</span>{{ $t('DDataEdition.H') }}<span class="im t">{{ $t('DDataEdition.I') }}</span>{{ $t('DDataEdition.J') }}<br>
+        <span class="im">{{ $t('DDataEdition.K') }}</span>: {{ $t('DDataEdition.L') }}<span class="im t">{{ $t('DDataEdition.M') }}</span>{{ $t('DDataEdition.N') }}
+      </span>
+    </div>
+    <div class="container">
+      <h2>{{ $t('privacyPolicy') }}</h2>
+      <span>
+        <span class="im">{{ $t('DData.A') }}</span>: {{ $t('DData.B') }}<span class="im t">{{ $t('DData.C') }}</span>{{ $t('DData.D') }}<span class="im t">{{ $t('DData.E') }}</span><br>
+        <span class="im">{{ $t('DData.F') }}</span>: {{ $t('DData.G') }}
       </span>
     </div>
   </div>
@@ -80,5 +113,15 @@ span{
 .im{
   font-size: 25px;
   font-weight: bolder;
+
+}
+
+.t{
+  color: var(--active-color) !important;
+}
+
+img{
+  width: 1000px;
+  height: 400px;
 }
 </style>

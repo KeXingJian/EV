@@ -17,10 +17,13 @@
 
 <script setup>
 import { ref } from 'vue'
+import {useOptionConfig} from "../../store/OptionConfig.js";
 
 const props = defineProps({
-  modelValue: Boolean
+  modelValue: Boolean,
 })
+const {palettes} = useOptionConfig()
+
 
 const emit = defineEmits(['update:modelValue'])
 const heartSvg = ref(null)
@@ -32,6 +35,14 @@ function toggle() {
 
   // 更新状态
   emit('update:modelValue', !props.modelValue)
+
+  const indexs = []
+
+  palettes.forEach((c,i)=>{
+    if (c.isLove) indexs.push(i)
+  })
+
+  localStorage.setItem('love',JSON.stringify(indexs))
 }
 </script>
 

@@ -7,7 +7,7 @@
 </template>
 
 <script setup>
-import Notice from "./region/Notice.vue";
+import Notice from "./configArea/region/Notice.vue";
 
 </script>
 <style scoped>

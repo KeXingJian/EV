@@ -54,15 +54,15 @@
 </template>
 
 <script setup>
-import NoticeButton from "../svg/NoticeButton.vue";
-import WarningButton from "../svg/WarningButton.vue";
-import ErrorButton from "../svg/ErrorButton.vue";
-import HelpButton from "../svg/HelpButton.vue";
-import NoticeCard from "../card/NoticeCard.vue";
-import DropDown from "../svg/DropDown.vue";
+import NoticeButton from "../../svg/NoticeButton.vue";
+import WarningButton from "../../svg/WarningButton.vue";
+import ErrorButton from "../../svg/ErrorButton.vue";
+import HelpButton from "../../svg/HelpButton.vue";
+import NoticeCard from "../../card/NoticeCard.vue";
+import DropDown from "../../svg/DropDown.vue";
 import {ref} from "vue";
 import {storeToRefs} from "pinia";
-import {useNotice} from "../../store/Notice.js";
+import {useNotice} from "../../../store/Notice.js";
 
 const toggleNotice = (event) => {
   event.currentTarget.parentElement.classList.toggle('show')

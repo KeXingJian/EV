@@ -2,11 +2,11 @@
   <div class="chart-config">
     <div class="t-1">
       <div class="config-item">
-        <span>面积化:</span>
+        <span>{{ $t('toArea') }}</span>
         <CheckBox v-model="item.lineConfig.isArea"></CheckBox>
       </div>
       <div class="config-item">
-        <span>面积色:</span>
+
         <ColorPoint v-model="item.areaColor"></ColorPoint>
       </div>
     </div>
@@ -47,30 +47,30 @@ const props = defineProps({
 const lineTypeSelect = [
   {
     value: 0,
-    label: '直型'
+    label: 'straight'
   },
   {
     value: 1,
-    label: '曲型'
+    label: 'bending'
   },
   {
     value: 2,
-    label: '折型'
+    label: 'folded'
   }
 ]
 
 const startPointType = [
   {
     value: 0,
-    label: '始'
+    label: 'start'
   },
   {
     value: 1,
-    label: '中'
+    label: 'Middle'
   },
   {
     value: 2,
-    label: '终'
+    label: 'end'
   }
 ]
 
@@ -78,7 +78,7 @@ const {echartsOptions} = storeToRefs(useOptionConfig())
 
 watch(props.item, (newVal) => {
   //专有无需重构
-  console.log(newVal)
+
   const target = echartsOptions.value.series.find(i=>i.id===newVal.id)
 
   x0y(newVal,echartsOptions,target)
@@ -91,7 +91,7 @@ watch(props.item, (newVal) => {
   if (newVal.lineConfig.isArea) target.areaStyle = {color: newVal.areaColor}
   else target.areaStyle = null
 
-  console.log('系列更新触发合并',echartsOptions.value)
+  //console.log('系列更新触发合并',echartsOptions.value)
   emitter.emit('merge-option')
 })
 </script>

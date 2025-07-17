@@ -1,57 +1,52 @@
 <template>
   <div class="bar-chart">
     <div class="top-config-item">
-      <div class="config-item">
-        <span>{{ $t('label') }}</span>
 
-        <check-box v-model="item.isLabel"></check-box>
-        <ColorPoint v-model="item.labelColor"></ColorPoint>
-      </div>
-      <div class="config-item">
-        <span>{{ $t('labelLine') }}</span>
-        <check-box v-model="item.pieConfig.labelLine"></check-box>
-      </div>
-      <div class="config-item">
-        <span
-            :style="{
-              width:'55px',
-           }"
-        >{{ $t('toRose') }}</span>
-        <check-box v-model="item.pieConfig.isRose"></check-box>
-      </div>
       <div class="config-item">
         <span>{{ $t('default') }}</span>
         <ColorPoint v-model="item.color"></ColorPoint>
       </div>
     </div>
+    <div class="top-config-item">
+      <div class="config-item">
+        <span>{{ $t('label') }}</span>
+        <ColorPoint v-model="item.labelColor"></ColorPoint>
+      </div>
+      <div class="config-item">
 
-
-    <div class="config-item"
-         :class="{
-          inactivation: !item.pieConfig.isRose }"
-    >
-      <span>{{ $t('mappingWay') }}</span>
+        <check-box v-model="item.isLabel"></check-box>
+      </div>
       <RadioBox
-          v-model="item.pieConfig.roseType"
-          :options="mapTypeSelect"
-          :name="'mapTypeSelect'+item.id"
-          :inactivation="!item.pieConfig.isRose"
+          v-model="item.funnelConfig.labelPosition"
+          :options="labelPosition"
+          :name="'labelPosition'+item.id"
       ></RadioBox>
+    </div>
 
+
+    <div class="config-item">
+      <span>{{ $t('stop') }}</span>
+      <RadioBox
+          v-model="item.funnelConfig.align"
+          :options="stopType"
+          :name="'stopType'+item.id"></RadioBox>
     </div>
     <div class="config-item">
-      <span>{{ $t('labelType') }}</span>
+      <span>{{ $t('sort') }}</span>
       <RadioBox
-          v-model="item.pieConfig.position"
-          :options="labelTypeSelect"
-          :name="'labelTypeSelect'+item.id"></RadioBox>
+          v-model="item.funnelConfig.sort"
+          :options="sortType"
+          :name="'sortType'+item.id"></RadioBox>
     </div>
+
     <section>
       <div class="left-config-item">
         <div class="config-item">
-          <span>{{ $t('topMargin') }}</span>
+          <span
+              :style="{width: '65px'}"
+          >{{ $t('topMargin') }}</span>
           <ProgressBar
-              v-model="item.pieConfig.polar.pt"
+              v-model="item.funnelConfig.position.t"
               :width="175"
               :min="0"
               :max="100"
@@ -60,9 +55,11 @@
           ></ProgressBar>
         </div>
         <div class="config-item">
-          <span>{{ $t('leftMargin') }}</span>
+          <span
+              :style="{width: '65px'}"
+          >{{ $t('leftMargin') }}</span>
           <ProgressBar
-              v-model="item.pieConfig.polar.pl"
+              v-model="item.funnelConfig.position.l"
               :width="175"
               :min="0"
               :max="100"
@@ -71,12 +68,14 @@
           ></ProgressBar>
         </div>
         <div class="config-item">
-          <span>{{ $t('roundness') }}</span>
+          <span
+              :style="{width: '65px'}"
+          >{{ $t('gap') }}</span>
           <ProgressBar
-              v-model="item.pieConfig.borderRadius"
+              v-model="item.funnelConfig.gap"
               :width="175"
               :min="0"
-              :max="60"
+              :max="100"
               :step="0.1"
               unit="%"
           ></ProgressBar>
@@ -84,9 +83,9 @@
       </div>
       <div class="right-config-item">
         <div class="config-item">
-          <span>{{ $t('innerDiameter') }}</span>
+          <span>{{ $t('width') }}</span>
           <ProgressBar
-              v-model="item.pieConfig.polar.pi"
+              v-model="item.funnelConfig.position.w"
               :width="175"
               :min="0"
               :max="100"
@@ -95,9 +94,9 @@
           ></ProgressBar>
         </div>
         <div class="config-item">
-          <span>{{ $t('outerDiameter') }}</span>
+          <span>{{ $t('height') }}</span>
           <ProgressBar
-              v-model="item.pieConfig.polar.po"
+              v-model="item.funnelConfig.position.h"
               :width="175"
               :min="0"
               :max="100"
@@ -105,17 +104,7 @@
               unit="%"
           ></ProgressBar>
         </div>
-        <div class="config-item">
-          <span>{{ $t('gap') }}</span>
-          <ProgressBar
-              v-model="item.pieConfig.padAngle"
-              :width="175"
-              :min="0"
-              :max="60"
-              :step="0.1"
-              unit="%"
-          ></ProgressBar>
-        </div>
+
       </div>
     </section>
   </div>
@@ -130,7 +119,8 @@ import ColorPoint from "../button/ColorPoint.vue";
 import emitter from "../../emitter/emitter.js";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
-import {buildPolar, labelTypeForPosition, roseTypeSelect} from "../../utils/newArch/Position.js";
+import {buildGrid} from "../../utils/newArch/Position.js";
+import {funnelAlign, funnelLabel, funnelSort} from "../../utils/newArch/Check4Series.js";
 
 const props = defineProps({
   item: {
@@ -139,26 +129,49 @@ const props = defineProps({
   }
 })
 
-const mapTypeSelect = [
+const labelPosition = [
   {
     value: 0,
-    label: 'radius',
+    label: 'left',
   },
   {
     value: 1,
-    label: 'area'
+    label: 'Middle'
+  },
+  {
+    value: 2,
+    label: 'right'
   }
 ]
 
-const labelTypeSelect = [
+const stopType = [
   {
     value: 0,
-    label: 'inner'
+    label: 'left',
   },
   {
     value: 1,
-    label: 'outer'
+    label: 'Middle'
   },
+  {
+    value: 2,
+    label: 'right'
+  }
+]
+
+const sortType = [
+  {
+    value: 0,
+    label: 'asc',
+  },
+  {
+    value: 1,
+    label: 'none'
+  },
+  {
+    value: 2,
+    label: 'desc'
+  }
 ]
 
 const {echartsOptions} = storeToRefs(useOptionConfig())
@@ -168,25 +181,26 @@ watch(props.item, (newVal) => {
 
   target.label.show = newVal.isLabel
   target.label.color = newVal.labelColor
+  target.funnelAlign = funnelAlign[newVal.funnelConfig.align]
+  target.sort = funnelSort[newVal.funnelConfig.sort]
+  target.label.position = funnelLabel[newVal.funnelConfig.labelPosition]
 
-  target.itemStyle.borderRadius = newVal.pieConfig.borderRadius
-  target.padAngle = newVal.pieConfig.padAngle
+  target.gap = newVal.funnelConfig.gap
 
-  target.label.position = labelTypeForPosition[newVal.pieConfig.position]
-  target.labelLine.show = newVal.pieConfig.labelLine
-
-  const position = buildPolar(
-      newVal.pieConfig.polar.pi,
-      newVal.pieConfig.polar.po,
-      newVal.pieConfig.polar.pl,
-      newVal.pieConfig.polar.pt
+  const position = buildGrid(
+      newVal.funnelConfig.position.t,
+      newVal.funnelConfig.position.b,
+      newVal.funnelConfig.position.l,
+      newVal.funnelConfig.position.r,
+      newVal.funnelConfig.position.w,
+      newVal.funnelConfig.position.h,
   )
-  target.radius = position.radius
-  target.center = position.center
 
+  target.width = position.width
+  target.height = position.height
+  target.top = position.top
+  target.left = position.left
 
-  if (newVal.pieConfig.isRose) target.roseType = roseTypeSelect[newVal.pieConfig.roseType]
-  else target.roseType = false
 
   //console.log('系列更新触发合并', echartsOptions.value)
   emitter.emit('merge-option')
@@ -201,6 +215,11 @@ watch(props.item, (newVal) => {
   > section {
     display: flex;
     gap: 20px;
+
+    span {
+      width: 38px;
+    }
+
     width: 500px;
     justify-content: space-between;
   }
@@ -230,7 +249,6 @@ span {
   gap: 20px;
 
 
-  justify-content: space-between;
   width: 500px;
 }
 
@@ -238,11 +256,5 @@ span {
   display: flex;
   gap: 10px;
   flex-direction: column;
-
-  span{
-    width: 60px;
-    font-size: .8em;
-  }
-
 }
 </style>

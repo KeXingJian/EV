@@ -2,7 +2,7 @@
   <div class="axis-container">
     <div class="header" @click="toggleDataset($event)">
       <div class="header-left">
-        <span>坐标系</span>
+        <span>{{ $t('coordinate') }}</span>
       </div>
       <div class="header-right">
         <DropDown @click.stop></DropDown>
@@ -34,11 +34,11 @@
 
 <script setup>
 
-import DropDown from "../svg/DropDown.vue";
+import DropDown from "../../svg/DropDown.vue";
 
 import {storeToRefs} from "pinia";
-import {useOptionConfig} from "../../store/OptionConfig.js";
-import CoordinateSystem from "../newArch/CoordinateSystem.vue";
+import {useOptionConfig} from "../../../store/OptionConfig.js";
+import CoordinateSystem from "./CoordinateSystem.vue";
 
 const toggleDataset = (event) => {
   event.currentTarget.nextElementSibling.classList.toggle('show')

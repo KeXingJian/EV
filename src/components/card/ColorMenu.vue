@@ -116,6 +116,7 @@ const handleChartClick = (params) => {
 const handleChartHover = (params) => {
   if (params.seriesIndex !== 0) return
   const target = colorSet.value[params.dataIndex]
+  //如果第二层为空
   if (!option.series[1]){
     const colorSelect = {
       padAngle: 1,

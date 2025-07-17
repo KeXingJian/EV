@@ -170,6 +170,10 @@ function showRange() {
   transform: rotate(45deg);
   color: var(--font-color);
   font-size: 17px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .range__input {

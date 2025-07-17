@@ -10,9 +10,11 @@
     </div>
     <section class="Ys show">
       <div>
+        <span>{{ $t('coordinate') }}</span>
         <div class="c">
           <C v-for="c in Cs.filter(i=>i.id!==-1)" :key="c.id" :model-item="c"></C>
         </div>
+        <span>{{ $t('series') }}</span>
         <div class="s">
           <S v-for="s in Ss" :key="s.id" :model-item="s"></S>
         </div>
@@ -104,22 +106,7 @@ svg {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 30px;
-}
 
-.c:before,  .s:before {
-  top: -28px;
-  content: '坐标系';
-  position: absolute;
-  border-radius: 10px;
-  width: 99%;
-  z-index: 2;
-  font-weight: bolder;
-}
-
-
-.s:before {
-  content: '系列';
 }
 
 .c:after {
@@ -136,6 +123,10 @@ svg {
   width: 99%;
   top: calc(100% + 12px);
   z-index: 2;
+}
+
+span{
+  font-weight: bolder;
 }
 
 </style>

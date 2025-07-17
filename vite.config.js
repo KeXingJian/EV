@@ -8,7 +8,7 @@ import obfuscatorPlugin from "vite-plugin-javascript-obfuscator";
 export default defineConfig({
     plugins: [
         vue(),
-        obfuscatorPlugin({
+       /* obfuscatorPlugin({
             options: {
                 debugProtection: true,
                 compact: true,                // 压缩代码
@@ -20,7 +20,7 @@ export default defineConfig({
                 transformObjectKeys: true,
                 identifierNamesGenerator: 'hexadecimal' // 变量名十六进制化
             },
-        }),
+        }),*/
         Sitemap({
             hostname: 'https://tool.excelvision.cloud',
             dynamicRoutes: ['/','modelBuild','beautify']

@@ -34,6 +34,7 @@ import RightFloatButton from "../button/RightFloatButton.vue";
 import Table from "./Table.vue";
 import HeaderNav from "./HeaderNav.vue";
 import Enchiridion from "./Enchiridion.vue";
+import emitter from "../../emitter/emitter.js";
 const isOpen = ref(false);
 const width = ref(0);
 const minWidth = 0;
@@ -74,14 +75,29 @@ const stopResize = () => {
 
 }
 
+const toShowPolicy = ()=>{
+  if (!isOpen.value) {
+    width.value = 500
+    isOpen.value = true
+  }
+  if (selectedIndex.value===1) selectedIndex.value = 0
+  setTimeout(() => {
+    emitter.emit("scroll-to-bottom")
+  }, 500)
+
+}
+
 onMounted(()=>{
   window.addEventListener('resize', handleWindowResize);
+  emitter.on("show-policy", toShowPolicy);
 })
 
 onBeforeUnmount(() => {
   document.removeEventListener('mousemove', handleMouseMove);
   document.removeEventListener('mouseup', stopResize);
   window.removeEventListener('resize', handleWindowResize);
+  emitter.off("show-policy", toShowPolicy);
+
 });
 
 </script>

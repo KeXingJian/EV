@@ -7,7 +7,7 @@
       <div class="button-top" @click.stop="showOption4C($event)">
         <div class="box">
              <span>
-             坐标系:
+             C
             </span>
           <span class="option-value">
               {{ currentC }}
@@ -19,7 +19,7 @@
       <div class="button-top" @click.stop="showOption4Var($event,0)">
         <div class="box">
              <span>
-             类目:
+             X
             </span>
           <span class="option-value">
                 {{currentVarC }}
@@ -32,7 +32,7 @@
       <div class="button-top" @click.stop="showOption4Var($event,1)">
         <div class="box">
              <span>
-             数值:
+             Y
             </span>
           <span class="option-value">
                 {{ currentVarN }}
@@ -45,7 +45,7 @@
       <div class="button-top" @click.stop="showOption4Dataset($event)">
         <div class="box">
              <span>
-             数据集:
+             <Database></Database>
             </span>
           <span class="option-value">
                 {{ currentDataset }}
@@ -67,8 +67,10 @@ import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
 import emitter from "../../emitter/emitter.js";
 import {checkSeries, deleteSeries, unloadSeries} from "../../utils/newArch/Check4Series.js";
+import Database from "../svg/Database.vue";
 
-const {Ds,Ss,Cs,fileData,echartsOptions} = storeToRefs(useOptionConfig())
+const {Ds,Ss,Cs,fileData,echartsOptions,lang} = storeToRefs(useOptionConfig())
+
 
 const props = defineProps({
   modelItem:{
@@ -79,12 +81,11 @@ const props = defineProps({
 
 //坐标系
 const currentC = computed(() => {
-  if (!props.modelItem.C) return '未定义'
+  if (!props.modelItem.C) return lang.value ? 'undefined' : '未定义'
   return props.modelItem.C.name
 })
 
 const getCSelect = ()=>{
-
   return Cs.value.map(item=>{
     return {
       index: item,
@@ -120,11 +121,14 @@ const showOption4C = (event)=>{
     target: props.modelItem,
     options: options,
     handle: (index, target) => {
+      if (target.C === index) return
       target.C = index
       if (target.C.type===0 || target.C.type===1) {
         target.type = 0
       }else if (target.C.type===2) {
         target.type = 3
+      }if (target.C.type===3){
+        target.type = 5
       }
       unloadSeries(props.modelItem,echartsOptions)
       checkSeries(target,echartsOptions)
@@ -135,12 +139,12 @@ const showOption4C = (event)=>{
 
 //变量
 const currentVarC = computed(() => {
-  if (props.modelItem.category===-1 || fileData.value.columnStats.length===0) return '未定义'
+  if (props.modelItem.category===-1 || fileData.value.columnStats.length===0) return lang.value ? 'undefined' : '未定义'
   return fileData.value.columnStats[props.modelItem.category].field;
 })
 
 const currentVarN = computed(() => {
-  if (props.modelItem.number===-1 || fileData.value.columnStats.length===0) return '未定义'
+  if (props.modelItem.number===-1 || fileData.value.columnStats.length===0) return lang.value ? 'undefined' : '未定义'
   return fileData.value.columnStats[props.modelItem.number].field;
 })
 
@@ -191,11 +195,14 @@ const showOption4Var = (event,type) => {
     target: props.modelItem,
     options: options,
     handle: (index,target)=>{
-      console.log('轴字段切换',target)
+      //console.log('轴字段切换',target)
       if (type===0){
+        if (target.category !== -1 && target.category===index) return
         target.category = index
       }else {
+        if (target.number !== -1 && target.number===index) return
         target.number = index
+
       }
       checkSeries(target,echartsOptions)
     }
@@ -203,7 +210,7 @@ const showOption4Var = (event,type) => {
 }
 //数据集
 const currentDataset = computed(() => {
-  if (!props.modelItem.D) return '未定义'
+  if (!props.modelItem.D) return lang.value ? 'undefined' : '未定义'
   return props.modelItem.D.name
 })
 
@@ -243,6 +250,7 @@ const showOption4Dataset = (event)=>{
     target: props.modelItem,
     options:datasetSelect.value,
     handle: (index,target)=>{
+      if (target.D === index) return
       target.D = index
       checkSeries(target,echartsOptions)
     }
@@ -250,7 +258,7 @@ const showOption4Dataset = (event)=>{
 }
 
 const deleteS = ()=>{
-  console.log('尝试删除系列',props.modelItem)
+  //console.log('尝试删除系列',props.modelItem)
   deleteSeries(props.modelItem,Ss,echartsOptions)
 }
 </script>

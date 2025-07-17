@@ -1,8 +1,8 @@
 <template>
-  <div class="global-container">
+  <div class="palette-container">
     <div class="header" @click="toggleDataset($event)">
       <div class="header-left">
-        <span>全局配置</span>
+        <span>{{ $t('palette') }}</span>
       </div>
       <div class="header-right">
         <DropDown @click.stop></DropDown>
@@ -10,22 +10,21 @@
     </div>
     <div class="options">
       <div>
-        <GlobalConfig></GlobalConfig>
+        <PaletteConfig></PaletteConfig>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import DropDown from "../svg/DropDown.vue";
-import GlobalConfig from "../config/GlobalConfig.vue";
+import DropDown from "../../svg/DropDown.vue";
+import PaletteConfig from "../config/PaletteConfig.vue";
 
 const toggleDataset = (event) => {
   event.currentTarget.nextElementSibling.classList.toggle('show')
   event.currentTarget.classList.toggle('rotate')
 }
 </script>
-
 
 <style scoped>
 
@@ -41,8 +40,11 @@ const toggleDataset = (event) => {
   }
 }
 
+.show{
+  grid-template-rows: 1fr;
+}
 
-.rotate.header .header-right,.rotate.global-header .global-header-right{
+.rotate.header .header-right{
   svg:last-child {
     rotate: 180deg;
   }
@@ -64,10 +66,6 @@ const toggleDataset = (event) => {
   background-color: var(--theme-hover-color);
 }
 
-
-.show{
-  grid-template-rows: 1fr;
-}
 svg {
   transition: rotate 150ms ease;
 }

@@ -8,7 +8,9 @@
     <ColorMenu></ColorMenu>
     <OptionItem></OptionItem>
     <Page></Page>
-    <Contact></Contact>
+    <Toast></Toast>
+    <Appreciate1></Appreciate1>
+    <Appreciate2></Appreciate2>
     <main>
       <HeaderNavigation></HeaderNavigation>
       <div class="container">
@@ -44,7 +46,7 @@ import ToolNavigation from "./components/ToolNavigation.vue";
 import SelectArea from "./components/SelectArea.vue";
 import GraphCanvas from "./components/GraphCanvas.vue";
 import HeaderNavigation from "./components/HeaderNavigation.vue";
-import AboutRegion from "./components/region/AboutRegion.vue";
+import AboutRegion from "./components/configArea/region/AboutRegion.vue";
 import emitter from "./emitter/emitter.js";
 import {onBeforeUnmount, onMounted, ref} from "vue";
 
@@ -58,11 +60,15 @@ import {init} from "./utils/newArch/InitUtils.js";
 import Menu from "./components/newArch/Menu.vue";
 import LeftFolatButton from "./components/button/LeftFolatButton.vue";
 import {analyzeColumns2} from "./utils/ExcelUtils.js";
-import {getMockData, getMockField, handle1, handle2, handle3, handle4, handle5, handle6} from "./utils/MockData.js";
-import Contact from "./components/card/Contact.vue";
+import {getMockData, handle1, handle2, handle3, handle4, handle5, handle6} from "./utils/MockData.js";
+import Toast from "./components/Toast.vue";
+import Appreciate1 from "./components/card/Appreciate1.vue";
+import Appreciate2 from "./components/card/Appreciate2.vue";
+import { useI18n } from 'vue-i18n'
 
+const { locale, t } = useI18n()
 
-const {theme, echartsOptions,fileData,dataset,Ss,sIndex,Cs,cIndex,global,Ds} = storeToRefs(useOptionConfig())
+const {theme, echartsOptions,fileData,dataset,Ss,sIndex,Cs,cIndex,global,Ds,palettes} = storeToRefs(useOptionConfig())
 
 
 const onResize = () => {
@@ -97,7 +103,7 @@ const minWidth = 633;
 const maxWidth = 1200;
 const isResizing = ref(false);
 
-const startResize = (e) => {
+const startResize = () => {
   isResizing.value = true;
   document.addEventListener('mousemove', handleMouseMove);
   document.addEventListener('mouseup', stopResize);
@@ -120,20 +126,18 @@ const handleMouseMove = (e) => {
 }
 
 const loadFirstChart = (num)=>{
-  const mockData = getMockData();
-  const mockField = getMockField();
+  const userLang = navigator.language || navigator.userLanguage
+  const mockData = getMockData(!userLang.startsWith('zh'));
 
   fileData.value = {
     rowCount: mockData.length-1, // 排除表头
     columnStats: analyzeColumns2(mockData,mockData[0]?.map(String) || [],),
-  };
+  }
+
+  dataset.value.dimension = mockData[0]
   dataset.value.source = mockData.slice(1) // 存储原始数据（排除表头）
-  dataset.value.dimension = mockField
 
   init()
-
-
-
   switch (num) {
     case 1:
       handle1(Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)
@@ -158,7 +162,41 @@ const loadFirstChart = (num)=>{
   }
 
 
-  pushMsg(0, '示例图以为您加载,可以据此快速学习.您可以导入数据或右悬浮半球->数据编辑,即时编辑数据')
+  pushMsg(0, `${t('Notice.A')}`)
+}
+
+const langInit = ()=>{
+
+  const userLang = navigator.language || navigator.userLanguage
+
+  if (userLang.startsWith('zh')) {
+    locale.value = 'zh-CN'
+  } else {
+    locale.value = 'en'
+    Ds.value[0].from = "Temporary Data"
+    emitter.emit('change-lang')
+  }
+}
+
+const colorInit = () => {
+
+  const my = JSON.parse(localStorage.getItem('my'))
+  const love = JSON.parse(localStorage.getItem('love'))
+
+
+  if (!my) localStorage.setItem('my', JSON.stringify(palettes.value[0].colors))
+  else palettes.value[0].colors = my
+
+  //console.log(my)
+
+  if(!love) localStorage.setItem('love',JSON.stringify([0,1,2,3,4,5]))
+  else {
+    palettes.value.forEach((color, index) => {
+      if (love.includes(index)) color.isLove = true
+      else color.isLove = false
+    })
+
+  }
 }
 
 // 解析 URL 参数并验证
@@ -180,18 +218,14 @@ const parseNumberFromURL = () => {
 };
 
 onMounted(() => {
+  langInit()
+  colorInit()
+
   window.addEventListener('resize',onResize)
   emitter.on("theme-change", changeTheme);
-  pushMsg(0,
-      '欢迎使用EXCELVISION,当前为测试版,如有问题QQ联系:',
-      '2787901285(点击试试)',
-      ()=>{
-        emitter.emit('contact')
-      }
-  )
+
 
   const num = parseNumberFromURL()
-  if (!num || num>6) return
 
   loadFirstChart(num)
 
@@ -236,7 +270,7 @@ main {
   position: absolute;
   height: calc(100vh - 80px);
   width: 8px;
-  background: var(--theme-hover-color);
+  background: var(--2-background-color);
   left: calc(100% - 8px);
   z-index: 2;
   cursor: e-resize;
