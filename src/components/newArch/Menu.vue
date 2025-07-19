@@ -31,7 +31,6 @@ const colors = ['#0D6E6E', '#FF3D3D', '#4a9d9c', '#0D6E6E'];
 const { t, locale } = useI18n()
 
 
-
 const option = {
   animation: true, // 确保动画开启
   animationEasing: 'cubicInOut', // 缓动效果
@@ -57,10 +56,8 @@ const option = {
     itemStyle: { borderRadius: 8, borderWidth: 2 },
     type: 'pie',
     data: [
-
       { value: 12, name: t('x0y'), itemStyle: { color: colors[1] } },
       { value: 11, name: t('polar'), itemStyle: { color: colors[2] } },
-      // value: 11, name: '雷达系', itemStyle: { color: colors[3] } },
       { value: 13, name: t('series'), itemStyle: { color: colors[0] } },
     ],
     roseType: 'area'
@@ -74,7 +71,6 @@ const showMenu = (args)=> {
 
   cancel.value.style.top = `${args.y - 20}px`
   cancel.value.style.left = `${args.x - 20}px`
-
 
   localIsShowMenu.value = true
 
@@ -99,6 +95,7 @@ const menuHandlers = [
       name: 'C'+cIndex.value,
       type: 0, //0:x0y系;1:极坐标系;2无系
       grid: getGrid(),
+      polar:null,
       isLoad:false,
       axisType: false, //横轴为类目
       isStack: false,
@@ -150,6 +147,7 @@ const menuHandlers = [
       id: ++cIndex.value,
       name: 'C'+cIndex.value,
       type: 1, //0:x0y系;1:极坐标系;2无系
+      grid:null,
       polar: getPolar(),
       isLoad:false,
       axisType: false, //横轴为类目
@@ -197,36 +195,7 @@ const menuHandlers = [
     loadAxis(c,echartsOptions)
     close();
   },
-  /*(field) => {
-    const c = {
-      id: ++cIndex.value,
-      name: 'C'+cIndex.value,
-      type: 3, //0:x0y系;1:极坐标系;2无系;3雷达系
-      polar: getPolar(),
-      isLoad:false,
-      max: 100,
-      field: field,
-      shape: 0,
 
-      isAxisLine: true,
-      axisLineColor: '#FF4081',
-
-      axisLabel: false,
-      axisLabelColor : '#000',
-      hideOverlap: true,
-
-      isSplitLine: true,
-      splitColor: '#FF4081',
-      isSplitArea:true,
-      splitNumber:5,
-      colorSet: ['#FF4081'],
-    }
-
-    Cs.value.push(c)
-    loadAxis(c,echartsOptions)
-    pushMsg(1,'雷达系强依赖类目,类目删除或导入数据会导致雷达系删除')
-    close()
-  },*/
   () => {
     const s = {
       id: ++sIndex.value,
@@ -297,20 +266,8 @@ const menuHandlers = [
 
 const handleChartClick = (params) => {
   if (params.componentType === 'series' && params.seriesType === 'pie') {
-    console.log()
-   /* let handler = null
-    if (params.seriesIndex === 0 && params.dataIndex === 2) return
-    else if (params.seriesIndex === 1) {
-      handler = menuHandlers['雷达系']
-      handler(params.dataIndex)
-    } else {
-      handler = menuHandlers[params.name]
-      if (handler) {
-        handler()
-      }
-    }*/
 
-    const handler = menuHandlers[params.seriesIndex]
+    const handler = menuHandlers[params.dataIndex]
     if (handler) {
       handler()
     }
@@ -318,58 +275,9 @@ const handleChartClick = (params) => {
   }
 }
 
-const handleChartHover = (params) => {
-
-  if (params.seriesIndex !== 0) return
-
-  if (!option.series[1] && params.dataIndex === 2) {
-
-    const colorSelect = {
-      padAngle: 1,
-      emphasis: {
-        itemStyle: {
-          shadowBlur: 10,
-          shadowColor: 'rgba(0, 0, 0, 0.5)'
-        }
-      },
-      radius: ['65%', '90%'],
-      label: { show: true, position: 'inside', color: '#fff', fontWeight: 'bolder',fontSize: '0.6em' },
-      labelLine: {show: false},
-      itemStyle: {borderRadius: 8, borderWidth: 2},
-      type: 'pie',
-      data: [],
-    }
-    fileData.value.columnStats.forEach((item) => {
-      colorSelect.data.push({
-        value: 1,
-        name: item.field,
-        itemStyle: {
-          color: '#FF4081'
-        }
-      })
-    })
-    option.series.push(colorSelect)
-  }else if (option.series[1] && params.dataIndex !== 2){
-    option.series.splice(1, 1)
-  }
-
-  myChart.setOption(option,{ notMerge: true }); // 强制重新渲染
-}
-// 防抖函数（简单版）
-function debounce(func, delay = 500) {
-  let timer;
-  return function (...args) {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      func.apply(this, args);
-    }, delay);
-  };
-}
 
 onMounted(()=>{
   myChart = echarts.init(container.value,null, { renderer: 'svg' });
-
-  //myChart.on('mouseover', debounce(handleChartHover))
   emitter.on('show-menu', showMenu)
 })
 

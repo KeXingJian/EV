@@ -2,7 +2,11 @@
   <div class="container">
     <div>
       <div class="config-item">
-        <span>精度:</span>
+        <span
+            :style="{
+              width:'70px'
+            }"
+        >{{ $t('precision') }}</span>
         <ProgressBar
             v-model="precision"
             :width="40"
@@ -14,14 +18,14 @@
       <div class="config-item">
         <span :style="{
           width:'55px'
-        }">最小值:</span>
+        }">{{ $t('min') }}</span>
         <InputForNumber text="min" :width="100" v-model="map.min">
         </InputForNumber>
       </div>
       <div class="config-item">
         <span :style="{
           width:'55px'
-        }">最大值:</span>
+        }">{{ $t('max') }}</span>
         <InputForNumber text="Max" :width="100" v-model="map.max">
         </InputForNumber>
       </div>
@@ -29,7 +33,11 @@
 
     <div>
       <div class="config-item">
-        <span>等分:</span>
+        <span
+            :style="{
+              width:'50px'
+            }"
+        >{{ $t('halving') }}</span>
         <CheckBox v-model="isEq"></CheckBox>
       </div>
       <div class="config-item">
@@ -38,9 +46,9 @@
         <span>[x,y)</span>
       </div>
       <div class="config-item">
-        <span>纵轴</span>
+        <span>V</span>
         <SelectButton v-model="map.type"></SelectButton>
-        <span>横轴</span>
+        <span>H</span>
       </div>
       <div class="options">
         <AddButton @click="addBreakpointBefore($event)">添加分界点</AddButton>

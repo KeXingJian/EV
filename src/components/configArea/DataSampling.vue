@@ -1,10 +1,6 @@
 <template>
   <div class="datasets-container">
     <ul>
-      <vue-draggable
-          v-model="safeDs"
-          :serialize="false"
-      >
         <li class="dataset" v-for="dataset in Ds" :key="dataset.id">
           <div class="dataset-head" @click="toggleDataset($event)">
             <Database></Database>
@@ -21,14 +17,12 @@
           </div>
           <DatasetEdit :dataset = dataset></DatasetEdit>
         </li>
-      </vue-draggable>
     </ul>
   </div>
 </template>
 
 <script setup>
 import DatasetEdit from "../card/DatasetEdit.vue";
-import {VueDraggable} from "vue-draggable-plus";
 import DropDown from "../svg/DropDown.vue";
 import Database from "../svg/Database.vue";
 import {storeToRefs} from "pinia";

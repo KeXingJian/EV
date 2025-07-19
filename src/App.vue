@@ -7,10 +7,12 @@
     <Menu></Menu>
     <ColorMenu></ColorMenu>
     <OptionItem></OptionItem>
+    <OptionItem4I8N></OptionItem4I8N>
     <Page></Page>
     <Toast></Toast>
     <Appreciate1></Appreciate1>
     <Appreciate2></Appreciate2>
+
     <main>
       <HeaderNavigation></HeaderNavigation>
       <div class="container">
@@ -65,10 +67,15 @@ import Toast from "./components/Toast.vue";
 import Appreciate1 from "./components/card/Appreciate1.vue";
 import Appreciate2 from "./components/card/Appreciate2.vue";
 import { useI18n } from 'vue-i18n'
+import OptionItem4I8N from "./components/card/OptionItem4I8N.vue";;
+import {useGlobalConfig} from "./store/GlobalConfig.js";
+import {usePalettesConfig} from "./store/PalettesConfig.js";
 
 const { locale, t } = useI18n()
 
-const {theme, echartsOptions,fileData,dataset,Ss,sIndex,Cs,cIndex,global,Ds,palettes} = storeToRefs(useOptionConfig())
+const {theme, echartsOptions,fileData,dataset,Ss,sIndex,Cs,cIndex,Ds} = storeToRefs(useOptionConfig())
+const {palettes} = storeToRefs(usePalettesConfig())
+const {global} = storeToRefs(useGlobalConfig())
 
 
 const onResize = () => {
@@ -128,14 +135,15 @@ const handleMouseMove = (e) => {
 const loadFirstChart = (num)=>{
   const userLang = navigator.language || navigator.userLanguage
   const mockData = getMockData(!userLang.startsWith('zh'));
+  const endData = mockData.slice(1)
 
   fileData.value = {
     rowCount: mockData.length-1, // 排除表头
-    columnStats: analyzeColumns2(mockData,mockData[0]?.map(String) || [],),
+    columnStats: analyzeColumns2(endData,mockData[0]?.map(String) || [],),
   }
 
   dataset.value.dimension = mockData[0]
-  dataset.value.source = mockData.slice(1) // 存储原始数据（排除表头）
+  dataset.value.source =  endData// 存储原始数据（排除表头）
 
   init()
   switch (num) {
@@ -161,8 +169,8 @@ const loadFirstChart = (num)=>{
       handle1(Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)
   }
 
-
   pushMsg(0, `${t('Notice.A')}`)
+
 }
 
 const langInit = ()=>{
@@ -173,6 +181,7 @@ const langInit = ()=>{
     locale.value = 'zh-CN'
   } else {
     locale.value = 'en'
+    document.title = "ExcelVision - Free online chart maker | ExcelVision is ready to use, real-time data visualization"
     Ds.value[0].from = "Temporary Data"
     emitter.emit('change-lang')
   }
@@ -192,8 +201,7 @@ const colorInit = () => {
   if(!love) localStorage.setItem('love',JSON.stringify([0,1,2,3,4,5]))
   else {
     palettes.value.forEach((color, index) => {
-      if (love.includes(index)) color.isLove = true
-      else color.isLove = false
+      color.isLove = !!love.includes(index);
     })
 
   }

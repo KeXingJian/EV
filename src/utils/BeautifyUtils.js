@@ -16,10 +16,10 @@ export const getFieldDetails = (mapIndex)=>{
 export const legendTypeSelect = ['horizontal','vertical']
 
 export const legendStyleSelect = [
-    {index:'circle',label:'圆形'},
-    {index:'roundRect',label: '方形'},
-    {index:'triangle',label: '三角形'},
-    {index:'diamond',label: '菱形'},
-    {index:'pin',label: '水滴'},
-    {index:'arrow',label: '箭头'},
+    {index:'circle',label:'circle'},
+    {index:'roundRect',label: 'roundRect'},
+    {index:'triangle',label: 'triangle'},
+    {index:'diamond',label: 'diamond'},
+    {index:'pin',label: 'pin'},
+    {index:'arrow',label: 'arrow'},
 ]

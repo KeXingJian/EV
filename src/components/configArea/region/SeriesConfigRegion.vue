@@ -95,47 +95,13 @@ const loadedSeries = computed(()=>{
   justify-content: space-between;
   transition: 300ms ease-in-out;
   background-color: var(--2-background-color);
-  position: relative;
+
 }
 
 .series-header:hover{
   background-color: var(--hover-color);
 }
 
-.series-header:after{
-  content: '';
-  width: 100%;
-  position: absolute;
-  height: 1px;
-  border-radius: 1px;
-  z-index: 0;
-  top: 95%;
-  left: 0;
-  background: linear-gradient(
-      90deg,
-      var(--2-background-color) 0%,
-      var(--border-color) 50%,
-      var(--2-background-color) 100%
-  );
-}
-
-
-.series-header:after{
-  content: '';
-  width: 100%;
-  position: absolute;
-  height: 1px;
-  border-radius: 1px;
-  z-index: 0;
-  top: 95%;
-  left: 0;
-  background: linear-gradient(
-      90deg,
-      var(--2-background-color) 0%,
-      var(--border-color) 50%,
-      var(--2-background-color) 100%
-  );
-}
 
 .series-body{
   display: grid;
@@ -147,6 +113,7 @@ const loadedSeries = computed(()=>{
     flex-direction: column;
     gap: 20px;
   }
+  border-bottom: 2px solid var(--2-background-color);
 }
 
 .show{

@@ -18,11 +18,12 @@
 <script setup>
 import { ref } from 'vue'
 import {useOptionConfig} from "../../store/OptionConfig.js";
+import {usePalettesConfig} from "../../store/PalettesConfig.js";
 
 const props = defineProps({
   modelValue: Boolean,
 })
-const {palettes} = useOptionConfig()
+const {palettes} = usePalettesConfig()
 
 
 const emit = defineEmits(['update:modelValue'])

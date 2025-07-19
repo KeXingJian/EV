@@ -49,20 +49,9 @@
     <section>
       <div class="left-config-item">
         <div class="config-item">
-          <span>{{ $t('topMargin') }}</span>
+          <span>{{ $t('innerDiameter') }}</span>
           <ProgressBar
-              v-model="item.pieConfig.polar.pt"
-              :width="175"
-              :min="0"
-              :max="100"
-              :step="0.1"
-              unit="%"
-          ></ProgressBar>
-        </div>
-        <div class="config-item">
-          <span>{{ $t('leftMargin') }}</span>
-          <ProgressBar
-              v-model="item.pieConfig.polar.pl"
+              v-model="item.pieConfig.polar.pi"
               :width="175"
               :min="0"
               :max="100"
@@ -83,28 +72,8 @@
         </div>
       </div>
       <div class="right-config-item">
-        <div class="config-item">
-          <span>{{ $t('innerDiameter') }}</span>
-          <ProgressBar
-              v-model="item.pieConfig.polar.pi"
-              :width="175"
-              :min="0"
-              :max="100"
-              :step="0.1"
-              unit="%"
-          ></ProgressBar>
-        </div>
-        <div class="config-item">
-          <span>{{ $t('outerDiameter') }}</span>
-          <ProgressBar
-              v-model="item.pieConfig.polar.po"
-              :width="175"
-              :min="0"
-              :max="100"
-              :step="0.1"
-              unit="%"
-          ></ProgressBar>
-        </div>
+
+
         <div class="config-item">
           <span>{{ $t('gap') }}</span>
           <ProgressBar
@@ -125,12 +94,14 @@
 import RadioBox from "../box/RadioBox.vue";
 import CheckBox from "../box/CheckBox.vue";
 import ProgressBar from "../button/ProgressBar.vue";
-import {watch} from "vue";
+import {onBeforeMount, watch} from "vue";
 import ColorPoint from "../button/ColorPoint.vue";
 import emitter from "../../emitter/emitter.js";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
 import {buildPolar, labelTypeForPosition, roseTypeSelect} from "../../utils/newArch/Position.js";
+import {debounce} from "../../utils/DebounceUtils.js";
+import {pieInit} from "../../utils/newArch/Check4Series.js";
 
 const props = defineProps({
   item: {
@@ -163,34 +134,17 @@ const labelTypeSelect = [
 
 const {echartsOptions} = storeToRefs(useOptionConfig())
 
-watch(props.item, (newVal) => {
-  const target = echartsOptions.value.series.find(i => i.id === newVal.id)
-
-  target.label.show = newVal.isLabel
-  target.label.color = newVal.labelColor
-
-  target.itemStyle.borderRadius = newVal.pieConfig.borderRadius
-  target.padAngle = newVal.pieConfig.padAngle
-
-  target.label.position = labelTypeForPosition[newVal.pieConfig.position]
-  target.labelLine.show = newVal.pieConfig.labelLine
-
-  const position = buildPolar(
-      newVal.pieConfig.polar.pi,
-      newVal.pieConfig.polar.po,
-      newVal.pieConfig.polar.pl,
-      newVal.pieConfig.polar.pt
-  )
-  target.radius = position.radius
-  target.center = position.center
-
-
-  if (newVal.pieConfig.isRose) target.roseType = roseTypeSelect[newVal.pieConfig.roseType]
-  else target.roseType = false
-
-  //console.log('系列更新触发合并', echartsOptions.value)
+const emitLoadChart = debounce(() => {
   emitter.emit('merge-option')
+}, 200)
+
+
+watch(props.item, (newVal) => {
+  pieInit(newVal,echartsOptions)
+  emitLoadChart()
 })
+
+
 </script>
 
 <style scoped>

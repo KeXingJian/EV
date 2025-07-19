@@ -62,6 +62,17 @@
               unit=""
           ></ProgressBar>
         </div>
+        <div class="config-item" v-if="item.type===1">
+          <span>{{ $t('innerDiameter') }}</span>
+          <ProgressBar
+              v-model="item.polar.pi"
+              :width="175"
+              :min="0"
+              :max="100"
+              :step="0.1"
+              unit="%"
+          ></ProgressBar>
+        </div>
 
       </div>
       <div class="l" >
@@ -149,103 +160,7 @@
 
       </div>
     </div>
-    <div class="b">
-      <div class="left">
 
-        <div class="config-item" v-if="item.type===0">
-          <span>{{ $t('topMargin') }}</span>
-          <ProgressBar
-              v-model="item.grid.t"
-              :width="175"
-              :min="0"
-              :max="100"
-              :step="0.1"
-              unit="%"
-          ></ProgressBar>
-        </div>
-        <div class="config-item" v-if="item.type===0">
-          <span>{{ $t('leftMargin') }}</span>
-          <ProgressBar
-              v-model="item.grid.l"
-              :width="175"
-              :min="0"
-              :max="100"
-              :step="0.1"
-              unit="%"
-          ></ProgressBar>
-        </div>
-        <div class="config-item" v-if="item.type===1">
-          <span>{{ $t('topMargin') }}</span>
-          <ProgressBar
-              v-model="item.polar.pt"
-              :width="175"
-              :min="0"
-              :max="100"
-              :step="0.1"
-              unit="%"
-          ></ProgressBar>
-        </div>
-        <div class="config-item" v-if="item.type===1">
-          <span>{{ $t('leftMargin') }}</span>
-          <ProgressBar
-              v-model="item.polar.pl"
-              :width="175"
-              :min="0"
-              :max="100"
-              :step="0.1"
-              unit="%"
-          ></ProgressBar>
-        </div>
-
-      </div>
-      <div class="right">
-        <div class="config-item" v-if="item.type===0">
-          <span>{{ $t('width') }}</span>
-          <ProgressBar
-              v-model="item.grid.w"
-              :width="175"
-              :min="0"
-              :max="100"
-              :step="0.1"
-              unit="%"
-          ></ProgressBar>
-        </div>
-        <div class="config-item" v-if="item.type===0">
-          <span>{{ $t('height') }}</span>
-          <ProgressBar
-              v-model="item.grid.h"
-              :width="175"
-              :min="0"
-              :max="100"
-              :step="0.1"
-              unit="%"
-          ></ProgressBar>
-        </div>
-
-        <div class="config-item" v-if="item.type===1">
-          <span>{{ $t('innerDiameter') }}</span>
-          <ProgressBar
-              v-model="item.polar.pi"
-              :width="175"
-              :min="0"
-              :max="100"
-              :step="0.1"
-              unit="%"
-          ></ProgressBar>
-        </div>
-        <div class="config-item" v-if="item.type===1">
-          <span>{{ $t('outerDiameter') }}</span>
-          <ProgressBar
-              v-model="item.polar.po"
-              :width="175"
-              :min="0"
-              :max="100"
-              :step="0.1"
-              unit="%"
-          ></ProgressBar>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -254,12 +169,14 @@ import CheckBox from "../../box/CheckBox.vue";
 import InputBox from "../../box/InputBox.vue";
 import ProgressBar from "../../button/ProgressBar.vue";
 import ColorPoint from "../../button/ColorPoint.vue";
-import {onMounted, watch} from "vue";
+import {watch} from "vue";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../../store/OptionConfig.js";
 import SelectButton from "../../button/SelectButton.vue";
-import {buildGrid, buildPolar, getPosition, getSymbol} from "../../../utils/newArch/Position.js";
+import {buildPolar} from "../../../utils/newArch/Position.js";
 import emitter from "../../../emitter/emitter.js";
+import {debounce} from "../../../utils/DebounceUtils.js";
+import {updatePolar} from "../../../utils/newArch/AxisUtis.js";
 const props = defineProps({
   item:{
     type:Object,
@@ -267,7 +184,12 @@ const props = defineProps({
   },
 })
 
+
 const {echartsOptions} = storeToRefs(useOptionConfig())
+
+const emitLoadChart = debounce(() => {
+  emitter.emit('merge-option')
+}, 200);
 
 watch(props.item.H,(newVal)=>{
   let target = null
@@ -277,10 +199,10 @@ watch(props.item.H,(newVal)=>{
     target = echartsOptions.value.radiusAxis.find(i=>i.id===props.item.id)
   }
 
-  update(target,newVal,0)
+  updatePolar(target,newVal,0)
 
   //console.log('轴更新触发合并',target)
-  emitter.emit('merge-option')
+  emitLoadChart()
 
 },{ deep: false })
 
@@ -295,40 +217,17 @@ watch(props.item.V,(newVal)=>{
     target.endAngle = newVal.ea
   }
 
-  update(target,newVal,1)
+  updatePolar(target,newVal,1)
 
   //console.log('轴更新触发合并',target)
-  emitter.emit('merge-option')
-},{ deep: false })
-
-
-watch(props.item.grid,(newVal)=>{
-  const target = echartsOptions.value.grid.find(i=>i.id===props.item.id)
-  const position = buildGrid(
-      newVal.t,
-      newVal.b,
-      newVal.l,
-      newVal.r,
-      newVal.w,
-      newVal.h,
-  )
-  target.top = position.top
-  target.bottom = position.bottom
-  target.left = position.left
-  target.right = position.right
-  target.width = position.width
-  target.height = position.height
-
-  //console.log('轴更新触发合并',target)
-  emitter.emit('merge-option')
-
+  emitLoadChart()
 },{ deep: false })
 
 watch(props.item.polar,(newVal)=>{
   const target = echartsOptions.value.polar.find(i=>i.id===props.item.id)
 
   const position = buildPolar(
-      newVal.pi,
+      newVal.po * newVal.pi / 100,
       newVal.po,
       newVal.pl,
       newVal.pt,
@@ -338,34 +237,11 @@ watch(props.item.polar,(newVal)=>{
   target.center = position.center
 
   //console.log('轴更新触发合并',target)
-  emitter.emit('merge-option')
+  emitLoadChart()
 
 },{ deep: false })
 
-const update = (target,newVal,type)=>{
-  target.name = newVal.axisName
-  target.nameTextStyle.color = newVal.textColor
-  target.axisLabel.show = newVal.labelShow
-  target.axisLabel.color = newVal.labelColor
-  target.axisLabel.formatter = function(value) {
-    return `${value+newVal.unit}`
-  }
-  target.axisLine.show = newVal.show
-  target.axisLine.symbol = getSymbol(newVal.symbol)
-  target.axisLine.lineStyle.color = newVal.lineColor
-  target.axisTick.show = newVal.tickLine
-  target.splitLine.show = newVal.splitLine
-  target.position = getPosition(newVal.position,type)
-  target.inverse = !newVal.symbol
-  target.offset = newVal.offset
 
-  //console.log('轴更新触发合并',target)
-  emitter.emit('merge-option')
-}
-
-onMounted(()=>{
-  //console.log(props.item)
-})
 </script>
 
 
@@ -382,10 +258,10 @@ onMounted(()=>{
   content: '';
   width: 100%;
   position: absolute;
-  height: 1px;
+  height: 4px;
   border-radius: 1px;
   z-index: 0;
-  top: 99%;
+  top: 99.8%;
   left: 0;
   background: linear-gradient(
       90deg,
@@ -399,7 +275,9 @@ onMounted(()=>{
   display: flex;
   gap: 10px;
   align-items: center;
-  flex: 1;
+
+  height: 25px;
+
 }
 .t,.b {
   display: flex;
@@ -407,12 +285,14 @@ onMounted(()=>{
   grid-template-columns: 1fr 1fr;
   max-width: 500px;
   justify-content: space-between;
+
 }
 
 .r, .l,.left,.right {
   display: flex;
   flex-direction: column;
   gap: 10px;
+
 }
 
 

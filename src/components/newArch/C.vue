@@ -80,7 +80,7 @@ import CloseButton from "../svg/CloseButton.vue";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
 import Swap from "../svg/Swap.vue";
-import {checkSeries} from "../../utils/newArch/Check4Series.js";
+import {checkSeries, unLoadFunnelArea, unloadPieArea} from "../../utils/newArch/Check4Series.js";
 import {changeAxisType, deleteAxis} from "../../utils/newArch/AxisUtis.js";
 import CheckBox from "../box/CheckBox.vue";
 import {computed, toRefs, watch} from "vue";
@@ -93,12 +93,14 @@ const props = defineProps({
   },
 })
 
+const modelItem = props.modelItem
+
 const {Cs,Ss,echartsOptions,fileData} = storeToRefs(useOptionConfig())
 
 const changeType = ()=>{
-  props.modelItem.axisType = !props.modelItem.axisType
-  changeAxisType(props.modelItem,echartsOptions)
-  Ss.value.filter(i=> i.isLoad && i.C.id === props.modelItem.id)
+  modelItem.axisType = !modelItem.axisType
+  changeAxisType(modelItem,echartsOptions)
+  Ss.value.filter(i=> i.isLoad && i.C.id === modelItem.id)
       .forEach(i => checkSeries(i,echartsOptions))
 }
 
@@ -109,18 +111,19 @@ const getCType = () => {
 }
 
 const currentVarC = computed(() => {
-  if (!props.modelItem.field || fileData.value.columnStats.length===0) return '未定义'
-  return fileData.value.columnStats[props.modelItem.field].field;
+  if (!modelItem.field || fileData.value.columnStats.length===0) return '未定义'
+  return fileData.value.columnStats[modelItem.field].field;
 })
 
 const deleteC = () => {
-  deleteAxis(props.modelItem,Cs,Ss,echartsOptions)
+
+  deleteAxis(modelItem,Cs,Ss,echartsOptions)
 }
 
-const {isStack} = toRefs(props.modelItem)
+const {isStack} = toRefs(modelItem)
 
 watch(isStack,()=>{
-  Ss.value.filter(i=> i.isLoad && i.C.id === props.modelItem.id)
+  Ss.value.filter(i=> i.isLoad && i.C.id === modelItem.id)
       .forEach(i => checkSeries(i,echartsOptions))
 })
 </script>

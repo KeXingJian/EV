@@ -15,6 +15,8 @@ import emitter from "../../emitter/emitter.js";
 import {useOptionConfig} from "../../store/OptionConfig.js";
 import {storeToRefs} from "pinia";
 import Close from "../svg/Close.vue";
+import {debounce} from "../../utils/DebounceUtils.js";
+import {usePalettesConfig} from "../../store/PalettesConfig.js";
 
 const container = ref(null);
 const cancel = ref(null)
@@ -23,7 +25,7 @@ let myChart = null
 
 let handle = null
 
-const {palettes} = storeToRefs(useOptionConfig())
+const {palettes} = storeToRefs(usePalettesConfig())
 
 // 计算属性：保持断点排序
 const colorSet = computed(() => {
@@ -63,16 +65,6 @@ const option = {
   ],
 };
 
-// 防抖函数（简单版）
-function debounce(func, delay = 500) {
-  let timer;
-  return function (...args) {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      func.apply(this, args);
-    }, delay);
-  };
-}
 
 const showMenu = (args) => {
   container.value.style.top = `${args.y - 300}px`

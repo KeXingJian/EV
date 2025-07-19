@@ -22,8 +22,9 @@ import {computed} from "vue";
 import OwnPaletteBox from "../../box/OwnPaletteBox.vue";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../../store/OptionConfig.js";
+import {usePalettesConfig} from "../../../store/PalettesConfig.js";
 
-const {palettes} = storeToRefs(useOptionConfig())
+const {palettes} = storeToRefs(usePalettesConfig())
 
 // 计算属性：保持断点排序
 const colorSet = computed(() => {
@@ -35,14 +36,23 @@ const colorSet = computed(() => {
 <style scoped>
 .palettes {
   display: flex;
-  overflow: hidden;
   width: 500px;
   flex-wrap: wrap;
 }
-.palette-config{
-  background: var(--2-background-color);
+
+.palette-config {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 80px - 42px);
+  overflow-y: scroll;
+  overflow-x: hidden;
   padding: 8px;
 }
+.palette-config::-webkit-scrollbar {
+  display: none;
+}
+
+
 .palettes-item{
   flex: 1;
   display: flex;
@@ -54,10 +64,12 @@ const colorSet = computed(() => {
   span{
     width: 20px;
   }
+  cursor: pointer;
 }
 
 .palettes-item:hover{
   background: var(--hover-color);
+  transition: 300ms ease-in-out;
 }
 
 .own{

@@ -20,6 +20,7 @@ import {useOptionConfig} from "../../store/OptionConfig.js";
 import emitter from "../../emitter/emitter.js";
 import {x0y} from "../../utils/BeautifyUtils.js";
 import ProgressBar from "../button/ProgressBar.vue";
+import {debounce} from "../../utils/DebounceUtils.js";
 
 const props=defineProps({
   item:{
@@ -29,8 +30,12 @@ const props=defineProps({
 })
 
 const {echartsOptions} = storeToRefs(useOptionConfig())
+
+const emitLoadChart = debounce(() => {
+  emitter.emit('merge-option')
+}, 200);
+
 watch(props.item ,(newVal)=>{
-  //专有无需重构
   const target = echartsOptions.value.series.find(i=>i.id===newVal.id)
   if(newVal.barConfig.isAuto){
     target.barWidth = undefined
@@ -39,7 +44,7 @@ watch(props.item ,(newVal)=>{
   }
   target.itemStyle.borderRadius = newVal.barConfig.borderRadius
   x0y(newVal,echartsOptions,target)
-  emitter.emit('merge-option')
+  emitLoadChart()
 })
 
 </script>

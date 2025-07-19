@@ -36,6 +36,7 @@ import {useOptionConfig} from "../../store/OptionConfig.js";
 import emitter from "../../emitter/emitter.js";
 import {x0y} from "../../utils/BeautifyUtils.js";
 import {startPoints} from "../../utils/newArch/Check4Series.js";
+import {debounce} from "../../utils/DebounceUtils.js";
 
 const props = defineProps({
   item: {
@@ -76,8 +77,12 @@ const startPointType = [
 
 const {echartsOptions} = storeToRefs(useOptionConfig())
 
+const emitLoadChart = debounce(() => {
+  emitter.emit('merge-option')
+}, 200)
+
+
 watch(props.item, (newVal) => {
-  //专有无需重构
 
   const target = echartsOptions.value.series.find(i=>i.id===newVal.id)
 
@@ -91,8 +96,10 @@ watch(props.item, (newVal) => {
   if (newVal.lineConfig.isArea) target.areaStyle = {color: newVal.areaColor}
   else target.areaStyle = null
 
+
+
   //console.log('系列更新触发合并',echartsOptions.value)
-  emitter.emit('merge-option')
+  emitLoadChart()
 })
 </script>
 

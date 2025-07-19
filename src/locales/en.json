@@ -12,7 +12,7 @@
   "coordinate": "Coordinate System",
   "series": "Series",
   "palette": "Color Palette",
-  "globalConfiguration": "Global Configuration",
+  "globalConfiguration": "Global config",
 
   "horizontal": "Horizontal",
   "vertical": "Vertical",
@@ -146,7 +146,7 @@
   },
   "Sampling": {
     "A": "Expression",
-    "B": "Field Operator Literal(like:A > 0)",
+    "B": "Index Operator Literal(like:A > 0)",
     "C": "Require",
     "D": "Field must be",
     "E": " capital",
@@ -205,9 +205,23 @@
     "A": "The sample charts are loaded for you to learn quickly. You can import data or right hover the hemisphere -> 'DataEdition' to edit data instantly.",
     "B": "Your data has been parsed, with a total of ",
     "C": " data entries. However, it is found that the data type of the entry under field [",
-    "D": "] is inconsistent or empty. The entry will be removed when necessary",
+    "D": "] is empty. The entry will be removed when necessary",
     "E": " data items in total. You can start building the series!!!",
-    "F": "How to adjust the color of NoSeries: Click the corresponding area"
+    "F": "How to adjust the color of NoSeries: Click the corresponding area",
+    "G": "Field [",
+    "H": "] is a number, but the following line does not  number and is changed to 0,",
+    "I": "] is/are not unique, not recommended to set to X"
   },
-  "copy": "You have copied the email contact"
+  "copy": "You have copied the email contact",
+  "circle": "circle",
+  "roundRect": "roundRect",
+  "triangle": "triangle",
+  "diamond": "diamond",
+  "pin": "pin",
+  "arrow": "arrow",
+
+  "precision": "precision",
+  "min": "min",
+  "max": "max",
+  "halving": "halving"
 }

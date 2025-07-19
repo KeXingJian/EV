@@ -22,16 +22,15 @@
     </div>
     <div class="m">
       <div class="legend">
-
         <div class="item">
           <span>{{ $t('legend') }}</span>
-          <CheckBox v-model="global.legend.show"></CheckBox>
-          <ColorPoint v-model="global.legend.color"></ColorPoint>
+          <CheckBox v-model="legend.show"></CheckBox>
+          <ColorPoint v-model="legend.color"></ColorPoint>
         </div>
 
         <div class="item">
           <span>{{ $t('orientation') }}</span>
-          <CheckBox v-model="global.legend.type"></CheckBox>
+          <CheckBox v-model="legend.type"></CheckBox>
         </div>
         <div class="item">
           <div class="button-top" @click.stop="showLegendStyle">
@@ -40,7 +39,7 @@
              {{ $t('shape') }}
             </span>
               <span class="option-value">
-                {{ currentStyle }}
+                {{ $t(currentStyle) }}
             </span>
             </div>
           </div>
@@ -48,7 +47,7 @@
         <div class="item">
           <span>{{ $t('size') }}</span>
           <ProgressBar
-              v-model="global.legend.fontSize"
+              v-model="legend.fontSize"
               :width="175"
               :min="0"
               :max="100"
@@ -61,85 +60,33 @@
           <ProgressBar
               v-model="global.legend.fontWeight"
               :width="175"
-              :min="0"
+              :min="100"
               :max="800"
               :step="100"
               unit=""
           ></ProgressBar>
         </div>
-        <div class="item">
-          <span>{{ $t('topMargin') }}</span>
-          <ProgressBar
-              v-model="global.legend.t"
-              :width="175"
-              :min="0"
-              :max="100"
-              :step="1"
-              unit=""
-          ></ProgressBar>
-        </div>
-        <div class="item">
-          <span>{{ $t('leftMargin') }}</span>
-          <ProgressBar
-              v-model="global.legend.l"
-              :width="175"
-              :min="0"
-              :max="100"
-              :step="1"
-              unit=""
-          ></ProgressBar>
-        </div>
-        <div class="item">
-          <span>{{ $t('width') }}</span>
-          <ProgressBar
-              v-model="global.legend.w"
-              :width="175"
-              :min="0"
-              :max="100"
-              :step="1"
-              unit=""
-          ></ProgressBar>
-        </div>
-        <div class="item">
-          <span>{{ $t('height') }}</span>
-          <ProgressBar
-              v-model="global.legend.h"
-              :width="175"
-              :min="0"
-              :max="100"
-              :step="1"
-              unit=""
-          ></ProgressBar>
-        </div>
+
       </div>
-      <div class="font">
+      <div class="title">
 
         <div class="item">
           <span>{{ $t('title') }}</span>
-          <CheckBox v-model="global.title.show"></CheckBox>
-          <ColorPoint v-model="global.title.color"></ColorPoint>
-        </div>
-
-        <div class="item">
-          <span>{{ $t('centerHorizontally') }}</span>
-          <CheckBox v-model="global.title.isJustify"></CheckBox>
-        </div>
-        <div class="item">
-          <span>{{ $t('verticalCenter') }}</span>
-          <CheckBox v-model="global.title.isAlign"></CheckBox>
+          <CheckBox v-model="title.show"></CheckBox>
+          <ColorPoint v-model="title.color"></ColorPoint>
         </div>
         <div class="config-item">
           <span>{{ $t('text') }}</span>
           <input-box
               :width="175"
               text="text"
-              v-model="global.title.text"
+              v-model="title.text"
           ></input-box>
         </div>
         <div class="item">
           <span>{{ $t('size') }}</span>
           <ProgressBar
-              v-model="global.title.fontSize"
+              v-model="title.fontSize"
               :width="175"
               :min="0"
               :max="100"
@@ -151,38 +98,16 @@
           <span>{{ $t('weight') }}</span>
 
           <ProgressBar
-              v-model="global.title.fontWeight"
+              v-model="title.fontWeight"
               :width="175"
-              :min="0"
+              :min="100"
               :max="800"
               :step="100"
               unit=""
           ></ProgressBar>
 
         </div>
-        <div class="item">
-          <span>{{ $t('topMargin') }}</span>
-          <ProgressBar
-              v-model="global.title.t"
-              :width="175"
-              :min="0"
-              :max="100"
-              :step="1"
-              unit=""
-          ></ProgressBar>
 
-        </div>
-        <div class="item">
-          <span>{{ $t('leftMargin') }}</span>
-          <ProgressBar
-              v-model="global.title.l"
-              :width="175"
-              :min="0"
-              :max="100"
-              :step="1"
-              unit=""
-          ></ProgressBar>
-        </div>
         <div class="item">
           <span>{{ $t('imageQuality') }}</span>
           <ProgressBar
@@ -193,13 +118,14 @@
               :step="0.5"
               unit=""
           ></ProgressBar>
+
         </div>
       </div>
     </div>
 
     <div class="b">
       <div class="config-item" v-show="global.isLayer">
-       <ProgressBarArea default-color="#FF4081"  :map="global.visualMap" v-model="global.visualMap.pieces"></ProgressBarArea>
+        <ProgressBarArea default-color="#FF4081"  :map="global.visualMap" v-model="global.visualMap.pieces"></ProgressBarArea>
       </div>
 
     </div>
@@ -217,18 +143,25 @@ import InputBox from "../../box/InputBox.vue";
 import {legendStyleSelect, legendTypeSelect} from "../../../utils/BeautifyUtils.js";
 import emitter from "../../../emitter/emitter.js";
 import ProgressBarArea from "../../button/ProgressBarArea.vue";
+import {debounce} from "../../../utils/DebounceUtils.js";
+import {useGlobalConfig} from "../../../store/GlobalConfig.js";
 
-const {global, echartsOptions} = storeToRefs(useOptionConfig())
+const {echartsOptions} = storeToRefs(useOptionConfig())
+const {global} = storeToRefs(useGlobalConfig())
+
+// 防抖处理，避免频繁触发 load-chart
+const emitLoadChart = debounce(() => {
+  emitter.emit('load-chart');
+}, 200);
 
 const showLegendStyle = (event) => {
-  emitter.emit('show-options', {
+  emitter.emit('show-options-i18n', {
     x: event.clientX,
     y: event.clientY,
     target: global.value,
     options: legendStyleSelect,
     handle: (index, target) => {
       target.legend.icon = index
-
     }
   })
 }
@@ -238,58 +171,100 @@ const currentStyle = computed(() => {
   return target.label
 })
 
-watch(global, (nweVal) => {
+// 提取配置项为 computed 属性
+const title = computed(() => global.value.title)
+const legend = computed(() => global.value.legend)
+const backGround = computed(() => global.value.backGround)
+const visualMap = computed(() => global.value.visualMap)
+const pixelRatio = computed(() => global.value.pixelRatio)
 
-  echartsOptions.value.large = nweVal.isLarge
+// 监听 title 变化
+watch(
+    title,
+    (newTitle) => {
+      const titleConfig = echartsOptions.value.graphic.elements[0]
 
+      titleConfig.invisible = !newTitle.show;
+      titleConfig.style.text = newTitle.text;
+      titleConfig.style.fill = newTitle.color;
+      titleConfig.style.fontSize = newTitle.fontSize;
+      titleConfig.style.fontWeight = newTitle.fontWeight;
 
-  if (nweVal.title.isJustify) echartsOptions.value.title[0].left = 'center'
-  else echartsOptions.value.title[0].left = nweVal.title.l + '%'
+      emitLoadChart();
+    },
+    { deep: true }
+);
 
-  if (nweVal.title.isAlign) echartsOptions.value.title[0].top = 'center'
-  else echartsOptions.value.title[0].top = nweVal.title.t + '%'
+// 监听 legend 变化
+watch(
+    legend,
+    (newLegend) => {
+      const legendConfig = echartsOptions.value.legend
+      legendConfig.show = newLegend.show
+      legendConfig.textStyle.fontSize = newLegend.fontSize
 
-  echartsOptions.value.title[0].text = nweVal.title.text
-  echartsOptions.value.title[0].show = nweVal.title.show
+      const r = newLegend.fontSize / 12
 
-  echartsOptions.value.title[0].textStyle.color = nweVal.title.color
-  echartsOptions.value.title[0].textStyle.fontSize = nweVal.title.fontSize
-  echartsOptions.value.title[0].textStyle.fontWeight = nweVal.title.fontWeight
+      legendConfig.itemWidth = 25 * r
+      legendConfig.itemHeight = 14 * r
 
-  echartsOptions.value.legend.show = nweVal.legend.show
-  echartsOptions.value.legend.top = nweVal.legend.t + '%'
-  echartsOptions.value.legend.left = nweVal.legend.l + '%'
-  echartsOptions.value.legend.orient = legendTypeSelect[nweVal.legend.type ? 0 : 1]
-  echartsOptions.value.legend.textStyle.fontSize = nweVal.legend.fontSize
-  echartsOptions.value.legend.textStyle.fontWeight = nweVal.legend.fontWeight
-  echartsOptions.value.legend.textStyle.color = nweVal.legend.color
-  echartsOptions.value.legend.icon = nweVal.legend.icon
-  echartsOptions.value.legend.itemWidth = nweVal.legend.w
-  echartsOptions.value.legend.itemHeight = nweVal.legend.h
-  echartsOptions.value.toolbox.feature.saveAsImage.pixelRatio = nweVal.pixelRatio
+      legendConfig.textStyle.fontWeight = newLegend.fontWeight
+      legendConfig.textStyle.color = newLegend.color
+      legendConfig.icon = newLegend.icon
 
+      legendConfig.orient = legendTypeSelect[newLegend.type ? 0 : 1]
+      emitter.emit('init-legend-area')
+      emitLoadChart();
+    },
+    { deep: true }
+);
 
-  echartsOptions.value.backgroundColor = nweVal.backGround
-
-
-  if (nweVal.isLayer){
-    echartsOptions.value.visualMap = {
-      pieces: nweVal.visualMap.pieces,
-      dimension: nweVal.visualMap.type ? 0:1
+// 监听 background 变化
+watch(
+    backGround,
+    (newBg) => {
+      echartsOptions.value.backgroundColor = newBg;
+      emitLoadChart();
     }
-  }else {
-    echartsOptions.value.visualMap = undefined
-  }
+);
 
+watch(
+    title,
+    ()=>{
+      echartsOptions.value.dataZoom
+    }
+)
 
-  emitter.emit('load-chart')
+// 监听 visualMap 变化
+watch(
+    visualMap,
+    (newVisualMap) => {
+      if (global.value.isLayer) {
+        echartsOptions.value.visualMap = {
+          pieces: newVisualMap.pieces,
+          dimension: newVisualMap.type ? 0 : 1,
+        };
+      } else {
+        echartsOptions.value.visualMap = undefined;
+      }
+      emitLoadChart();
+    },
+    { deep: true }
+);
 
-}, {deep: true})
+// 监听 pixelRatio 变化
+watch(
+    pixelRatio,
+    (newRatio) => {
+      echartsOptions.value.toolbox.feature.saveAsImage.pixelRatio = newRatio;
+      emitLoadChart();
+    }
+);
+
 </script>
 
 <style scoped>
 .global-config {
-  background-color: var(--2-background-color);
   display: grid;
   gap: 10px;
   padding: 20px 4px;
@@ -309,7 +284,7 @@ watch(global, (nweVal) => {
   width: 500px;
 }
 
-.font, .legend {
+.title, .legend {
   display: flex;
   flex-direction: column;
   gap: 15px;
@@ -328,7 +303,7 @@ watch(global, (nweVal) => {
   display: flex;
   gap: 10px;
   align-items: center;
-  height: 35px;
+  height: 38px;
 }
 
 .config-item {
@@ -353,7 +328,13 @@ span {
   width:70px;
 }
 
-.font {
+.title {
+  span {
+    width: 66px;
+  }
+}
+
+.legend{
   span {
     width: 66px;
   }

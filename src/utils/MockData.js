@@ -1,5 +1,6 @@
 import {checkSeries} from "./newArch/Check4Series.js";
 import {loadAxis} from "./newArch/AxisUtis.js";
+import {getGrid, getPolar} from "./newArch/Position.js";
 
 export const getMockData = (lang) => {
 
@@ -118,22 +119,10 @@ export const getMockSs1 = () => {
                 "padAngle": 0,
                 "position": 0,
                 "labelLine": true,
-                "polar": {
-                    "pi": 0,
-                    "po": 49,
-                    "pl": 49,
-                    "pt": 49
-                }
+                "polar":getPolar()
             },
             funnelConfig: {
-                position: {
-                    t: 7,
-                    b: 0,
-                    l: 8,
-                    r: 0,
-                    w: 85,
-                    h: 80
-                },
+                position: getGrid(),
                 sort: 0, //升 无 降
                 gap: 2,
                 labelPosition: 0, //左,中,右
@@ -182,22 +171,10 @@ export const getMockSs1 = () => {
                 "padAngle": 0,
                 "position": 0,
                 "labelLine": true,
-                "polar": {
-                    "pi": 0,
-                    "po": 49,
-                    "pl": 49,
-                    "pt": 49
-                }
+                "polar": getPolar()
             },
             funnelConfig: {
-                position: {
-                    t: 7,
-                    b: 0,
-                    l: 8,
-                    r: 0,
-                    w: 85,
-                    h: 80
-                },
+                position: getGrid(),
                 sort: 0, //升 无 降
                 gap: 2,
                 labelPosition: 0, //左,中,右
@@ -246,22 +223,10 @@ export const getMockSs1 = () => {
                 "padAngle": 0,
                 "position": 0,
                 "labelLine": true,
-                "polar": {
-                    "pi": 0,
-                    "po": 55,
-                    "pl": 55,
-                    "pt": 55
-                }
+                "polar": getPolar()
             },
             funnelConfig: {
-                position: {
-                    t: 7,
-                    b: 0,
-                    l: 8,
-                    r: 0,
-                    w: 85,
-                    h: 80
-                },
+                position: getGrid(),
                 sort: 0, //升 无 降
                 gap: 2,
                 labelPosition: 0, //左,中,右
@@ -310,22 +275,10 @@ export const getMockSs1 = () => {
                 "padAngle": 0,
                 "position": 0,
                 "labelLine": true,
-                "polar": {
-                    "pi": 0,
-                    "po": 41,
-                    "pl": 41,
-                    "pt": 41
-                }
+                "polar":getPolar()
             },
             funnelConfig: {
-                position: {
-                    t: 7,
-                    b: 0,
-                    l: 8,
-                    r: 0,
-                    w: 85,
-                    h: 80
-                },
+                position:getGrid(),
                 sort: 0, //升 无 降
                 gap: 2,
                 labelPosition: 0, //左,中,右
@@ -382,22 +335,10 @@ export const getMockSs2 = () => {
                 "padAngle": 0,
                 "position": 0,
                 "labelLine": true,
-                "polar": {
-                    "pi": 0,
-                    "po": 55,
-                    "pl": 55,
-                    "pt": 55
-                }
+                "polar": getPolar()
             },
             funnelConfig: {
-                position: {
-                    t: 7,
-                    b: 0,
-                    l: 8,
-                    r: 0,
-                    w: 85,
-                    h: 80
-                },
+                position: getGrid(),
                 sort: 0, //升 无 降
                 gap: 2,
                 labelPosition: 0, //左,中,右
@@ -449,22 +390,10 @@ export const getMockSs2 = () => {
                 "padAngle": 0,
                 "position": 0,
                 "labelLine": true,
-                "polar": {
-                    "pi": 0,
-                    "po": 55,
-                    "pl": 55,
-                    "pt": 55
-                }
+                "polar":getPolar()
             },
             funnelConfig: {
-                position: {
-                    t: 7,
-                    b: 0,
-                    l: 8,
-                    r: 0,
-                    w: 85,
-                    h: 80
-                },
+                position: getGrid(),
                 sort: 0, //升 无 降
                 gap: 2,
                 labelPosition: 0, //左,中,右
@@ -521,22 +450,10 @@ export const getMockSs3 = () => {
                 "padAngle": 0,
                 "position": 0,
                 "labelLine": true,
-                "polar": {
-                    "pi": 0,
-                    "po": 48,
-                    "pl": 48,
-                    "pt": 48
-                }
+                "polar": getPolar()
             },
             funnelConfig: {
-                position: {
-                    t: 7,
-                    b: 0,
-                    l: 8,
-                    r: 0,
-                    w: 85,
-                    h: 80
-                },
+                position:getGrid(),
                 sort: 0, //升 无 降
                 gap: 2,
                 labelPosition: 0, //左,中,右
@@ -588,22 +505,10 @@ export const getMockSs3 = () => {
                 "padAngle": 0,
                 "position": 0,
                 "labelLine": true,
-                "polar": {
-                    "pi": 0,
-                    "po": 54,
-                    "pl": 54,
-                    "pt": 54
-                }
+                "polar":getPolar()
             },
             funnelConfig: {
-                position: {
-                    t: 7,
-                    b: 0,
-                    l: 8,
-                    r: 0,
-                    w: 85,
-                    h: 80
-                },
+                position: getGrid(),
                 sort: 0, //升 无 降
                 gap: 2,
                 labelPosition: 0, //左,中,右
@@ -661,21 +566,14 @@ export const getMockSs4 = () => {
                 "position": 0,
                 "labelLine": true,
                 "polar": {
-                    "pi": 10,
-                    "po": 33,
-                    "pl": 50,
-                    "pt": 50
+                    pi: 70,
+                    po: 400,
+                    pl: 500,
+                    pt: 410
                 }
             },
             funnelConfig: {
-                position: {
-                    t: 7,
-                    b: 0,
-                    l: 8,
-                    r: 0,
-                    w: 85,
-                    h: 80
-                },
+                position: getGrid(),
                 sort: 0, //升 无 降
                 gap: 2,
                 labelPosition: 0, //左,中,右
@@ -728,21 +626,14 @@ export const getMockSs4 = () => {
                 "position": 1,
                 "labelLine": true,
                 "polar": {
-                    "pi": 40.5,
-                    "po": 80,
-                    "pl": 50,
-                    "pt": 50
+                    pi: 0,
+                    po: 200,
+                    pl: 500,
+                    pt: 410
                 }
             },
             funnelConfig: {
-                position: {
-                    t: 7,
-                    b: 0,
-                    l: 8,
-                    r: 0,
-                    w: 85,
-                    h: 80
-                },
+                position: getGrid(),
                 sort: 0, //升 无 降
                 gap: 2,
                 labelPosition: 0, //左,中,右
@@ -800,22 +691,10 @@ export const getMockSs5 = () => {
                 "padAngle": 0,
                 "position": 0,
                 "labelLine": true,
-                "polar": {
-                    "pi": 0,
-                    "po": 55,
-                    "pl": 55,
-                    "pt": 55
-                }
+                "polar":getPolar()
             },
             funnelConfig: {
-                position: {
-                    t: 7,
-                    b: 0,
-                    l: 8,
-                    r: 0,
-                    w: 85,
-                    h: 80
-                },
+                position:getGrid(),
                 sort: 0, //升 无 降
                 gap: 2,
                 labelPosition: 0, //左,中,右
@@ -867,22 +746,10 @@ export const getMockSs5 = () => {
                 "padAngle": 0,
                 "position": 0,
                 "labelLine": true,
-                "polar": {
-                    "pi": 0,
-                    "po": 55,
-                    "pl": 55,
-                    "pt": 55
-                }
+                "polar": getPolar()
             },
             funnelConfig: {
-                position: {
-                    t: 7,
-                    b: 0,
-                    l: 8,
-                    r: 0,
-                    w: 85,
-                    h: 80
-                },
+                position: getGrid(),
                 sort: 0, //升 无 降
                 gap: 2,
                 labelPosition: 0, //左,中,右
@@ -902,9 +769,9 @@ export const getMockSs5 = () => {
             "category": 0,
             "number": 2,
             "isLoad": false,
-            "color": "#0D7377",
+            "color": "#F6416C",
             "type": 0,
-            "areaColor": "#0D7377",
+            "areaColor": "#F6416C",
             "isLabel": false,
             "labelColor": "#000",
             "lineConfig": {
@@ -934,22 +801,10 @@ export const getMockSs5 = () => {
                 "padAngle": 0,
                 "position": 0,
                 "labelLine": true,
-                "polar": {
-                    "pi": 0,
-                    "po": 46,
-                    "pl": 46,
-                    "pt": 46
-                }
+                "polar":getPolar()
             },
             funnelConfig: {
-                position: {
-                    t: 7,
-                    b: 0,
-                    l: 8,
-                    r: 0,
-                    w: 85,
-                    h: 80
-                },
+                position: getGrid(),
                 sort: 0, //升 无 降
                 gap: 2,
                 labelPosition: 0, //左,中,右
@@ -1006,22 +861,10 @@ export const getMockSs6 = () => {
                 "padAngle": 0,
                 "position": 0,
                 "labelLine": true,
-                "polar": {
-                    "pi": 0,
-                    "po": 55,
-                    "pl": 55,
-                    "pt": 55
-                }
+                "polar": getPolar()
             },
             funnelConfig: {
-                position: {
-                    t: 7,
-                    b: 0,
-                    l: 8,
-                    r: 0,
-                    w: 85,
-                    h: 80
-                },
+                position:getGrid(),
                 sort: 0, //升 无 降
                 gap: 2,
                 labelPosition: 0, //左,中,右
@@ -1073,22 +916,10 @@ export const getMockSs6 = () => {
                 "padAngle": 0,
                 "position": 0,
                 "labelLine": true,
-                "polar": {
-                    "pi": 0,
-                    "po": 55,
-                    "pl": 55,
-                    "pt": 55
-                }
+                "polar":getPolar()
             },
             funnelConfig: {
-                position: {
-                    t: 7,
-                    b: 0,
-                    l: 8,
-                    r: 0,
-                    w: 85,
-                    h: 80
-                },
+                position: getGrid(),
                 sort: 0, //升 无 降
                 gap: 2,
                 labelPosition: 0, //左,中,右
@@ -1140,22 +971,10 @@ export const getMockSs6 = () => {
                 "padAngle": 0,
                 "position": 0,
                 "labelLine": true,
-                "polar": {
-                    "pi": 0,
-                    "po": 46,
-                    "pl": 46,
-                    "pt": 46
-                }
+                "polar":getPolar()
             },
             funnelConfig: {
-                position: {
-                    t: 7,
-                    b: 0,
-                    l: 8,
-                    r: 0,
-                    w: 85,
-                    h: 80
-                },
+                position: getGrid(),
                 sort: 0, //升 无 降
                 gap: 2,
                 labelPosition: 0, //左,中,右
@@ -1175,7 +994,7 @@ export const getMockCs2 = () => {
     return [
         {
             "id": -1,
-            "name": "饼图",
+            "name": "noSeries",
             "type": 2,
             "isStack": false
         },
@@ -1185,9 +1004,9 @@ export const getMockCs2 = () => {
             "type": 1,
             "polar": {
                 "pi": 10,
-                "po": 90,
-                "pl": 50,
-                "pt": 50
+                "po": 390,
+                pl: 500,
+                pt: 410
             },
             "isLoad": false,
             "axisType": true,
@@ -1229,9 +1048,9 @@ export const getMockCs2 = () => {
             "type": 1,
             "polar": {
                 "pi": 10,
-                "po": 90,
-                "pl": 50,
-                "pt": 50
+                "po": 390,
+                pl: 500,
+                pt: 410
             },
             "isLoad": false,
             "axisType": true,
@@ -1274,7 +1093,7 @@ export const getMockCs3 = () => {
     return [
         {
             "id": -1,
-            "name": "饼图",
+            "name": "noSeries",
             "type": 2,
             "isStack": false
         },
@@ -1282,13 +1101,11 @@ export const getMockCs3 = () => {
             "id": 0,
             "name": "C0",
             "type": 0,
-            "grid": {
-                "t": 5,
-                "b": 0,
-                "l": 10,
-                "r": 0,
-                "w": 80,
-                "h": 40
+            "grid":{
+                t: 400,
+                l: 100,
+                w: 800,
+                h: 300,
             },
             "isLoad": false,
             "axisType": false,
@@ -1329,13 +1146,12 @@ export const getMockCs3 = () => {
             "name": "C1",
             "type": 0,
             "grid": {
-                "t": 55,
-                "b": 0,
-                "l": 10,
-                "r": 0,
-                "w": 80,
-                "h": 40
+                t: 50,
+                l: 100,
+                w: 800,
+                h: 300,
             },
+
             "isLoad": false,
             "axisType": false,
             "isStack": false,
@@ -1378,7 +1194,7 @@ export const getMockCs4 = () => {
     return [
         {
             "id": -1,
-            "name": "饼图",
+            "name": "noSeries",
             "type": 2,
             "isStack": false
         }
@@ -1390,7 +1206,7 @@ export const getMockCs5 = () => {
     return [
         {
             "id": -1,
-            "name": "饼图",
+            "name": "noSeries",
             "type": 2,
             "isStack": false
         },
@@ -1398,14 +1214,7 @@ export const getMockCs5 = () => {
             "id": 0,
             "name": "C0",
             "type": 0,
-            "grid": {
-                "t": 12,
-                "b": 0,
-                "l": 6,
-                "r": 0,
-                "w": 85.7,
-                "h": 78.8
-            },
+            "grid":getGrid(),
             "isLoad": false,
             "axisType": false,
             "isStack": true,
@@ -1449,7 +1258,7 @@ export const getMockCs6 = () => {
     return [
         {
             "id": -1,
-            "name": "饼图",
+            "name": "noSeries",
             "type": 2,
             "isStack": false
         },
@@ -1457,14 +1266,7 @@ export const getMockCs6 = () => {
             "id": 0,
             "name": "C0",
             "type": 0,
-            "grid": {
-                "t": 12,
-                "b": 0,
-                "l": 6,
-                "r": 0,
-                "w": 85.7,
-                "h": 78.8
-            },
+            "grid":getGrid(),
             "isLoad": false,
             "axisType": false,
             "isStack": false,
@@ -1509,7 +1311,6 @@ export const handle1 = (Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)=>{
     sIndex.value = 3
     cIndex.value = 0
 
-    global.value.title.text = ''
 
     Cs.value.filter(i=>i.id>-1).forEach(i=>loadAxis(i,echartsOptions))
     Ss.value.forEach(i=> {
@@ -1524,7 +1325,7 @@ export const handle2 = (Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)=>{
     Ss.value = getMockSs2()
     Cs.value = getMockCs2()
     global.value.backGround = '#1d2e3d'
-    global.value.title.text = ''
+
     echartsOptions.value.backgroundColor = '#1d2e3d'
 
 
@@ -1607,7 +1408,7 @@ export const handle6= (Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)=>{
         {
             "gt": 25,
             "lte": 50,
-            "color": "#cdfaf6"
+            "color": "#4CD3C2"
         },
         {
             "gt": 50,
@@ -1644,7 +1445,7 @@ const getColors = ()=>{
         "#00E5FF",
         "#FF74B1",
         "#0D6E6E",
-        "#0D1F2D",
+        "#4CD3C2",
         "#1d2e3d",
         "#F6416C",
         "#00fff0",

@@ -24,17 +24,16 @@
         </span>
       </div>
     </div>
-    <div class="sole">
-      <span class="head">{{ $t('sole') }}</span>
-      <div v-for="(item,index) in fileData.columnStats.map(item => item.isUnique)" :key="index" class="type-item">
-        <Check v-if="item"></Check>
-        <Close v-else></Close>
-      </div>
-    </div>
+<!--    <div class="sole">-->
+<!--      <span class="head">{{ $t('sole') }}</span>-->
+<!--      <div v-for="(item,index) in fileData.columnStats.map(item => item.isUnique)" :key="index" class="type-item">-->
+<!--        <Check v-if="item"></Check>-->
+<!--        <Close v-else></Close>-->
+<!--      </div>-->
+<!--    </div>-->
   </div>
 </template>
 <script setup>
-import {onMounted, ref} from "vue";
 import Close from "../../svg/Close.vue";
 import Check from "../../svg/Check.vue";
 import {storeToRefs} from "pinia";

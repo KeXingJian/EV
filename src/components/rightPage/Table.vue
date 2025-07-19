@@ -67,19 +67,18 @@ import {themeQuartz} from 'ag-grid-community';
 import {AgGridVue} from "ag-grid-vue3";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
-import {computed, ref, watch, watchEffect} from "vue";
+import {computed, ref, watch} from "vue";
 import EditableHeader from './EditableHeader.vue'
 import InputBox from "../box/InputBox.vue";
 import CheckButton from "../svg/CheckButton.vue";
 import CloseButton from "../svg/CloseButton.vue";
 import AddLongButton from "../button/AddLongButton.vue";
 import {analyzeColumns2} from "../../utils/ExcelUtils.js";
-import {pushMsg} from "../../utils/MsgUtils.js";
-import emitter from "../../emitter/emitter.js";
 import DeleteLongButton from "../button/DeleteLongButton.vue";
 import {checkSeries, unloadSeries} from "../../utils/newArch/Check4Series.js";
+
 const store = useOptionConfig()
-const {dataset, Ds, fileData, prevColumnStats, Ss, echartsOptions,theme} = storeToRefs(useOptionConfig());
+const {dataset, Ds, fileData, Ss, echartsOptions,theme} = storeToRefs(useOptionConfig());
 
 const isAddingField = ref(false)
 const newFieldName = ref('')
@@ -117,7 +116,7 @@ const columnDefs = computed(() => {
   // 如果维度数组存在且有效，优先使用维度数组
   if (fileData.value?.columnStats?.length !== 0) {
     return fileData.value.columnStats.map((dim, index) => {
-      const columnConfig = {
+      return {
         headerName: dim.field,
         field: `col${index}`,
         suppressSizeToFit: false,
@@ -139,9 +138,6 @@ const columnDefs = computed(() => {
         // 自动应用对应类型的编辑器（数字列自动使用数字输入框）
         cellEditor: dim.type === 'number' ? 'agNumberCellEditor' : 'agTextCellEditor',
       }
-
-
-      return columnConfig
     })
   } else return []
 });
@@ -275,38 +271,34 @@ const deleteSelectedRows = ()=>{
 
 const updateColumnStats = () => {
   // 保留旧状态
-  prevColumnStats.value = [...store.fileData.columnStats]
+  //prevColumnStats.value = [...store.fileData.columnStats]
 
   const header = fileData.value.columnStats.map(col => col.field)
 
-  // 生成新状态
-  const fullData = [header, ...dataset.value.source]
-  const newStats = analyzeColumns2(fullData, header)
-
   // 检测变化
-  const uniquenessChanges = store.trackColumnStatsChange(newStats)
+  //const uniquenessChanges = store.trackColumnStatsChange(newStats)
+
   // 更新正式状态
-  fileData.value.columnStats = newStats
+  fileData.value.columnStats = analyzeColumns2(dataset.value.source, header,false)
 
   // 触发处理逻辑
-  handleUniquenessChanges(uniquenessChanges)
+  //handleUniquenessChanges(uniquenessChanges)
 }
 // 新增处理函数
-const handleUniquenessChanges = (changes) => {
-
-  changes.forEach(change => {
-    emitter.emit('uniqueness-changed', change)
-    pushMsg(2,
-        `字段 [${change.field}] 失去唯一性.`
-    )
-    Ss.value.forEach((s) => {
-      if (s.category === change.index) {
-        s.category = -1
-        if (s.isLoad) unloadSeries(s,echartsOptions)
-      }
-    })
-  })
-}
+// const handleUniquenessChanges = (changes) => {
+//   changes.forEach(change => {
+//     emitter.emit('uniqueness-changed', change)
+//     pushMsg(2,
+//         `字段 [${change.field}] 失去唯一性.`
+//     )
+//     Ss.value.forEach((s) => {
+//       if (s.category === change.index) {
+//         s.category = -1
+//         if (s.isLoad) unloadSeries(s,echartsOptions)
+//       }
+//     })
+//   })
+// }
 
 watch(theme,(newVal)=>{
   myTheme.value = newVal ? darkTheme : lightTheme

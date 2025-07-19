@@ -6,12 +6,8 @@
     <div class="var">
       <div class="button-top" @click.stop="showOption4C($event)">
         <div class="box">
-             <span>
-             C
-            </span>
-          <span class="option-value">
-              {{ currentC }}
-          </span>
+          <span>C</span>
+          <span class="option-value">{{ $t(currentC) }}</span>
         </div>
       </div>
     </div>
@@ -66,8 +62,17 @@ import {computed} from "vue";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
 import emitter from "../../emitter/emitter.js";
-import {checkSeries, deleteSeries, unloadSeries} from "../../utils/newArch/Check4Series.js";
+import {
+  checkSeries,
+  deleteSeries,
+  unLoadFunnelArea,
+  unloadPieArea,
+  unloadSeries
+} from "../../utils/newArch/Check4Series.js";
 import Database from "../svg/Database.vue";
+import {useI18n} from "vue-i18n";
+
+const { t } = useI18n()
 
 const {Ds,Ss,Cs,fileData,echartsOptions,lang} = storeToRefs(useOptionConfig())
 
@@ -79,17 +84,19 @@ const props = defineProps({
   },
 })
 
+const modelItem = props.modelItem
+
 //坐标系
 const currentC = computed(() => {
   if (!props.modelItem.C) return lang.value ? 'undefined' : '未定义'
-  return props.modelItem.C.name
+  return modelItem.C.name
 })
 
 const getCSelect = ()=>{
   return Cs.value.map(item=>{
     return {
       index: item,
-      label: item.name
+      label: t(item.name)
     }
   })
 }
@@ -122,7 +129,14 @@ const showOption4C = (event)=>{
     options: options,
     handle: (index, target) => {
       if (target.C === index) return
+
+      if (target.C.id===-1){
+        if (modelItem.type===3) unloadPieArea(modelItem.id,echartsOptions)
+        else if(modelItem.type===4) unLoadFunnelArea(modelItem.id,echartsOptions)
+      }
+
       target.C = index
+
       if (target.C.type===0 || target.C.type===1) {
         target.type = 0
       }else if (target.C.type===2) {
@@ -132,7 +146,6 @@ const showOption4C = (event)=>{
       }
       unloadSeries(props.modelItem,echartsOptions)
       checkSeries(target,echartsOptions)
-      //TODO
     }
   })
 }
@@ -152,7 +165,7 @@ const currentVarN = computed(() => {
 const getFieldSelect = (type) => {
   if (!fileData.value.columnStats) return
   if (type === 0) {
-    return fileData.value.columnStats.filter(item=>item.isUnique).map(item=>{
+    return fileData.value.columnStats.map(item=>{
       return {
         index: item.index,
         label: item.field
@@ -202,7 +215,6 @@ const showOption4Var = (event,type) => {
       }else {
         if (target.number !== -1 && target.number===index) return
         target.number = index
-
       }
       checkSeries(target,echartsOptions)
     }
@@ -259,6 +271,8 @@ const showOption4Dataset = (event)=>{
 
 const deleteS = ()=>{
   //console.log('尝试删除系列',props.modelItem)
+  if (modelItem.type===3) unloadPieArea(modelItem.id,echartsOptions)
+  else if(modelItem.type===4) unLoadFunnelArea(modelItem.id,echartsOptions)
   deleteSeries(props.modelItem,Ss,echartsOptions)
 }
 </script>

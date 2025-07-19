@@ -50,7 +50,6 @@
           <CloseButton v-if="isAddGroup" @click="isAddGroup=false"></CloseButton>
         </div>
       </div>
-
       <Bar v-if="dataset.name === 'ROOT'"></Bar>
       <FieldManage v-if="dataset.name === 'ROOT'"></FieldManage>
     </div>

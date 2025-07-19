@@ -10,7 +10,7 @@
     </div>
     <div class="options">
       <div>
-        <div class="axis"v-for="item in Cs.filter(i=>i.id!==-1)"
+        <div class="axis" v-for="item in Cs.filter(i=>i.id!==-1)"
              :key="item.id"
         >
           <div class="axis-header" @click="toggleDataset($event)">
@@ -84,32 +84,13 @@ const {Cs} = storeToRefs(useOptionConfig())
   background-color: var(--theme-hover-color);
 }
 
-
 .axis-header{
-  position: relative;
   padding: 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   transition: 300ms ease-in-out;
   background-color: var(--2-background-color);
-}
-
-.axis-header:after{
-  content: '';
-  width: 100%;
-  position: absolute;
-  height: 1px;
-  border-radius: 1px;
-  z-index: 0;
-  top: 95%;
-  left: 0;
-  background: linear-gradient(
-      90deg,
-      var(--2-background-color) 0%,
-      var(--border-color) 50%,
-      var(--2-background-color) 100%
-  );
 }
 
 .axis-header:hover{
@@ -131,6 +112,7 @@ const {Cs} = storeToRefs(useOptionConfig())
 .show{
   grid-template-rows: 1fr;
 }
+
 svg {
   transition: rotate 150ms ease;
 }
@@ -138,4 +120,5 @@ svg {
 span{
   font-weight: bolder;
 }
+
 </style>

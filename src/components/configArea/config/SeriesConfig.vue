@@ -1,6 +1,5 @@
 <template>
   <div class="series-config">
-
     <div class="chart-select" >
       <RadioBox
           v-if="item.C.type===0 || item.C.type===1"
@@ -27,12 +26,10 @@
         <CheckBox v-model="item.barConfig.isAuto"></CheckBox>
       </div>
       <div class="config-item">
-        <span>{{ $t('series') }}</span>
         <ColorPoint v-model="item.color"></ColorPoint>
       </div>
       <div class="config-item">
-
-        <InputBox width="100" text="text" v-model="item.seriesName"></InputBox>
+        <InputBox :width="100" text="text" v-model="item.seriesName"></InputBox>
       </div>
     </div>
     <component :is="currentView" :item="item"></component>
@@ -53,9 +50,14 @@ import {useOptionConfig} from "../../../store/OptionConfig.js";
 import emitter from "../../../emitter/emitter.js";
 import InputBox from "../../box/InputBox.vue";
 import {getFieldDetails} from "../../../utils/BeautifyUtils.js";
-import {chartType} from "../../../utils/newArch/Check4Series.js";
+import {
+  chartType, funnelInit,
+  loadFunnelArea,
+  loadPieArea, pieInit,
+  unLoadFunnelArea,
+  unloadPieArea
+} from "../../../utils/newArch/Check4Series.js";
 import FunnelChartL from "../../GrpahType/FunnelChartL.vue";
-
 
 
 const props = defineProps({
@@ -101,7 +103,6 @@ const views = [
   markRaw(ScatterChartL),
   markRaw(PieChartL),
   markRaw(FunnelChartL)
-
 ]
 
 watchEffect(() => {
@@ -110,24 +111,55 @@ watchEffect(() => {
 
 const {type} = toRefs(props.item)
 
+const item = props.item
 watch(type, (newVal) =>{
-  const target = echartsOptions.value.series.find(i=>i.id===props.item.id)
+
+  const target = echartsOptions.value.series.find(i=>i.id===item.id)
   target.type = chartType[newVal]
   if (newVal===2){
-    if (props.item.scatterConfig.type === 1 && props.item.scatterConfig.mapField !== -1) {
-      const {max, min} = getFieldDetails(props.item.scatterConfig.mapField)
+    if (item.scatterConfig.type === 1 && item.scatterConfig.mapField !== -1) {
+      const {max, min} = getFieldDetails(item.scatterConfig.mapField)
       target.symbolSize =  function (val) {
-        return (props.item.scatterConfig.range[1]-props.item.scatterConfig.range[0]) *((val[2]-min) / (max-min)) +props.item.scatterConfig.range[0];
+        return (
+              item.scatterConfig.range[1]-item.scatterConfig.range[0]
+            )
+            *((val[2]-min)
+                / (max-min)) +props.item.scatterConfig.range[0]
       }
     } else {
-      target.symbolSize = props.item.scatterConfig.size;
+      target.symbolSize = item.scatterConfig.size;
     }
   }else {
     target.symbolSize = undefined
   }
 
-  emitter.emit('merge-option')
+
+
+  const id = item.id
+  if (newVal===3){
+    pieInit(item,echartsOptions)
+    unLoadFunnelArea(id,echartsOptions)
+    loadPieArea(
+        item.pieConfig,
+        id,
+        echartsOptions.value.series.find(i=>i.id===id),
+        echartsOptions
+    )
+  }else if (newVal===4) {
+    funnelInit(item,echartsOptions)
+    unloadPieArea(id,echartsOptions)
+    loadFunnelArea(
+        item.funnelConfig,
+        id,
+        echartsOptions.value.series.find(i=>i.id===id),
+        echartsOptions
+    )
+
+  }
+
+  emitter.emit('load-chart')
 })
+
 </script>
 
 <style scoped>
@@ -137,23 +169,7 @@ watch(type, (newVal) =>{
   display: grid;
   position: relative;
   gap: 15px;
-}
 
-.series-config:after {
-  content: '';
-  width: 100%;
-  position: absolute;
-  height: 1px;
-  border-radius: 1px;
-  z-index: 0;
-  top: 99%;
-  left: 0;
-  background: linear-gradient(
-      90deg,
-      var(--2-background-color) 0%,
-      var(--border-color) 50%,
-      var(--2-background-color) 100%
-  );
 }
 
 .t-1{
@@ -169,24 +185,6 @@ watch(type, (newVal) =>{
     font-weight: bolder;
     width: 53px;
   }
-}
-
-.ProgressBarArea {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: 300ms ease-in-out;
-
-  > div {
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-}
-
-.isLayer.ProgressBarArea {
-  grid-template-rows: 1fr;
 }
 
 </style>

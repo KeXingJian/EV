@@ -47,6 +47,7 @@ import {getDataForSimpleSeries} from "../../utils/newArch/Check4Series.js";
 import ProgressBarRange from "../button/ProgressBarRange.vue";
 import ProgressBar from "../button/ProgressBar.vue";
 import { useI18n } from 'vue-i18n'
+import {debounce} from "../../utils/DebounceUtils.js";
 
 const props = defineProps({
   item: {
@@ -97,6 +98,10 @@ const showOption4MapField = (event) => {
   })
 }
 
+const emitLoadChart = debounce(() => {
+  emitter.emit('merge-option')
+}, 200)
+
 watch(props.item, (newVal) => {
   //专有无需重构
   //console.log(newVal)
@@ -117,7 +122,7 @@ watch(props.item, (newVal) => {
   }
 
   //console.log('系列更新触发合并', echartsOptions.value)
-  emitter.emit('merge-option')
+  emitLoadChart()
 })
 
 </script>

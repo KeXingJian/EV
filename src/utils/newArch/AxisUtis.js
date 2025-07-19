@@ -1,9 +1,11 @@
 import {buildGrid, buildPolar, getPosition, getSymbol} from "./Position.js";
 import emitter from "../../emitter/emitter.js";
+import zoomIcon from '/src/assets/zoom.svg';
 
 import {unloadSeriesLazy} from "./Check4Series.js";
 import {getRadarCData} from "./DataUtils.js";
-
+import {debounce} from "../DebounceUtils.js";
+import {useOptionConfig} from "../../store/OptionConfig.js";
 
 export const loadAxis = (c, echartsOptions) => {
 
@@ -16,7 +18,7 @@ export const loadAxis = (c, echartsOptions) => {
 
 const loadX0yAxis = (c, echartsOptions) => {
 
-    const grid = buildGrid(c.grid.t, c.grid.b, c.grid.l, c.grid.r, c.grid.w, c.grid.h)
+    const grid = buildGrid(c.grid.t, c.grid.l, c.grid.w, c.grid.h)
 
     grid.id = c.id
     //console.log('构建定位模型', grid)
@@ -43,10 +45,14 @@ const loadX0yAxis = (c, echartsOptions) => {
     echartsOptions.value.yAxis.push(yAxis)
     echartsOptions.value.grid.push(grid)
 
+    loadX0yArea(c, echartsOptions,grid)
+
 }
 
 const loadPolarAxis = (c, echartsOptions) => {
-    const polar = buildPolar(c.polar.pi, c.polar.po, c.polar.pl, c.polar.pt)
+    const polar = buildPolar(
+        c.polar.pi *  c.polar.po / 100, c.polar.po, c.polar.pl, c.polar.pt
+    )
     polar.id = c.id
     //console.log('构建定位模型', polar)
 
@@ -66,9 +72,14 @@ const loadPolarAxis = (c, echartsOptions) => {
     A.z = 2
     //console.log("构建角度轴模型", A)
 
+    updatePolar(R,c.H,0)
+    updatePolar(R,c.V,1)
+
     echartsOptions.value.radiusAxis.push(R)
     echartsOptions.value.angleAxis.push(A)
     echartsOptions.value.polar.push(polar)
+
+    loadPolarArea(c, echartsOptions,polar)
 }
 
 const loadRadarAxis = (c, echartsOptions) => {
@@ -96,18 +107,246 @@ const loadRadarAxis = (c, echartsOptions) => {
 
     radar.axisLabel = {
         show: c.axisLabel,
-        color:c.axisLabelColor,
+        color: c.axisLabelColor,
         hideOverlap: c.hideOverlap
     }
 
     radar.axisLine = {
         show: c.isAxisLine,
-        color:c.axisLineColor,
+        color: c.axisLineColor,
     }
 
     //console.log('构建定位模型', radar)
     echartsOptions.value.radar.push(radar)
 
+}
+
+const loadX0yArea = (c, echartsOptions,targetGrid) => {
+
+    const {isLock} = useOptionConfig()
+
+    const id = c.id
+
+    const width = c.grid.w + 20
+    const height = c.grid.h + 20
+    const top = c.grid.t
+    const left = c.grid.l
+
+
+    const rect = {
+        position: [left - 10,  top - 10],
+        type: 'rect',
+        key: 'resizerRect' + id,
+        shape: {
+            width: width,
+            height: height
+        },
+        style: {
+            fill:'#000',
+            opacity: 0.1,
+            stroke: '#000',
+            lineWidth: 2, // 可选：增加线宽以增强虚线效果
+            lineDash: [5, 5] // 虚线模式：5px 实线 + 5px 空白
+        },
+        invisible: isLock,
+        draggable: !isLock,
+        ondrag: null,
+
+    }
+
+    // 使用 SVG 图形作为缩放手柄
+
+    const point = {
+        position: [left - 20, top - 30],
+        type: 'image',
+        key: 'resizerRect' + id,
+        style: {
+            fill: '000',
+            image:zoomIcon,
+            opacity: 1
+        },
+        shape:{
+            width: 24,
+            height: 24
+        },
+        invisible: isLock,
+        draggable: !isLock,
+        ondrag: null
+    }
+
+
+    rect.ondrag = (p) => {
+        debounce(() => {
+            targetGrid.left = p.target.x + 10
+            targetGrid.top = p.target.y + 10
+
+
+            rect.position[0] = p.target.x
+            rect.position[1] = p.target.y
+
+            point.position[0] = p.target.x - 10
+            point.position[1] = p.target.y - 20
+
+
+            c.grid.l = p.target.x + 10
+            c.grid.t = p.target.y + 10
+            emitter.emit('merge-option')
+
+        }, 200)()
+    }
+
+
+    point.ondrag = (p)=>{
+
+        debounce(() => {
+
+            const dx = p.target.x - point.position[0]
+            const dy = p.target.y - point.position[1]
+
+
+            targetGrid.left = p.target.x + 20
+            targetGrid.top = p.target.y + 30
+
+
+            rect.position[0] = p.target.x + 10
+            rect.position[1] = p.target.y + 20
+
+            point.position[0] = p.target.x
+            point.position[1] = p.target.y
+
+
+            c.grid.l = p.target.x + 20
+            c.grid.t = p.target.y + 30
+
+
+            targetGrid.width -= dx
+            targetGrid.height -= dy
+            rect.shape.width -= dx
+            rect.shape.height -= dy
+
+            emitter.emit('merge-option')
+
+        }, 100)()
+
+
+    }
+
+    echartsOptions.value.graphic.elements.push(rect)
+    echartsOptions.value.graphic.elements.push(point)
+}
+
+const loadPolarArea = (c, echartsOptions,targetPolar)=>{
+    const {isLock} = useOptionConfig()
+    const id = c.id
+    const r = c.polar.po + 10
+    const R = r * 2
+    const top = c.polar.pt - r
+    const left = c.polar.pl - r
+
+    const rect = {
+        position: [left ,  top ],
+        type: 'rect',
+        key: 'resizerRect' + id,
+        shape: {
+            width: R,
+            height: R
+        },
+        style: {
+            fill:'#000',
+            opacity: 0.1,
+            stroke: '#000',
+            lineWidth: 2, // 可选：增加线宽以增强虚线效果
+            lineDash: [5, 5] // 虚线模式：5px 实线 + 5px 空白
+        },
+        invisible: isLock,
+        draggable: !isLock,
+        ondrag: null,
+    }
+
+    const point = {
+        position: [left , top ],
+        type: 'image',
+        key: 'resizerRect' + id,
+        style: {
+            fill: '000',
+            image:zoomIcon,
+            opacity: 1
+        },
+        shape:{
+            width: 24,
+            height: 24
+        },
+        invisible: isLock,
+        draggable: !isLock,
+        ondrag: null
+    }
+
+    rect.ondrag = (p) => {
+
+        debounce(() => {
+
+            const currentR  = c.polar.po + 10
+            c.polar.pt = p.target.y + currentR
+            c.polar.pl = p.target.x + currentR
+
+            targetPolar.center[1] = p.target.y + currentR
+            targetPolar.center[0] = p.target.x + currentR
+
+            rect.position[0] = p.target.x
+            rect.position[1] = p.target.y
+
+            point.position[0] = p.target.x
+            point.position[1] = p.target.y
+
+
+            emitter.emit('merge-option')
+
+        }, 200)()
+
+    }
+
+    point.ondrag = (p) => {
+        debounce(() => {
+
+            const dx = p.target.x - point.position[0]
+            const dy = p.target.y - point.position[1]
+
+            const d = Math.max(dx,dy)
+
+            if (d>c.polar.po) {
+                emitter.emit('merge-option')
+                return
+            }
+
+            const currentR = c.polar.po + 10 - d
+
+            c.polar.po = currentR - 10
+
+            c.polar.pt = p.target.y + currentR
+            c.polar.pl = p.target.x + currentR
+
+            targetPolar.radius[1] = currentR - 10
+
+            targetPolar.center[1] = p.target.y + currentR
+            targetPolar.center[0] = p.target.x + currentR
+
+            rect.shape.width -= (d * 2)
+            rect.shape.height -= (d * 2)
+
+            rect.position[0] = p.target.x
+            rect.position[1] = p.target.y
+
+            point.position[0] = p.target.x
+            point.position[1] = p.target.y
+
+
+            emitter.emit('merge-option')
+
+        }, 200)()
+    }
+
+    echartsOptions.value.graphic.elements.push(rect)
+    echartsOptions.value.graphic.elements.push(point)
 }
 
 export const changeAxisType = (c, echartsOptions) => {
@@ -155,6 +394,12 @@ export const deleteAxis = (c, Cs, Ss, echartsOptions) => {
         Cs.value = Cs.value.filter(i => i.id !== c.id)
     }
     //console.log('卸载受影响的系列')
+
+    echartsOptions.value.graphic.elements = echartsOptions.value.graphic.elements.filter(i=>{
+        return i.key !== 'resizerRect'+c.id
+    })
+
+
     Ss.value.filter(i => i.C?.id === c.id).forEach((i) => {
         if (i.isLoad) unloadSeriesLazy(i, echartsOptions)
         i.C = null
@@ -188,3 +433,24 @@ const getSimpleAxisModel = (axis) => {
 }
 
 const shape = ['circle', 'polygon']
+
+export const updatePolar = (target,newVal,type)=>{
+    target.name = newVal.axisName
+    target.nameTextStyle.color = newVal.textColor
+    target.axisLabel.show = newVal.labelShow
+    target.axisLabel.color = newVal.labelColor
+    target.axisLabel.formatter = function(value) {
+        return `${value+newVal.unit}`
+    }
+    target.axisLine.show = newVal.show
+    target.axisLine.symbol = getSymbol(newVal.symbol)
+    target.axisLine.lineStyle.color = newVal.lineColor
+    target.axisTick.show = newVal.tickLine
+    target.splitLine.show = newVal.splitLine
+    target.position = getPosition(newVal.position,type)
+    target.inverse = !newVal.symbol
+    target.offset = newVal.offset
+
+    //console.log('轴更新触发合并',target)
+}
+

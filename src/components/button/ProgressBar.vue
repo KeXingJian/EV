@@ -109,7 +109,7 @@ function showRange() {
   height: 100%;
   flex: 1;
   display: grid;
-  background: var(--2-background-color);
+
   span{
     color: var(--font-color);
   }

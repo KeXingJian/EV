@@ -21,7 +21,7 @@
   background: linear-gradient(
       90deg,
       var(--2-background-color) 0%,
-      var(--border-color) 50%,
+      #fff 50%,
       var(--2-background-color) 100%
   );
 }

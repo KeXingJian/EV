@@ -28,8 +28,9 @@
 <script setup>
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
+import {usePalettesConfig} from "../../store/PalettesConfig.js";
 
-const {palettes} = storeToRefs(useOptionConfig())
+const {palettes} = storeToRefs(usePalettesConfig())
 
 const handleColorAdd = (e) => {
   const newColor = e.target.value.toUpperCase()

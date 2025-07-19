@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import DataSampling from "../components/configArea/DataSampling.vue";
 import ModelBuild from "../components/configArea/ModelBuild.vue";
 import Beautify from "../components/configArea/Beautify.vue";
+import PaletteConfig from "../components/configArea/config/PaletteConfig.vue";
+import GlobalConfig from "../components/configArea/config/GlobalConfig.vue";
 
 const routes = [
   {
@@ -18,6 +20,16 @@ const routes = [
     path: '/beautify',
     name: 'Beautify',
     component: Beautify,
+  },
+  {
+    path: '/palette',
+    name: 'Palette',
+    component: PaletteConfig,
+  },
+  {
+    path: '/globalConfig',
+    name: 'GlobalConfig',
+    component: GlobalConfig,
   }
 ]
 

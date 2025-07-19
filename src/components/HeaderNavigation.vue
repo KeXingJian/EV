@@ -2,7 +2,7 @@
   <section>
     <a class="logo">
       EXCEL<span>VISION.</span>
-      <span class="label">v1.1.0</span>
+      <span class="label">v1.3.3</span>
     </a>
 
     <div class="header-right">
@@ -41,8 +41,7 @@ const triggerFileInput = () => fileInput.value.click();
 // 核心文件处理
 const handleFileUpload = async (e) => {
   const file = e.target.files[0];
-  if (!file) return;
-
+  if (!file) return
 
   Ds.value = Ds.value.filter(i=>i.id===-1)
 
@@ -54,21 +53,19 @@ const handleFileUpload = async (e) => {
     const workbook = XLSX.read(data, {type: 'array', cellDates: true});
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const rawData = XLSX.utils.sheet_to_json(sheet, {header: 1, defval: null});
-
+    const endData = rawData.slice(1)
     // 数据结构
     fileData.value = {
       rowCount: rawData.length - 1, // 排除表头
-      columnStats: analyzeColumns2(rawData, rawData[0]?.map(String) || [],),
+      columnStats: analyzeColumns2(endData, rawData[0]?.map(String) || [],),
     };
-    dataset.value.source = rawData.slice(1) // 存储原始数据（排除表头）
+
+    dataset.value.source =  endData// 存储原始数据（排除表头）
     dataset.value.dimension = fileData.value.columnStats.map(i => i.field)
 
     importDone()
   };
   reader.readAsArrayBuffer(file);
-
-
-
 
 };
 
@@ -86,7 +83,20 @@ const importDone = () => {
 }
 
 const generateAnalysisReport = (data) => {
-  const anomalies = data.filter(item => item.hasAnomaly);
+
+  const anomalies = data.filter(item => item.hasAnomaly)
+  const noUniques = data.filter(item => !item.isUnique)
+
+  data.forEach(item => {
+    if (item.change4N.length!==0){
+      pushMsg(2,`${t('Notice.G')}${item.field}${t('Notice.H')}[${item.change4N}]`)
+    }
+
+  })
+  if (noUniques.length > 0) {
+    const noUniquesFields = noUniques.map(item => item.field)
+    pushMsg(1,`${t('Notice.G')}${noUniquesFields.join(', ')}${t('Notice.I')}`)
+  }
 
   if (anomalies.length > 0) {
     const anomalyFields = anomalies.map(item => item.field);
