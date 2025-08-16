@@ -31,9 +31,15 @@ import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
 import S from "../newArch/S.vue";
 import C from "../newArch/C.vue";
-
-const {Ss,Cs} = storeToRefs(useOptionConfig())
+import {useI18n} from "vue-i18n";
+const {t} = useI18n()
+const {Ss,Cs,isLoadRelation} = storeToRefs(useOptionConfig())
 const add = (event) => {
+
+  if (isLoadRelation.value){
+    emitter.emit("toast", t('关系图独立唯一,不予以添加'))
+    return
+  }
   emitter.emit('show-menu',
       {
         x: event.clientX,

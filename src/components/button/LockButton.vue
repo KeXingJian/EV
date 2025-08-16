@@ -34,9 +34,9 @@ const store = useOptionConfig()
 <style scoped>
 .button-div {
   position: absolute;
-  right: 30px;
-  top: 2px;
-  z-index: 999;
+  right: 71px;
+  top: 14px;
+  z-index: 98;
 }
 
 #lock {

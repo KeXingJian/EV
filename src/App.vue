@@ -5,14 +5,15 @@
       }"
   >
     <Menu></Menu>
+    <AIChat></AIChat>
     <ColorMenu></ColorMenu>
+    <ContextMenu v-if="isLoadRelation"></ContextMenu>
     <OptionItem></OptionItem>
     <OptionItem4I8N></OptionItem4I8N>
     <Page></Page>
     <Toast></Toast>
     <Appreciate1></Appreciate1>
     <Appreciate2></Appreciate2>
-
     <main>
       <HeaderNavigation></HeaderNavigation>
       <div class="container">
@@ -58,25 +59,47 @@ import {storeToRefs} from "pinia";
 import {useOptionConfig} from "./store/OptionConfig.js";
 import {pushMsg} from "./utils/MsgUtils.js";
 import Page from "./components/rightPage/Page.vue";
-import {init} from "./utils/newArch/InitUtils.js";
+import {init} from "./utils/InitUtils.js";
 import Menu from "./components/newArch/Menu.vue";
 import LeftFolatButton from "./components/button/LeftFolatButton.vue";
 import {analyzeColumns2} from "./utils/ExcelUtils.js";
-import {getMockData, handle1, handle2, handle3, handle4, handle5, handle6} from "./utils/MockData.js";
+import {
+  getMockData,
+  handle1,
+  handle2,
+  handle3,
+  handle4,
+  handle5,
+  handle6,
+  handle7
+} from "./utils/MockData.js";
 import Toast from "./components/Toast.vue";
 import Appreciate1 from "./components/card/Appreciate1.vue";
 import Appreciate2 from "./components/card/Appreciate2.vue";
-import { useI18n } from 'vue-i18n'
-import OptionItem4I8N from "./components/card/OptionItem4I8N.vue";;
+import {useI18n} from 'vue-i18n'
+import OptionItem4I8N from "./components/card/OptionItem4I8N.vue";
+
 import {useGlobalConfig} from "./store/GlobalConfig.js";
 import {usePalettesConfig} from "./store/PalettesConfig.js";
+import {v4 as uuidv4} from "uuid";
+import {useNodeState} from "./store/NodeState.js";
+import ContextMenu from "./components/card/ContextMenu.vue";
+import AIChat from "./components/button/AIChat.vue";
 
-const { locale, t } = useI18n()
+const {locale, t} = useI18n()
 
-const {theme, echartsOptions,fileData,dataset,Ss,sIndex,Cs,cIndex,Ds} = storeToRefs(useOptionConfig())
-const {palettes} = storeToRefs(usePalettesConfig())
-const {global} = storeToRefs(useGlobalConfig())
+const {
+  addX0Y,
+  addPolar,
+  addSeries,
+  addRelation,
+  echartsOptions,dataset,Ss,Cs,Ds,fileData
+} = useOptionConfig()
 
+const {theme,isLoadRelation} = storeToRefs(useOptionConfig())
+const {palettes} = usePalettesConfig()
+const {global} = useGlobalConfig()
+const {setColorPie} = useNodeState()
 
 const onResize = () => {
   const windowWidth = window.innerWidth;
@@ -89,8 +112,8 @@ const onResize = () => {
   emitter.emit('resize')
 }
 
-const toOpen = ()=>{
-  if(isOpen.value) width.value = 0
+const toOpen = () => {
+  if (isOpen.value) width.value = 0
   else width.value = 633
 
   isOpen.value = !isOpen.value
@@ -132,57 +155,66 @@ const handleMouseMove = (e) => {
 
 }
 
-const loadFirstChart = (num)=>{
+const loadFirstChart = (num) => {
   const userLang = navigator.language || navigator.userLanguage
   const mockData = getMockData(!userLang.startsWith('zh'));
   const endData = mockData.slice(1)
 
-  fileData.value = {
-    rowCount: mockData.length-1, // 排除表头
-    columnStats: analyzeColumns2(endData,mockData[0]?.map(String) || [],),
-  }
+  mockData[0].unshift('id')
+  endData.forEach(i => i.unshift(uuidv4()))
 
-  dataset.value.dimension = mockData[0]
-  dataset.value.source =  endData// 存储原始数据（排除表头）
+
+  fileData.rowCount = endData.length - 1
+  fileData.columnStats.splice
+  (0,
+      fileData.columnStats.length,
+      ...analyzeColumns2(endData, mockData[0].map(String))
+  )
+
+  dataset.dimension = mockData[0]
+  dataset.source = endData// 存储原始数据（排除表头）
 
   init()
   switch (num) {
     case 1:
-      handle1(Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)
+      handle1(Ss,Cs,echartsOptions,addX0Y,addSeries)
       return
     case 2:
-      handle2(Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)
+      handle2(Ss,Cs,echartsOptions,addPolar,addSeries,global)
       return
     case 3:
-      handle3(Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)
+      handle3(Ss,Cs,echartsOptions,addX0Y,addSeries,global)
       return
     case 4:
-      handle4(Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)
+      handle4(
+          Ss,Cs,echartsOptions,addX0Y,addSeries,
+          dataset.source,setColorPie
+      )
       return
     case 5:
-      handle5(Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)
+      handle5(Ss,Cs,echartsOptions,addX0Y,addSeries)
       return
     case 6:
-      handle6(Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)
+      handle6(Ss,Cs,global,echartsOptions,addX0Y,addSeries)
       return
     default:
-      handle1(Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)
+      handle1(Ss,Cs,echartsOptions,addX0Y,addSeries)
+      //handle7(Ss,echartsOptions,addRelation)
   }
 
   pushMsg(0, `${t('Notice.A')}`)
 
 }
 
-const langInit = ()=>{
+const langInit = () => {
 
   const userLang = navigator.language || navigator.userLanguage
 
   if (userLang.startsWith('zh')) {
     locale.value = 'zh-CN'
   } else {
-    locale.value = 'en'
     document.title = "ExcelVision - Free online chart maker | ExcelVision is ready to use, real-time data visualization"
-    Ds.value[0].from = "Temporary Data"
+    Ds[0].from = "Temporary Data"
     emitter.emit('change-lang')
   }
 }
@@ -193,14 +225,14 @@ const colorInit = () => {
   const love = JSON.parse(localStorage.getItem('love'))
 
 
-  if (!my) localStorage.setItem('my', JSON.stringify(palettes.value[0].colors))
-  else palettes.value[0].colors = my
+  if (!my) localStorage.setItem('my', JSON.stringify(palettes[0].colors))
+  else palettes[0].colors = my
 
   //console.log(my)
 
-  if(!love) localStorage.setItem('love',JSON.stringify([0,1,2,3,4,5]))
+  if (!love) localStorage.setItem('love', JSON.stringify([0, 1, 2, 3, 4, 5]))
   else {
-    palettes.value.forEach((color, index) => {
+    palettes.forEach((color, index) => {
       color.isLove = !!love.includes(index);
     })
 
@@ -229,7 +261,7 @@ onMounted(() => {
   langInit()
   colorInit()
 
-  window.addEventListener('resize',onResize)
+  window.addEventListener('resize', onResize)
   emitter.on("theme-change", changeTheme);
 
 
@@ -314,7 +346,7 @@ main {
   --theme-hover-color: #15ccbe;
 }
 
-.close{
+.close {
   padding-right: 0;
 }
 </style>

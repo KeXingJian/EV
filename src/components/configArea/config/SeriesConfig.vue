@@ -1,8 +1,8 @@
 <template>
   <div class="series-config">
-    <div class="chart-select" >
+    <div class="chart-select" v-if="item.type !== 5">
       <RadioBox
-          v-if="item.C.type===0 || item.C.type===1"
+          v-if="item.C?.type===0 || item.C?.type===1"
           v-model="item.type"
           :options="GraphTypeSelect"
           :name="'GraphTypeSelect'+item.id"
@@ -14,7 +14,7 @@
           :name="'GraphTypeSelect'+item.id"
       ></RadioBox>
     </div>
-    <div class="t-1" v-if="item.C.type===0 || item.C.type===1">
+    <div class="t-1" v-if="item.C?.type===0 || item.C?.type===1">
       <div class="config-item">
         <span>{{ $t('label') }}</span>
         <CheckBox v-model="item.isLabel"></CheckBox>
@@ -45,19 +45,19 @@ import PieChartL from "../../GrpahType/PieChartL.vue";
 import ScatterChartL from "../../GrpahType/ScatterChartL.vue";
 import CheckBox from "../../box/CheckBox.vue";
 import ColorPoint from "../../button/ColorPoint.vue";
-import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../../store/OptionConfig.js";
 import emitter from "../../../emitter/emitter.js";
 import InputBox from "../../box/InputBox.vue";
-import {getFieldDetails} from "../../../utils/BeautifyUtils.js";
 import {
-  chartType, funnelInit,
+  funnelInit, getFieldDetails,
   loadFunnelArea,
   loadPieArea, pieInit,
   unLoadFunnelArea,
   unloadPieArea
 } from "../../../utils/newArch/Check4Series.js";
 import FunnelChartL from "../../GrpahType/FunnelChartL.vue";
+import {chartType} from "../../../utils/newArch/ConstantPool.js";
+import RelationChartL from "../../GrpahType/RelationChartL.vue";
 
 
 const props = defineProps({
@@ -95,14 +95,15 @@ const GraphTypeSelect2 = [
 
 const currentView = shallowRef(null)
 
-const {echartsOptions} = storeToRefs(useOptionConfig())
+const {echartsOptions} = useOptionConfig()
 
 const views = [
   markRaw(LineChartL),
   markRaw(BarChartL),
   markRaw(ScatterChartL),
   markRaw(PieChartL),
-  markRaw(FunnelChartL)
+  markRaw(FunnelChartL),
+  markRaw(RelationChartL)
 ]
 
 watchEffect(() => {
@@ -114,7 +115,7 @@ const {type} = toRefs(props.item)
 const item = props.item
 watch(type, (newVal) =>{
 
-  const target = echartsOptions.value.series.find(i=>i.id===item.id)
+  const target = echartsOptions.series.find(i=>i.id===item.id)
   target.type = chartType[newVal]
   if (newVal===2){
     if (item.scatterConfig.type === 1 && item.scatterConfig.mapField !== -1) {
@@ -142,7 +143,7 @@ watch(type, (newVal) =>{
     loadPieArea(
         item.pieConfig,
         id,
-        echartsOptions.value.series.find(i=>i.id===id),
+        echartsOptions.series.find(i=>i.id===id),
         echartsOptions
     )
   }else if (newVal===4) {
@@ -151,7 +152,7 @@ watch(type, (newVal) =>{
     loadFunnelArea(
         item.funnelConfig,
         id,
-        echartsOptions.value.series.find(i=>i.id===id),
+        echartsOptions.series.find(i=>i.id===id),
         echartsOptions
     )
 

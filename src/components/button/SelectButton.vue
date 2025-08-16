@@ -16,6 +16,7 @@ const emit = defineEmits(['update:modelValue'])
 const toggle = (event) => {
   emit('update:modelValue', event.target.checked)
 }
+
 </script>
 
 <template>

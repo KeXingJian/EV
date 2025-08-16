@@ -1,14 +1,12 @@
 
-export function parseCondition(expression, columnStats) {
+export const parseCondition = (expression, columnStats)=> {
 
     // 增强正则表达式，明确捕获不同类型值
     const validationRegExp = /^([A-Z]+)\s*(=|!=|<=|>=|<|>)\s*(?:'([^']*)'|([+-]?\d+\.?\d*)|(true|false))$/;
     const match = expression.match(validationRegExp);
 
-    if (!match) {
-        //console.log('表达式格式错误，正确格式如：A>100 或 B=\'文本\'');
-        return false
-    }
+    if (!match) return false
+
 
     const field = match[1];
     const operator = match[2];
@@ -17,7 +15,7 @@ export function parseCondition(expression, columnStats) {
     const boolValue = match[5]; // 布尔值
 
     // 获取字段元数据
-    const colIndex = field.charCodeAt(0) - 'A'.charCodeAt(0);
+    const colIndex = field.charCodeAt(0) - 'A'.charCodeAt(0) + 1
     const meta = columnStats.find(c => c.index === colIndex);
     if (!meta) {
         //console.log(`字段 ${field} 不存在`);

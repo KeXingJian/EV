@@ -9,7 +9,7 @@
             <CloseButton @click="deleteFilter(dataset,index)"></CloseButton>
           </button>
           <AddButton v-if="!isAddFilter" @click="isAddFilter=true"></AddButton>
-          <form v-if="isAddFilter" @submit.prevent="applyFilter" class="form" :style="{
+          <form v-if="isAddFilter" @submit.prevent="toApplyFilter" class="form" :style="{
               width: `150px`
           }">
             <input
@@ -34,7 +34,7 @@
             <CloseButton @click="deleteGroup(group.child,index)"></CloseButton>
           </button>
           <AddButton v-if="!isAddGroup" @click="isAddGroup=true"></AddButton>
-          <form v-if="isAddGroup" @submit.prevent="createGroup" class="form" :style="{
+          <form v-if="isAddGroup" @submit.prevent="toCreateGroup" class="form" :style="{
               width: `150px`
           }">
             <input
@@ -84,45 +84,47 @@ const isAddGroup = ref(false)
 
 const currentExpressionFilter = ref('')
 const currentExpressionGroup = ref('')
-const store = useOptionConfig()
+const {
+  echartsOptions,Ss,
+  applyFilter,
+  createGroup,
+  refreshDataset
+} = useOptionConfig()
 
-const {Ds, Ss, echartsOptions} = storeToRefs(useOptionConfig())
+const {Ds} = storeToRefs(useOptionConfig())
 
-const applyFilter = () => {
-  const isOK = store.applyFilter(props.dataset, currentExpressionFilter.value)
+const toApplyFilter = () => {
+  const isOK = applyFilter(props.dataset, currentExpressionFilter.value)
   if (isOK) {
     currentExpressionFilter.value = ''
     isAddFilter.value = false
-    Ss.value.filter(i=>i.isLoad).forEach(i=>checkSeries(i,echartsOptions))
+    Ss.filter(i=>i.isLoad).forEach(i=>checkSeries(i,echartsOptions))
   }
 
 }
 
-const createGroup = () => {
+const toCreateGroup = () => {
   //console.log(currentExpressionGroup.value)
-  const isOK = store.createGroup(props.dataset, currentExpressionGroup.value)
+  const isOK = createGroup(props.dataset, currentExpressionGroup.value)
   if (isOK) {
     currentExpressionGroup.value = ''
     isAddGroup.value = false
-    Ss.value.filter(i=>i.isLoad).forEach(i=>checkSeries(i,echartsOptions))
+    Ss.filter(i=>i.isLoad).forEach(i=>checkSeries(i,echartsOptions))
   }
 
 
 }
 
 const deleteFilter = (dataset, i) => {
-  dataset.filterConditions = dataset.filterConditions.filter((item, index) => index !== i)
-  store.refreshDataset(dataset.id)
-  Ss.value.filter(i=>i.isLoad).forEach(i=>checkSeries(i,echartsOptions))
+  dataset.filterConditions = dataset.filterConditions.filter((_, index) => index !== i)
+  refreshDataset(dataset.id)
+  Ss.filter(i=>i.isLoad).forEach(i=>checkSeries(i,echartsOptions))
 }
 
 const deleteGroup = (child, index) => {
-  const deleteIs = [] //忽略
-
+  const deleteIs = []
   toDeleteNode(child, deleteIs, index)
-  //console.log('节点删除完毕', Ds.value)
-  //忽略以下代码
-  Ss.value.forEach(i=>{
+  Ss.forEach(i=>{
     const needDelete = deleteIs.includes(i.D.id)
     if (needDelete){
       i.D =null
@@ -136,8 +138,6 @@ const deleteGroup = (child, index) => {
 const toDeleteNode = (child, ids, i) => {
 
   if (!child) return
-
-  //console.log(child)
   child.groupCondition.forEach((item, index) => {
 
     toDeleteNode(item.child, ids, index) //递归
@@ -148,7 +148,7 @@ const toDeleteNode = (child, ids, i) => {
 }
 
 const deleteGroupCondition = (child, i) => {
-  child.parent.groupCondition = child.parent.groupCondition.filter((item, index) => index !== i)
+  child.parent.groupCondition = child.parent.groupCondition.filter((_, index) => index !== i)
 }
 
 </script>

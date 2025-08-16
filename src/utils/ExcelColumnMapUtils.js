@@ -7,7 +7,7 @@ const ExcelColumnMap = {
     _letterToNum: {},
 
     // 初始化常量池
-    init: function (maxColumns = 1000) {
+    init: function (maxColumns = 100) {
         for (let num = 1; num <= maxColumns; num++) {
             const letter = this.convertNumberToLetter(num);
             this._numToLetter[num] = letter;

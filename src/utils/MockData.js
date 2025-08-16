@@ -1,6 +1,5 @@
 import {checkSeries} from "./newArch/Check4Series.js";
-import {loadAxis} from "./newArch/AxisUtis.js";
-import {getGrid, getPolar} from "./newArch/Position.js";
+import {changeAxisType, loadAxis} from "./newArch/AxisUtis.js";
 
 export const getMockData = (lang) => {
 
@@ -79,1327 +78,218 @@ export const getMockData = (lang) => {
 }
 
 
+export const handle1 = (Ss,Cs,echartsOptions,addX0Y,addSeries)=>{
+    addX0Y()
+    const c0 = Cs[1]
+    for(let i = 0; i < 4 ; i++) {
+        addSeries()
+        Ss[i].C = c0
+        Ss[i].category = 1
+        Ss[i].number = i+2
+        Ss[i].type = 1
+    }
 
-export const getMockSs1 = () => {
-    return [
-        {
-            "id": 0,
-            "name": "S0",
-            "seriesName": "S0",
-            "C": null,
-            "category": 0,
-            "number": 1,
-            "isLoad": false,
-            "color": "#FF4081",
-            "type": 1,
-            "areaColor": "#FF4081",
-            "isLabel": false,
-            "labelColor": "#000",
-            "lineConfig": {
-                "lineType": 0,
-                "startPoint": 0,
-                "isArea": false
-            },
-            "barConfig": {
-                borderRadius: 5,
-                barGap: 5,
-                barWidth: 40,
-                isAuto: true,
-            },
-            "scatterConfig": {
-                "type": 0,
-                "mapField": -1,
-                range: [20, 50],
-                size: 20,
-            },
-            "pieConfig": {
-                "isRose": false,
-                "roseType": 0,
-                "borderRadius": 10,
-                "padAngle": 0,
-                "position": 0,
-                "labelLine": true,
-                "polar":getPolar()
-            },
-            funnelConfig: {
-                position: getGrid(),
-                sort: 0, //升 无 降
-                gap: 2,
-                labelPosition: 0, //左,中,右
-                align: 1 //左,中,右
-            },
-            radarConfig: {
-                isArea: false,
-                areaColor: '#FF4081'
-            },
-            "D": null
-        },
-        {
-            "id": 1,
-            "name": "S1",
-            "seriesName": "S1",
-            "C": null,
-            "category": 0,
-            "number": 2,
-            "isLoad": false,
-            "color": "#14FFEC",
-            "type": 1,
-            "areaColor": "#FF4081",
-            "isLabel": false,
-            "labelColor": "#000",
-            "lineConfig": {
-                "lineType": 0,
-                "startPoint": 0,
-                "isArea": false
-            },
-            "barConfig": {
-                borderRadius: 5,
-                barGap: 5,
-                barWidth: 40,
-                isAuto: true,
-            },
-            "scatterConfig": {
-                "type": 0,
-                "mapField": -1,
-                range: [20, 50],
-                size: 20,
-            },
-            "pieConfig": {
-                "isRose": false,
-                "roseType": 0,
-                "borderRadius": 10,
-                "padAngle": 0,
-                "position": 0,
-                "labelLine": true,
-                "polar": getPolar()
-            },
-            funnelConfig: {
-                position: getGrid(),
-                sort: 0, //升 无 降
-                gap: 2,
-                labelPosition: 0, //左,中,右
-                align: 1 //左,中,右
-            },
-            radarConfig: {
-                isArea: false,
-                areaColor: '#FF4081'
-            },
-            "D": null
-        },
-        {
-            "id": 2,
-            "name": "S2",
-            "seriesName": "S2",
-            "C": null,
-            "category": 0,
-            "number": 3,
-            "isLoad": false,
-            "color": "#C5BAFF",
-            "type": 1,
-            "areaColor": "#FF4081",
-            "isLabel": false,
-            "labelColor": "#000",
-            "lineConfig": {
-                "lineType": 0,
-                "startPoint": 0,
-                "isArea": false
-            },
-            "barConfig": {
-                borderRadius: 5,
-                barGap: 5,
-                barWidth: 40,
-                isAuto: true,
-            },
-            "scatterConfig": {
-                "type": 0,
-                "mapField": -1,
-                range: [20, 50],
-                size: 20,
-            },
-            "pieConfig": {
-                "isRose": false,
-                "roseType": 0,
-                "borderRadius": 10,
-                "padAngle": 0,
-                "position": 0,
-                "labelLine": true,
-                "polar": getPolar()
-            },
-            funnelConfig: {
-                position: getGrid(),
-                sort: 0, //升 无 降
-                gap: 2,
-                labelPosition: 0, //左,中,右
-                align: 1 //左,中,右
-            },
-            radarConfig: {
-                isArea: false,
-                areaColor: '#FF4081'
-            },
-            "D":null
-        },
-        {
-            "id": 3,
-            "name": "S3",
-            "seriesName": "S3",
-            "C": null,
-            "category": 0,
-            "number": 4,
-            "isLoad": false,
-            "color": "#A7FFE4",
-            "type": 0,
-            "areaColor": "#FF4081",
-            "isLabel": false,
-            "labelColor": "#000",
-            "lineConfig": {
-                "lineType": 0,
-                "startPoint": 0,
-                "isArea": false
-            },
-            "barConfig": {
-                borderRadius: 5,
-                barGap: 5,
-                barWidth: 40,
-                isAuto: true,
-            },
-            "scatterConfig": {
-                "type": 0,
-                "mapField": -1,
-                range: [20, 50],
-                size: 20,
-            },
-            "pieConfig": {
-                "isRose": false,
-                "roseType": 0,
-                "borderRadius": 10,
-                "padAngle": 0,
-                "position": 0,
-                "labelLine": true,
-                "polar":getPolar()
-            },
-            funnelConfig: {
-                position:getGrid(),
-                sort: 0, //升 无 降
-                gap: 2,
-                labelPosition: 0, //左,中,右
-                align: 1 //左,中,右
-            },
-            radarConfig: {
-                isArea: false,
-                areaColor: '#FF4081'
-            },
-            "D": null
-        }
-    ]
+
+    const [s1,s2,s3,s4] = Ss
+
+    s1.color = "#FF4081"
+    s2.color = "#14FFEC"
+    s3.color = "#C5BAFF"
+    s4.color = "#A7FFE4"
+
+    Ss.forEach(i => checkSeries(i,echartsOptions))
 }
 
-export const getMockSs2 = () => {
-    return [
-        {
-            "id": 0,
-            "name": "S0",
-            "seriesName": "S0",
-            "C": null,
-            "category": 0,
-            "number": 1,
-            "isLoad": false,
-            "color": "#FE346E",
-            "type": 1,
-            "areaColor": "#FF4081",
-            "isLabel": false,
-            "labelColor": "#000",
-            "lineConfig": {
-                "lineType": 0,
-                "startPoint": 0,
-                "isArea": false
-            },
-            "barConfig": {
-                "borderRadius": 0,
-                "barGap": 5,
-                "barWidth": 12,
-                isAuto: true,
-            },
-            "scatterConfig": {
-                "type": 0,
-                "mapField": -1,
-                "range": [
-                    20,
-                    50
-                ],
-                "size": 20
-            },
-            "pieConfig": {
-                "isRose": false,
-                "roseType": 0,
-                "borderRadius": 10,
-                "padAngle": 0,
-                "position": 0,
-                "labelLine": true,
-                "polar": getPolar()
-            },
-            funnelConfig: {
-                position: getGrid(),
-                sort: 0, //升 无 降
-                gap: 2,
-                labelPosition: 0, //左,中,右
-                align: 1 //左,中,右
-            },
-            radarConfig: {
-                isArea: false,
-                areaColor: '#FF4081'
-            },
-            "D": null
-        },
-        {
-            "id": 1,
-            "name": "S1",
-            "seriesName": "S1",
-            "C": null,
-            "category": 0,
-            "number": 2,
-            "isLoad": false,
-            "color": "#0D6E6E",
-            "type": 1,
-            "areaColor": "#FF4081",
-            "isLabel": false,
-            "labelColor": "#000",
-            "lineConfig": {
-                "lineType": 0,
-                "startPoint": 0,
-                "isArea": false
-            },
-            "barConfig": {
-                "borderRadius": 0,
-                "barGap": 5,
-                "barWidth": 12,
-                isAuto: true,
-            },
-            "scatterConfig": {
-                "type": 0,
-                "mapField": -1,
-                "range": [
-                    20,
-                    50
-                ],
-                "size": 20
-            },
-            "pieConfig": {
-                "isRose": false,
-                "roseType": 0,
-                "borderRadius": 10,
-                "padAngle": 0,
-                "position": 0,
-                "labelLine": true,
-                "polar":getPolar()
-            },
-            funnelConfig: {
-                position: getGrid(),
-                sort: 0, //升 无 降
-                gap: 2,
-                labelPosition: 0, //左,中,右
-                align: 1 //左,中,右
-            },
-            radarConfig: {
-                isArea: false,
-                areaColor: '#FF4081'
-            },
-            "D":null
-        }
-    ]
-}
+export const handle2 = (Ss,Cs,echartsOptions,addPolar,addSeries,global)=>{
+    global.backGround = '#292e3b'
+    echartsOptions.backgroundColor = '#292e3b'
+    addPolar(true)
+    addPolar(true)
+    addSeries()
+    addSeries()
 
-export const getMockSs3 = () => {
-    return [
-        {
-            "id": 0,
-            "name": "S0",
-            "seriesName": "S0",
-            "C": null,
-            "category": 0,
-            "number": 1,
-            "isLoad": false,
-            "color": "#00FFF0",
-            "type": 1,
-            "areaColor": "#FF4081",
-            "isLabel": false,
-            "labelColor": "#000",
-            "lineConfig": {
-                "lineType": 0,
-                "startPoint": 0,
-                "isArea": false
-            },
-            "barConfig": {
-                "borderRadius": 5,
-                "barGap": 5,
-                "barWidth": 40,
-                isAuto: false,
-            },
-            "scatterConfig": {
-                "type": 0,
-                "mapField": -1,
-                "range": [
-                    20,
-                    50
-                ],
-                "size": 20
-            },
-            "pieConfig": {
-                "isRose": false,
-                "roseType": 0,
-                "borderRadius": 10,
-                "padAngle": 0,
-                "position": 0,
-                "labelLine": true,
-                "polar": getPolar()
-            },
-            funnelConfig: {
-                position:getGrid(),
-                sort: 0, //升 无 降
-                gap: 2,
-                labelPosition: 0, //左,中,右
-                align: 1 //左,中,右
-            },
-            radarConfig: {
-                isArea: false,
-                areaColor: '#FF4081'
-            },
-            "D": null
-        },
-        {
-            "id": 1,
-            "name": "S1",
-            "seriesName": "S1",
-            "C":null,
-            "category": 0,
-            "number": 2,
-            "isLoad": false,
-            "color": "#FF4081",
-            "type": 1,
-            "areaColor": "#FF4081",
-            "isLabel": false,
-            "labelColor": "#000",
-            "lineConfig": {
-                "lineType": 0,
-                "startPoint": 0,
-                "isArea": false
-            },
-            "barConfig": {
-                "borderRadius": 5,
-                "barGap": 5,
-                "barWidth": 40,
-                isAuto: false,
-            },
-            "scatterConfig": {
-                "type": 0,
-                "mapField": -1,
-                "range": [
-                    20,
-                    50
-                ],
-                "size": 20
-            },
-            "pieConfig": {
-                "isRose": false,
-                "roseType": 0,
-                "borderRadius": 10,
-                "padAngle": 0,
-                "position": 0,
-                "labelLine": true,
-                "polar":getPolar()
-            },
-            funnelConfig: {
-                position: getGrid(),
-                sort: 0, //升 无 降
-                gap: 2,
-                labelPosition: 0, //左,中,右
-                align: 1 //左,中,右
-            },
-            radarConfig: {
-                isArea: false,
-                areaColor: '#FF4081'
-            },
-            "D":null
-        }
-    ]
-}
+    const [_,c1,c2] = Cs
+    const [s1,s2] = Ss
 
-export const getMockSs4 = () => {
-    return [
-        {
-            "id": 0,
-            "name": "S0",
-            "seriesName": "S0",
-            "C": null,
-            "category": 0,
-            "number": 1,
-            "isLoad": false,
-            "color": "#FF4081",
-            "type": 3,
-            "areaColor": "#FF4081",
-            "isLabel": true,
-            "labelColor": "#000",
-            "lineConfig": {
-                "lineType": 0,
-                "startPoint": 0,
-                "isArea": false
-            },
-            "barConfig": {
-                "borderRadius": 5,
-                "barGap": 5,
-                "barWidth": 40,
-                isAuto: true,
-            },
-            "scatterConfig": {
-                "type": 0,
-                "mapField": -1,
-                "range": [
-                    20,
-                    50
-                ],
-                "size": 20
-            },
-            "pieConfig": {
-                "isRose": false,
-                "roseType": 1,
-                "borderRadius": 5,
-                "padAngle": 1,
-                "position": 0,
-                "labelLine": true,
-                "polar": {
-                    pi: 70,
-                    po: 400,
-                    pl: 500,
-                    pt: 410
-                }
-            },
-            funnelConfig: {
-                position: getGrid(),
-                sort: 0, //升 无 降
-                gap: 2,
-                labelPosition: 0, //左,中,右
-                align: 1 //左,中,右
-            },
-            radarConfig: {
-                isArea: false,
-                areaColor: '#FF4081'
-            },
-            "D": null
-        },
-        {
-            "id": 1,
-            "name": "S1",
-            "seriesName": "S1",
-            "C": null,
-            "category": 0,
-            "number": 2,
-            "isLoad": false,
-            "color": "#FF4081",
-            "type": 3,
-            "areaColor": "#FF4081",
-            "isLabel": true,
-            "labelColor": "#000",
-            "lineConfig": {
-                "lineType": 0,
-                "startPoint": 0,
-                "isArea": false
-            },
-            "barConfig": {
-                "borderRadius": 5,
-                "barGap": 5,
-                "barWidth": 40,
-                isAuto: true,
-            },
-            "scatterConfig": {
-                "type": 0,
-                "mapField": -1,
-                "range": [
-                    20,
-                    50
-                ],
-                "size": 20
-            },
-            "pieConfig": {
-                "isRose": true,
-                "roseType": 0,
-                "borderRadius": 7.3,
-                "padAngle": 1,
-                "position": 1,
-                "labelLine": true,
-                "polar": {
-                    pi: 0,
-                    po: 200,
-                    pl: 500,
-                    pt: 410
-                }
-            },
-            funnelConfig: {
-                position: getGrid(),
-                sort: 0, //升 无 降
-                gap: 2,
-                labelPosition: 0, //左,中,右
-                align: 1 //左,中,右
-            },
-            radarConfig: {
-                isArea: false,
-                areaColor: '#FF4081'
-            },
-            "D": null
-        }
-    ]
+    c1.V.sa = 210
+    c1.V.ea = 330
+
+    c2.V.sa =  30
+    c2.V.ea = 150
+
+    c2.H.splitLine = true
+    c2.V.splitLine = true
+    c2.V.position = false
+
+    Cs.forEach((i,index) => {
+        if (index === 0) return
+        i.axisType = true
+        i.polar.pi = 10
+        i.polar.po = 390
+        i.polar.pl = 500
+        i.polar.pt = 410
+        i.H.textColor = '#00FFF0'
+        i.H.labelColor = '#00FFF0'
+        i.V.textColor = '#00FFF0'
+        i.V.labelColor = '#00FFF0'
+        loadAxis(i,echartsOptions)
+        changeAxisType(i,echartsOptions)
+    })
+
+
+    s1.C = c1
+    s1.type = 1
+    s1.category = 1
+    s1.number = 2
+    s1.color = "#FF4081"
+
+    s2.C = c2
+    s2.type = 1
+    s2.category = 1
+    s2.number = 3
+
+    s2.color = "#0D6E6E"
+
+    Ss.forEach(i => checkSeries(i,echartsOptions))
 
 }
 
-export const getMockSs5 = () => {
-    return [
-        {
-            "id": 0,
-            "name": "S0",
-            "seriesName": "S0",
-            "C": null,
-            "category": 0,
-            "number": 1,
-            "isLoad": false,
-            "color": "#00FFF0",
-            "type": 0,
-            "areaColor": "#00FFF0",
-            "isLabel": false,
-            "labelColor": "#000",
-            "lineConfig": {
-                "lineType": 1,
-                "startPoint": 0,
-                "isArea": true
-            },
-            "barConfig": {
-                "borderRadius": 5,
-                "barGap": 5,
-                "barWidth": 40,
-                isAuto: true,
-            },
-            "scatterConfig": {
-                "type": 0,
-                "mapField": -1,
-                "range": [
-                    20,
-                    50
-                ],
-                "size": 20
-            },
-            "pieConfig": {
-                "isRose": false,
-                "roseType": 0,
-                "borderRadius": 10,
-                "padAngle": 0,
-                "position": 0,
-                "labelLine": true,
-                "polar":getPolar()
-            },
-            funnelConfig: {
-                position:getGrid(),
-                sort: 0, //升 无 降
-                gap: 2,
-                labelPosition: 0, //左,中,右
-                align: 1 //左,中,右
-            },
-            radarConfig: {
-                isArea: false,
-                areaColor: '#FF4081'
-            },
-            "D": null
-        },
-        {
-            "id": 1,
-            "name": "S1",
-            "seriesName": "S1",
-            "C":null,
-            "category": 0,
-            "number": 2,
-            "isLoad": false,
-            "color": "#7579E7",
-            "type": 0,
-            "areaColor": "#7579E7",
-            "isLabel": false,
-            "labelColor": "#000",
-            "lineConfig": {
-                "lineType": 1,
-                "startPoint": 0,
-                "isArea": true
-            },
-            "barConfig": {
-                "borderRadius": 5,
-                "barGap": 5,
-                "barWidth": 40,
-                isAuto: true,
-            },
-            "scatterConfig": {
-                "type": 0,
-                "mapField": -1,
-                "range": [
-                    20,
-                    50
-                ],
-                "size": 20
-            },
-            "pieConfig": {
-                "isRose": false,
-                "roseType": 0,
-                "borderRadius": 10,
-                "padAngle": 0,
-                "position": 0,
-                "labelLine": true,
-                "polar": getPolar()
-            },
-            funnelConfig: {
-                position: getGrid(),
-                sort: 0, //升 无 降
-                gap: 2,
-                labelPosition: 0, //左,中,右
-                align: 1 //左,中,右
-            },
-            radarConfig: {
-                isArea: false,
-                areaColor: '#FF4081'
-            },
-            "D": null
-        },
-        {
-            "id": 2,
-            "name": "S2",
-            "seriesName": "S2",
-            "C":null,
-            "category": 0,
-            "number": 2,
-            "isLoad": false,
-            "color": "#F6416C",
-            "type": 0,
-            "areaColor": "#F6416C",
-            "isLabel": false,
-            "labelColor": "#000",
-            "lineConfig": {
-                "lineType": 1,
-                "startPoint": 0,
-                "isArea": true
-            },
-            "barConfig": {
-                "borderRadius": 5,
-                "barGap": 5,
-                "barWidth": 40,
-                isAuto: true,
-            },
-            "scatterConfig": {
-                "type": 0,
-                "mapField": -1,
-                "range": [
-                    20,
-                    50
-                ],
-                "size": 20
-            },
-            "pieConfig": {
-                "isRose": false,
-                "roseType": 0,
-                "borderRadius": 10,
-                "padAngle": 0,
-                "position": 0,
-                "labelLine": true,
-                "polar":getPolar()
-            },
-            funnelConfig: {
-                position: getGrid(),
-                sort: 0, //升 无 降
-                gap: 2,
-                labelPosition: 0, //左,中,右
-                align: 1 //左,中,右
-            },
-            radarConfig: {
-                isArea: false,
-                areaColor: '#FF4081'
-            },
-            "D": null
-        }
-    ]
-}
+export const handle3 = (Ss,Cs,echartsOptions,addX0Y,addSeries,global)=>{
+    global.backGround = '#292e3b'
+    echartsOptions.backgroundColor = '#292e3b'
+    addX0Y(true)
+    addX0Y(true)
+    addSeries()
+    addSeries()
+    const [_,c1,c2] = Cs
+    const [s1,s2] = Ss
 
-export const getMockSs6 = () => {
-    return [
-        {
-            "id": 0,
-            "name": "S0",
-            "seriesName": "S0",
-            "C":null,
-            "category": 0,
-            "number": 1,
-            "isLoad": false,
-            "color": "#00FFF0",
-            "type": 2,
-            "areaColor": "#00FFF0",
-            "isLabel": false,
-            "labelColor": "#000",
-            "lineConfig": {
-                "lineType": 1,
-                "startPoint": 0,
-                "isArea": true
-            },
-            "barConfig": {
-                "borderRadius": 5,
-                "barGap": 5,
-                "barWidth": 40,
-                isAuto: true,
-            },
-            "scatterConfig": {
-                "type": 1,
-                "mapField": 4,
-                "range": [
-                    36.244140625,
-                    73.744140625
-                ],
-                "size": 20
-            },
-            "pieConfig": {
-                "isRose": false,
-                "roseType": 0,
-                "borderRadius": 10,
-                "padAngle": 0,
-                "position": 0,
-                "labelLine": true,
-                "polar": getPolar()
-            },
-            funnelConfig: {
-                position:getGrid(),
-                sort: 0, //升 无 降
-                gap: 2,
-                labelPosition: 0, //左,中,右
-                align: 1 //左,中,右
-            },
-            radarConfig: {
-                isArea: false,
-                areaColor: '#FF4081'
-            },
-            "D": null
-        },
-        {
-            "id": 1,
-            "name": "S1",
-            "seriesName": "S1",
-            "C":null,
-            "category": 0,
-            "number": 2,
-            "isLoad": false,
-            "color": "#A7FFE4",
-            "type": 2,
-            "areaColor": "#A7FFE4",
-            "isLabel": false,
-            "labelColor": "#000",
-            "lineConfig": {
-                "lineType": 1,
-                "startPoint": 0,
-                "isArea": true
-            },
-            "barConfig": {
-                "borderRadius": 5,
-                "barGap": 5,
-                "barWidth": 40,
-                isAuto: true,
-            },
-            "scatterConfig": {
-                "type": 1,
-                "mapField": 4,
-                "range": [
-                    30.244140625,
-                    80.744140625
-                ],
-                "size": 20
-            },
-            "pieConfig": {
-                "isRose": false,
-                "roseType": 0,
-                "borderRadius": 10,
-                "padAngle": 0,
-                "position": 0,
-                "labelLine": true,
-                "polar":getPolar()
-            },
-            funnelConfig: {
-                position: getGrid(),
-                sort: 0, //升 无 降
-                gap: 2,
-                labelPosition: 0, //左,中,右
-                align: 1 //左,中,右
-            },
-            radarConfig: {
-                isArea: false,
-                areaColor: '#FF4081'
-            },
-            "D": null
-        },
-        {
-            "id": 2,
-            "name": "S2",
-            "seriesName": "S2",
-            "C": null,
-            "category": 0,
-            "number": 3,
-            "isLoad": false,
-            "color": "#FF4081",
-            "type": 2,
-            "areaColor": "#FF4081",
-            "isLabel": false,
-            "labelColor": "#000",
-            "lineConfig": {
-                "lineType": 1,
-                "startPoint": 0,
-                "isArea": true
-            },
-            "barConfig": {
-                "borderRadius": 5,
-                "barGap": 5,
-                "barWidth": 40,
-                isAuto: true,
-            },
-            "scatterConfig": {
-                "type": 1,
-                "mapField": 4,
-                "range": [
-                    25.244140625,
-                    76.244140625
-                ],
-                "size": 20
-            },
-            "pieConfig": {
-                "isRose": false,
-                "roseType": 0,
-                "borderRadius": 10,
-                "padAngle": 0,
-                "position": 0,
-                "labelLine": true,
-                "polar":getPolar()
-            },
-            funnelConfig: {
-                position: getGrid(),
-                sort: 0, //升 无 降
-                gap: 2,
-                labelPosition: 0, //左,中,右
-                align: 1 //左,中,右
-            },
-            radarConfig: {
-                isArea: false,
-                areaColor: '#FF4081'
-            },
-            "D":null
-        }
-    ]
+    c1.H.position = false
+    c1.H.symbol = false
+    c1.V.position = true
+    c1.V.symbol = false
 
-}
-
-export const getMockCs2 = () => {
-    return [
-        {
-            "id": -1,
-            "name": "noSeries",
-            "type": 2,
-            "isStack": false
-        },
-        {
-            "id": 0,
-            "name": "C0",
-            "type": 1,
-            "polar": {
-                "pi": 10,
-                "po": 390,
-                pl: 500,
-                pt: 410
-            },
-            "isLoad": false,
-            "axisType": true,
-            "isStack": false,
-            "H": {
-                "name": "H0",
-                "axisName": "H0",
-                "unit": "",
-                "textColor": "#00FFF0",
-                "tickLine": false,
-                "splitLine": false,
-                "labelColor": "#00FFF0",
-                "labelShow": true,
-                "lineColor": "#0D6E6E",
-                "show": true,
-                "symbol": true,
-                "position": true
-            },
-            "V": {
-                "name": "V0",
-                "axisName": "V0",
-                "unit": "",
-                "textColor": "#00FFF0",
-                "tickLine": false,
-                "splitLine": false,
-                "labelColor": "#00FFF0",
-                "labelShow": true,
-                "lineColor": "#0D6E6E",
-                "show": true,
-                "symbol": true,
-                "position": false,
-                "sa": 30,
-                "ea": 150
-            }
-        },
-        {
-            "id": 1,
-            "name": "C1",
-            "type": 1,
-            "polar": {
-                "pi": 10,
-                "po": 390,
-                pl: 500,
-                pt: 410
-            },
-            "isLoad": false,
-            "axisType": true,
-            "isStack": false,
-            "H": {
-                "name": "H1",
-                "axisName": "H1",
-                "unit": "",
-                "textColor": "#00FFF0",
-                "tickLine": false,
-                "splitLine": true,
-                "labelColor": "#00FFF0",
-                "labelShow": true,
-                "lineColor": "#0D6E6E",
-                "show": true,
-                "symbol": true,
-                "position": true
-            },
-            "V": {
-                "name": "V1",
-                "axisName": "V1",
-                "unit": "",
-                "textColor": "#00FFF0",
-                "tickLine": false,
-                "splitLine": true,
-                "labelColor": "#00FFF0",
-                "labelShow": true,
-                "lineColor": "#0D6E6E",
-                "show": true,
-                "symbol": true,
-                "position": false,
-                "sa": 210,
-                "ea": 330
-            }
-        }
-    ]
-}
-
-export const getMockCs3 = () => {
-    return [
-        {
-            "id": -1,
-            "name": "noSeries",
-            "type": 2,
-            "isStack": false
-        },
-        {
-            "id": 0,
-            "name": "C0",
-            "type": 0,
-            "grid":{
-                t: 400,
-                l: 100,
-                w: 800,
-                h: 300,
-            },
-            "isLoad": false,
-            "axisType": false,
-            "isStack": false,
-            "H": {
-                "name": "H0",
-                "axisName": "H0",
-                "unit": "",
-                "textColor": "#f5f5f5",
-                "tickLine": false,
-                "splitLine": false,
-                "labelColor": "#f5f5f5",
-                "labelShow": true,
-                "lineColor": "#0D6E6E",
-                "show": true,
-                "symbol": false,
-                "position": false,
-                "offset": 0
-            },
-            "V": {
-                "name": "V0",
-                "axisName": "V0",
-                "unit": "",
-                "textColor": "#f5f5f5",
-                "tickLine": false,
-                "splitLine": false,
-                "labelColor": "#f5f5f5",
-                "labelShow": true,
-                "lineColor": "#0D6E6E",
-                "show": true,
-                "symbol": false,
-                "position": true,
-                "offset": 0
-            }
-        },
-        {
-            "id": 1,
-            "name": "C1",
-            "type": 0,
-            "grid": {
-                t: 50,
-                l: 100,
-                w: 800,
-                h: 300,
-            },
-
-            "isLoad": false,
-            "axisType": false,
-            "isStack": false,
-            "H": {
-                "name": "H1",
-                "axisName": "H1",
-                "unit": "",
-                "textColor": "#f5f5f5",
-                "tickLine": false,
-                "splitLine": false,
-                "labelColor": "#f5f5f5",
-                "labelShow": true,
-                "lineColor": "#0D6E6E",
-                "show": true,
-                "symbol": false,
-                "position": true,
-                "offset": 0
-            },
-            "V": {
-                "name": "V1",
-                "axisName": "V1",
-                "unit": "",
-                "textColor": "#f5f5f5",
-                "tickLine": false,
-                "splitLine": false,
-                "labelColor": "#f5f5f5",
-                "labelShow": true,
-                "lineColor": "#0D6E6E",
-                "show": true,
-                "symbol": true,
-                "position": true,
-                "offset": 0
-            }
-        }
-    ]
-
-}
-
-export const getMockCs4 = () => {
-    return [
-        {
-            "id": -1,
-            "name": "noSeries",
-            "type": 2,
-            "isStack": false
-        }
-    ]
-
-}
-
-export const getMockCs5 = () => {
-    return [
-        {
-            "id": -1,
-            "name": "noSeries",
-            "type": 2,
-            "isStack": false
-        },
-        {
-            "id": 0,
-            "name": "C0",
-            "type": 0,
-            "grid":getGrid(),
-            "isLoad": false,
-            "axisType": false,
-            "isStack": true,
-            "H": {
-                "name": "H0",
-                "axisName": "H0",
-                "unit": "",
-                "textColor": "#000",
-                "tickLine": false,
-                "splitLine": false,
-                "labelColor": "#000",
-                "labelShow": true,
-                "lineColor": "#0D6E6E",
-                "show": true,
-                "symbol": true,
-                "position": true,
-                "offset": 0
-            },
-            "V": {
-                "name": "V0",
-                "axisName": "V0",
-                "unit": "",
-                "textColor": "#000",
-                "tickLine": false,
-                "splitLine": false,
-                "labelColor": "#000",
-                "labelShow": true,
-                "lineColor": "#0D6E6E",
-                "show": true,
-                "symbol": true,
-                "position": false,
-                "offset": 0
-            }
-        }
-    ]
+    const grid1 = c1.grid
+    const grid2 = c2.grid
 
 
-}
-
-export const getMockCs6 = () => {
-    return [
-        {
-            "id": -1,
-            "name": "noSeries",
-            "type": 2,
-            "isStack": false
-        },
-        {
-            "id": 0,
-            "name": "C0",
-            "type": 0,
-            "grid":getGrid(),
-            "isLoad": false,
-            "axisType": false,
-            "isStack": false,
-            "H": {
-                "name": "H0",
-                "axisName": "H0",
-                "unit": "",
-                "textColor": "#000",
-                "tickLine": false,
-                "splitLine": false,
-                "labelColor": "#000",
-                "labelShow": true,
-                "lineColor": "#0D6E6E",
-                "show": true,
-                "symbol": true,
-                "position": true,
-                "offset": 0
-            },
-            "V": {
-                "name": "V0",
-                "axisName": "V0",
-                "unit": "",
-                "textColor": "#000",
-                "tickLine": false,
-                "splitLine": false,
-                "labelColor": "#000",
-                "labelShow": true,
-                "lineColor": "#0D6E6E",
-                "show": true,
-                "symbol": true,
-                "position": false,
-                "offset": 0
-            }
-        }
-    ]
+    c2.H.symbol = false
+    c2.V.position = true
 
 
-}
+    grid1.t = 400
+    grid1.l = 100
+    grid1.w = 800
+    grid1.h = 300
 
-export const handle1 = (Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)=>{
-    Ss.value = getMockSs1()
-    sIndex.value = 3
-    cIndex.value = 0
+    grid2.t = 50
+    grid2.l = 100
+    grid2.w = 800
+    grid2.h = 300
 
+    Cs.forEach((i,index) => {
+        if (index === 0) return
+        i.H.textColor = '#f5f5f5'
+        i.H.labelColor = '#f5f5f5'
+        i.V.textColor = '#f5f5f5'
+        i.V.labelColor = '#f5f5f5'
+        loadAxis(i,echartsOptions)
+    })
 
-    Cs.value.filter(i=>i.id>-1).forEach(i=>loadAxis(i,echartsOptions))
-    Ss.value.forEach(i=> {
-        i.C = Cs.value[1]
-        i.D = Ds.value[0]
-        checkSeries(i, echartsOptions)
+    s1.C = c1
+    s1.category = 1
+    s1.number = 2
+    s1.color = '#00FFF0'
+
+    s2.C = c2
+    s2.category = 1
+    s2.number = 3
+    s2.color = '#FF4081'
+
+    Ss.forEach((i) => {
+        i.type = 1
+        checkSeries(i,echartsOptions)
     })
 
 }
 
-export const handle2 = (Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)=>{
-    Ss.value = getMockSs2()
-    Cs.value = getMockCs2()
-    global.value.backGround = '#1d2e3d'
+export const handle4 = (Ss,Cs,echartsOptions,addSeries,source,setColorPie)=>{
+    addSeries()
+    addSeries()
 
-    echartsOptions.value.backgroundColor = '#1d2e3d'
+    const [s1,s2] = Ss
 
+    const pie1 =  s1.pieConfig
+    const pie2 =  s2.pieConfig
 
-    Cs.value.filter(i=>i.id>-1).forEach(i=>loadAxis(i,echartsOptions))
+    pie1.polar.pi = 70
+    pie1.polar.po = 400
 
-    Ss.value.forEach((i,index)=> {
-        i.C = Cs.value[index+1]
-        i.D = Ds.value[0]
-        checkSeries(i, echartsOptions)
-    })
+    pie1.borderRadius = 5
+    pie1.padAngle = 1
+    pie1.position = 0
+    pie1.labelLine = true
 
-    sIndex.value = 1
-    cIndex.value = 1
-}
+    pie2.polar.pi = 0
+    pie2.polar.po = 200
+    pie2.isRose = true
+    pie2.roseType = 0
 
-export const handle3 = (Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)=>{
-    Ss.value = getMockSs3()
-    Cs.value = getMockCs3()
+    pie2.borderRadius = 7.3
+    pie2.padAngle = 1
+    pie2.position = 1
+    pie2.labelLine = true
 
-    echartsOptions.value.backgroundColor = '#1a1f2b'
-
-    Cs.value.filter(i=>i.id>-1).forEach(i=>loadAxis(i,echartsOptions))
-
-    Ss.value.forEach((i,index)=> {
-        i.C = Cs.value[index+1]
-        i.D = Ds.value[0]
-        checkSeries(i, echartsOptions)
-    })
-
-    sIndex.value = 1
-    cIndex.value = 1
-}
-
-export const handle4 = (Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)=>{
-    Ss.value = getMockSs4()
-    Cs.value = getMockCs4()
     const colors = getColors()
-    Ss.value.forEach((i,index)=> {
-        i.C = Cs.value[0]
-        i.D = Ds.value[0]
-        checkSeries(i, echartsOptions)
-        const target = echartsOptions.value.series.find(item=>item.id===i.id)
 
-        target.data.forEach((d,index)=>{
-            d.itemStyle.color = colors[index]
+    Ss.forEach(s => {
+        source.forEach((i,index) => {
+            setColorPie(i[0]+s.id,colors[index])
         })
-        checkSeries(i, echartsOptions)
     })
 
-    sIndex.value = 1
-    cIndex.value = 0
-}
 
-export const handle5= (Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)=>{
-    Ss.value = getMockSs5()
-    Cs.value = getMockCs5()
+    Ss.forEach(i => {
+        i.type = 3
+        i.category = 1
+        i.number = 2
+        i.C = Cs[0]
+        i.pieConfig.polar.pl = 500
+        i.pieConfig.polar.pt = 410
 
-    Cs.value.filter(i=>i.id>-1).forEach(i=>loadAxis(i,echartsOptions))
-
-    Ss.value.forEach((i,index)=> {
-        i.C = Cs.value[1]
-        i.D = Ds.value[0]
-        checkSeries(i, echartsOptions)
+        checkSeries(i,echartsOptions)
     })
-
-    sIndex.value = 2
-    cIndex.value = 0
 }
 
-export const handle6= (Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)=>{
-    Ss.value = getMockSs6()
-    Cs.value = getMockCs6()
+export const handle5= (Ss,Cs,echartsOptions,addX0Y,addSeries)=>{
+    addX0Y(true)
+    const c0 = Cs[1]
+    c0.isStack = true
+    loadAxis(c0,echartsOptions)
+    for(let i = 0; i < 3 ; i++) {
+        addSeries()
+        Ss[i].C = c0
+        Ss[i].category = 1
+        Ss[i].number = i+2
+        Ss[i].lineConfig.isArea = true
+        Ss[i].lineConfig.lineType = 1
+    }
 
-    global.value.visualMap.pieces = [
+    const [s1,s2,s3] = Ss
+
+    s1.color = "#00FFF0"
+    s1.areaColor = "#00FFF0"
+    s2.color = "#7579E7"
+    s2.areaColor = "#7579E7"
+    s3.color = "#ff004d"
+    s3.areaColor = "#ff004d"
+
+    Ss.forEach(i => checkSeries(i,echartsOptions))
+}
+
+export const handle6= (Ss,Cs,global,echartsOptions,addX0Y,addSeries)=>{
+
+    global.visualMap.pieces = [
         {
             "gt": 0,
             "lte": 25,
@@ -1421,24 +311,36 @@ export const handle6= (Ss,Cs,sIndex,cIndex,global,echartsOptions,Ds)=>{
             "color": "#00FFF0"
         }
     ]
-    global.value.isLayer = true
 
-    echartsOptions.value.visualMap = {
-        pieces: global.value.visualMap.pieces,
+    global.isLayer = true
+
+    echartsOptions.visualMap = {
+        pieces: global.visualMap.pieces,
         dimension: 1
     }
 
-    Cs.value.filter(i=>i.id>-1).forEach(i=>loadAxis(i,echartsOptions))
+    addX0Y(true)
+    const c0 = Cs[1]
+    c0.isStack = true
+    loadAxis(c0,echartsOptions)
 
-    Ss.value.forEach((i)=> {
-        i.C = Cs.value[1]
-        i.D = Ds.value[0]
-        checkSeries(i, echartsOptions)
-    })
+    for(let i = 0; i < 4 ; i++) {
+        addSeries()
+        Ss[i].C = c0
+        Ss[i].category = 1
+        Ss[i].number = i+2
+        Ss[i].type = 2
+        Ss[i].scatterConfig.mapField = i+2
+        Ss[i].scatterConfig.type = 1
+        checkSeries(Ss[i],echartsOptions)
+    }
 
-    sIndex.value = 2
-    cIndex.value = 0
 }
+
+export const handle7= (Ss,echartsOptions,addRelation)=>{
+    addRelation()
+}
+
 
 const getColors = ()=>{
     return [
@@ -1451,5 +353,2830 @@ const getColors = ()=>{
         "#00fff0",
         "#ff004d",
         "#6930C3"
+    ]
+}
+
+
+
+export const getMockData4R = () => {
+
+    return [
+        [
+            "id",
+            "始人物",
+            "关系",
+            "终人物",
+            "权重",
+            "派系",
+            "关系度"
+        ],
+        [
+            "e95c4e84-942d-4bce-a4b3-c2b7f4b273aa",
+            "贾宝玉",
+            "父亲",
+            "贾政",
+            98,
+            "贾府核心",
+            95
+        ],
+        [
+            "07b92580-1d8b-4c1f-8602-f87b919228f3",
+            "贾宝玉",
+            "母亲",
+            "王夫人",
+            98,
+            "贾府核心",
+            95
+        ],
+        [
+            "5eda0ce7-e382-4d2b-b1c1-401c2ebf68f1",
+            "贾宝玉",
+            "祖母",
+            "贾母",
+            98,
+            "贾府核心",
+            85
+        ],
+        [
+            "5cab1f1f-fadb-40fc-8281-9b839c450b1c",
+            "贾宝玉",
+            "外祖母",
+            "贾母",
+            98,
+            "贾府核心",
+            85
+        ],
+        [
+            "28069e5c-fd51-4872-a412-d3e441f95cc8",
+            "贾宝玉",
+            "表妹",
+            "林黛玉",
+            98,
+            "贾府核心",
+            65
+        ],
+        [
+            "d23a7151-3d1d-4a35-bcf7-8bfdf5a86b35",
+            "贾宝玉",
+            "妻子",
+            "薛宝钗",
+            98,
+            "贾府核心",
+            95
+        ],
+        [
+            "3193a57a-faf6-4d15-a774-1e2bc66904a5",
+            "贾宝玉",
+            "嫂子",
+            "王熙凤",
+            98,
+            "贾府核心",
+            30
+        ],
+        [
+            "d29550cf-93d6-4056-b4f0-05a0b9031469",
+            "贾宝玉",
+            "堂兄",
+            "贾琏",
+            98,
+            "贾府核心",
+            30
+        ],
+        [
+            "9351accc-90bc-4ab3-8f16-c915f86ba176",
+            "贾宝玉",
+            "堂弟",
+            "贾环",
+            98,
+            "贾府核心",
+            30
+        ],
+        [
+            "aebca3f0-236b-4989-b484-7187a6b6eee2",
+            "贾宝玉",
+            "丫鬟",
+            "袭人",
+            98,
+            "贾府核心",
+            55
+        ],
+        [
+            "1e97656f-79f4-4cdc-8a87-c91c16630a3e",
+            "贾宝玉",
+            "丫鬟",
+            "晴雯",
+            98,
+            "贾府核心",
+            55
+        ],
+        [
+            "14650eaf-4b15-4174-b26e-0c95acd7fb08",
+            "贾宝玉",
+            "丫鬟",
+            "麝月",
+            98,
+            "贾府核心",
+            55
+        ],
+        [
+            "abdcef73-81f1-46e6-8efe-37165788134e",
+            "贾宝玉",
+            "丫鬟",
+            "芳官",
+            98,
+            "贾府核心",
+            55
+        ],
+        [
+            "ed4d8fed-4e69-45a7-a2a7-e5afcbec0b31",
+            "贾宝玉",
+            "表妹",
+            "史湘云",
+            98,
+            "贾府核心",
+            65
+        ],
+        [
+            "cc1b23a1-c93f-4800-8c6c-37b320f06465",
+            "贾宝玉",
+            "侄媳",
+            "秦可卿",
+            98,
+            "贾府核心",
+            30
+        ],
+        [
+            "867fb630-34c8-4846-8e7f-47143084a7c3",
+            "贾宝玉",
+            "侄儿",
+            "贾蓉",
+            98,
+            "贾府核心",
+            30
+        ],
+        [
+            "207910be-26de-44d2-9048-03fc81eaa748",
+            "贾宝玉",
+            "远房表弟",
+            "秦钟",
+            98,
+            "贾府核心",
+            25
+        ],
+        [
+            "0d3420a1-06ba-4699-a8a7-7e7de1097fe8",
+            "贾宝玉",
+            "朋友",
+            "柳湘莲",
+            98,
+            "贾府核心",
+            45
+        ],
+        [
+            "fe378b47-7280-4c5a-a0e4-8dfc49223569",
+            "贾宝玉",
+            "朋友",
+            "蒋玉菡",
+            98,
+            "贾府核心",
+            45
+        ],
+        [
+            "a102dde0-e6d1-4577-9853-2d4ed941640f",
+            "贾宝玉",
+            "老师",
+            "贾代儒",
+            98,
+            "贾府核心",
+            30
+        ],
+        [
+            "f64f6516-1d9b-4875-b991-08a539b49597",
+            "贾宝玉",
+            "仆人",
+            "茗烟",
+            98,
+            "贾府核心",
+            50
+        ],
+        [
+            "ca91c36e-3bc0-4ac3-b787-d7090a2be0c8",
+            "贾宝玉",
+            "仆人",
+            "李贵",
+            98,
+            "贾府核心",
+            50
+        ],
+        [
+            "de37b647-43c9-47f4-b397-5425236a2a2f",
+            "贾宝玉",
+            "仆人",
+            "扫红",
+            98,
+            "贾府核心",
+            50
+        ],
+        [
+            "b5199bc7-573b-41b5-9ecb-fdf6bd866d95",
+            "贾宝玉",
+            "仆人",
+            "锄药",
+            98,
+            "贾府核心",
+            50
+        ],
+        [
+            "bdf92276-8864-42c9-915f-b8b833668318",
+            "贾宝玉",
+            "仆人",
+            "墨雨",
+            98,
+            "贾府核心",
+            50
+        ],
+        [
+            "57b82866-5e93-4051-a856-aac75b8db51f",
+            "贾宝玉",
+            "仆人",
+            "引泉",
+            98,
+            "贾府核心",
+            50
+        ],
+        [
+            "b8d77ca6-5ef4-4cc4-a683-84d7411eb92b",
+            "贾宝玉",
+            "仆人",
+            "扫花",
+            98,
+            "贾府核心",
+            50
+        ],
+        [
+            "cc84524d-8e28-4490-992b-c835b8369dde",
+            "贾宝玉",
+            "仆人",
+            "挑云",
+            98,
+            "贾府核心",
+            50
+        ],
+        [
+            "394e869b-f2e7-4dc2-828e-cf63eb1b4953",
+            "贾宝玉",
+            "仆人",
+            "伴鹤",
+            98,
+            "贾府核心",
+            50
+        ],
+        [
+            "19434877-1a0f-40f0-8a99-a590e1ba25dd",
+            "贾宝玉",
+            "仆人",
+            "双瑞",
+            98,
+            "贾府核心",
+            50
+        ],
+        [
+            "c4475173-3e4f-4c86-b06f-784179ca8875",
+            "林黛玉",
+            "外祖母",
+            "贾母",
+            95,
+            "贾府核心",
+            85
+        ],
+        [
+            "046c8cff-55dd-4d27-aac1-aca32756230f",
+            "林黛玉",
+            "表哥",
+            "贾宝玉",
+            95,
+            "贾府核心",
+            65
+        ],
+        [
+            "9e995f6b-e218-4b3c-91b1-f813104f8afe",
+            "林黛玉",
+            "嫂子",
+            "王熙凤",
+            95,
+            "贾府核心",
+            30
+        ],
+        [
+            "a70976fa-bedb-4c68-b79d-0afcc2c3b0f2",
+            "林黛玉",
+            "丫鬟",
+            "紫鹃",
+            95,
+            "贾府核心",
+            55
+        ],
+        [
+            "c1a9df82-dfab-4660-958e-1c2d26388e3a",
+            "林黛玉",
+            "丫鬟",
+            "雪雁",
+            95,
+            "贾府核心",
+            55
+        ],
+        [
+            "08920c89-7057-428c-9a88-aaae4066266a",
+            "林黛玉",
+            "丫鬟",
+            "春纤",
+            95,
+            "贾府核心",
+            55
+        ],
+        [
+            "bf08a127-242e-4fe1-aa25-a3ef9d6484df",
+            "林黛玉",
+            "父亲",
+            "林如海",
+            95,
+            "贾府核心",
+            95
+        ],
+        [
+            "b5607374-9d82-4583-b41a-9fce951ef3d0",
+            "林黛玉",
+            "母亲",
+            "贾敏",
+            95,
+            "贾府核心",
+            95
+        ],
+        [
+            "5a0d2b46-3bbd-47ed-979a-ffef6fa23310",
+            "林黛玉",
+            "表姐",
+            "贾元春",
+            95,
+            "贾府核心",
+            65
+        ],
+        [
+            "5da02760-9d9f-449a-b58c-0a1b25166b8e",
+            "林黛玉",
+            "表姐",
+            "贾探春",
+            95,
+            "贾府核心",
+            65
+        ],
+        [
+            "dc1fced9-f175-4f0b-bc6d-63af0e877469",
+            "林黛玉",
+            "表姐",
+            "贾惜春",
+            95,
+            "贾府核心",
+            65
+        ],
+        [
+            "01605d88-2c7a-40d9-a0f1-1673c3bb2739",
+            "林黛玉",
+            "表姐",
+            "贾迎春",
+            95,
+            "贾府核心",
+            65
+        ],
+        [
+            "f0f18d42-4fe0-4492-b970-91f68fd1a0a3",
+            "林黛玉",
+            "表嫂",
+            "李纨",
+            95,
+            "贾府核心",
+            20
+        ],
+        [
+            "f84c01b8-80ff-4c2d-8b2f-373f642bde63",
+            "林黛玉",
+            "表嫂",
+            "尤氏",
+            95,
+            "贾府核心",
+            20
+        ],
+        [
+            "bfddf3c9-38df-468e-9b29-655383761f24",
+            "林黛玉",
+            "表妹",
+            "史湘云",
+            95,
+            "贾府核心",
+            65
+        ],
+        [
+            "e1b884ee-6f2d-4658-ac2a-3dc262295d20",
+            "林黛玉",
+            "朋友",
+            "妙玉",
+            95,
+            "贾府核心",
+            45
+        ],
+        [
+            "252b47e0-ea49-4eee-acb3-79725015f30b",
+            "林黛玉",
+            "朋友",
+            "香菱",
+            95,
+            "贾府核心",
+            45
+        ],
+        [
+            "297b02a5-277b-4403-ad71-093d2c0a3ef3",
+            "薛宝钗",
+            "母亲",
+            "薛姨妈",
+            92,
+            "薛家核心",
+            95
+        ],
+        [
+            "0e3a112a-6cef-4cf1-a344-28178cc13168",
+            "薛宝钗",
+            "哥哥",
+            "薛蟠",
+            92,
+            "薛家核心",
+            75
+        ],
+        [
+            "67485964-bed1-4834-86ad-113b2465280b",
+            "薛宝钗",
+            "丫鬟",
+            "莺儿",
+            92,
+            "薛家核心",
+            55
+        ],
+        [
+            "1f4e9e0f-d00f-4a4f-8499-72d6143cf2c5",
+            "薛宝钗",
+            "丫鬟",
+            "文杏",
+            92,
+            "薛家核心",
+            55
+        ],
+        [
+            "6c65bf3c-b6f9-432e-8f80-cde2957de438",
+            "薛宝钗",
+            "丫鬟",
+            "蕊官",
+            92,
+            "薛家核心",
+            55
+        ],
+        [
+            "5df42f6a-6748-47f2-a46b-ab993c505a98",
+            "薛宝钗",
+            "丈夫",
+            "贾宝玉",
+            92,
+            "薛家核心",
+            95
+        ],
+        [
+            "bf850840-d750-4527-b3a5-08fbd341937c",
+            "薛宝钗",
+            "表妹",
+            "林黛玉",
+            92,
+            "薛家核心",
+            65
+        ],
+        [
+            "f8e47cfb-2e73-4ab4-95ca-0c46291ab032",
+            "薛宝钗",
+            "表妹",
+            "史湘云",
+            92,
+            "薛家核心",
+            65
+        ],
+        [
+            "e7e0f1e9-1385-45dc-963d-8090f9124559",
+            "薛宝钗",
+            "表姐",
+            "贾元春",
+            92,
+            "薛家核心",
+            65
+        ],
+        [
+            "f0f26207-0bd3-4adf-ac4f-86b4b2158a45",
+            "薛宝钗",
+            "表姐",
+            "贾探春",
+            92,
+            "薛家核心",
+            65
+        ],
+        [
+            "b7ff7e8f-9be7-4bd6-9dc3-38772a4c22ea",
+            "薛宝钗",
+            "表嫂",
+            "王熙凤",
+            92,
+            "薛家核心",
+            20
+        ],
+        [
+            "eb48cfa6-31cc-4285-89d1-6cce745a33f3",
+            "薛宝钗",
+            "表嫂",
+            "李纨",
+            92,
+            "薛家核心",
+            20
+        ],
+        [
+            "d6e6d73c-5074-41c9-9987-4c0faa6a048b",
+            "薛宝钗",
+            "表嫂",
+            "尤氏",
+            92,
+            "薛家核心",
+            20
+        ],
+        [
+            "021eb977-2eb5-414a-956f-3ec5fe4298bd",
+            "薛宝钗",
+            "表弟",
+            "贾环",
+            92,
+            "薛家核心",
+            65
+        ],
+        [
+            "550fd42e-5ff1-42c4-9c2f-e4e06d3dc098",
+            "薛宝钗",
+            "远房表弟",
+            "贾琏",
+            92,
+            "薛家核心",
+            25
+        ],
+        [
+            "f1fb76f6-2845-47a5-87e4-624d52628a71",
+            "薛宝钗",
+            "远房表弟",
+            "贾珍",
+            92,
+            "薛家核心",
+            25
+        ],
+        [
+            "c1039259-c370-4281-bf5f-e97e38d51550",
+            "薛宝钗",
+            "远房表弟",
+            "贾蓉",
+            92,
+            "薛家核心",
+            25
+        ],
+        [
+            "33c344a8-1757-4d3a-8232-2ac4ce9d98a3",
+            "薛宝钗",
+            "亲戚",
+            "邢夫人",
+            92,
+            "薛家核心",
+            35
+        ],
+        [
+            "03b15e74-e9a3-414d-80b4-8a0f281d8102",
+            "薛宝钗",
+            "亲戚",
+            "赵姨娘",
+            92,
+            "薛家核心",
+            35
+        ],
+        [
+            "04895c25-ce1f-4637-b15b-0a669895ed4a",
+            "薛宝钗",
+            "亲戚",
+            "周瑞家的",
+            92,
+            "薛家核心",
+            35
+        ],
+        [
+            "8f215a36-41b3-4e90-9bc7-9b40c32dace7",
+            "王熙凤",
+            "丈夫",
+            "贾琏",
+            90,
+            "贾府核心",
+            95
+        ],
+        [
+            "e93c4dd4-47bb-44b5-87d0-fd58e6e4f5d2",
+            "王熙凤",
+            "姑妈",
+            "王夫人",
+            90,
+            "贾府核心",
+            30
+        ],
+        [
+            "8f88c3c4-f37b-4905-b49b-ad3004683ef3",
+            "王熙凤",
+            "表妹",
+            "林黛玉",
+            90,
+            "贾府核心",
+            65
+        ],
+        [
+            "387b4356-5611-4f3c-8f06-0e07cc75f587",
+            "王熙凤",
+            "表妹",
+            "薛宝钗",
+            90,
+            "贾府核心",
+            65
+        ],
+        [
+            "91fc234c-4452-4b28-86e8-4a8c2eef2ce7",
+            "王熙凤",
+            "表妹",
+            "史湘云",
+            90,
+            "贾府核心",
+            65
+        ],
+        [
+            "abffa9c9-3ad9-428f-8b4b-0b9c767959d4",
+            "王熙凤",
+            "表侄",
+            "贾宝玉",
+            90,
+            "贾府核心",
+            30
+        ],
+        [
+            "14c9a9a7-f2c6-4ddc-9aa5-85020df8a2e2",
+            "王熙凤",
+            "表嫂",
+            "李纨",
+            90,
+            "贾府核心",
+            20
+        ],
+        [
+            "84b86c29-c951-43f2-9215-150a941d61ac",
+            "王熙凤",
+            "表嫂",
+            "尤氏",
+            90,
+            "贾府核心",
+            20
+        ],
+        [
+            "ff9e2514-33bf-466b-bf0d-dba05b19677b",
+            "王熙凤",
+            "丫鬟",
+            "平儿",
+            90,
+            "贾府核心",
+            55
+        ],
+        [
+            "216a8cb0-d922-44ea-8aab-087d0b9d8d86",
+            "王熙凤",
+            "丫鬟",
+            "丰儿",
+            90,
+            "贾府核心",
+            55
+        ],
+        [
+            "5236eb4a-28f0-46d9-b2f5-a0549e73d62c",
+            "王熙凤",
+            "丫鬟",
+            "小红",
+            90,
+            "贾府核心",
+            55
+        ],
+        [
+            "c7d5b150-4680-4a5b-8571-b18d1fa450c9",
+            "王熙凤",
+            "丫鬟",
+            "彩明",
+            90,
+            "贾府核心",
+            55
+        ],
+        [
+            "c9bd6f5f-b7f4-4483-af7a-2fb8554b8d6d",
+            "王熙凤",
+            "丫鬟",
+            "彩霞",
+            90,
+            "贾府核心",
+            55
+        ],
+        [
+            "bbd177da-fe96-4246-86a4-253b3c60ccc5",
+            "王熙凤",
+            "丫鬟",
+            "秋桐",
+            90,
+            "贾府核心",
+            55
+        ],
+        [
+            "3ae63bee-f9b8-4be8-8ee4-eda749837690",
+            "王熙凤",
+            "仆人",
+            "旺儿",
+            90,
+            "贾府核心",
+            50
+        ],
+        [
+            "d7b8f6e1-4c5d-44a2-94f5-a893a15e18e9",
+            "王熙凤",
+            "仆人",
+            "来旺",
+            90,
+            "贾府核心",
+            50
+        ],
+        [
+            "b1411c29-9557-47fe-af60-25c129686841",
+            "王熙凤",
+            "仆人",
+            "林之孝",
+            90,
+            "贾府核心",
+            50
+        ],
+        [
+            "9cb3a8a7-c954-4705-88d6-4f2993434d48",
+            "王熙凤",
+            "仆人",
+            "赖大",
+            90,
+            "贾府核心",
+            50
+        ],
+        [
+            "fd68227f-674e-49b9-92cc-9119cb44dd30",
+            "王熙凤",
+            "仆人",
+            "周瑞",
+            90,
+            "贾府核心",
+            50
+        ],
+        [
+            "f505b953-1941-4f82-8105-fdc5dfed6d8c",
+            "王熙凤",
+            "仆人",
+            "兴儿",
+            90,
+            "贾府核心",
+            50
+        ],
+        [
+            "b8400cb5-4a61-4ee3-834c-03eef76787a4",
+            "王熙凤",
+            "仆人",
+            "旺儿媳妇",
+            90,
+            "贾府核心",
+            50
+        ],
+        [
+            "f5890468-7973-40e4-8331-7d1568b142fe",
+            "王熙凤",
+            "亲戚",
+            "刘姥姥",
+            90,
+            "贾府核心",
+            35
+        ],
+        [
+            "d39602bc-73fd-4cfe-90a2-1ff55b228e95",
+            "贾母",
+            "儿子",
+            "贾政",
+            88,
+            "贾府核心",
+            90
+        ],
+        [
+            "3f4a539d-8f4e-4048-80db-5d7359a87b12",
+            "贾母",
+            "儿子",
+            "贾赦",
+            88,
+            "贾府核心",
+            90
+        ],
+        [
+            "9d166a11-ea20-485f-b921-84e18c4605c9",
+            "贾母",
+            "孙子",
+            "贾宝玉",
+            88,
+            "贾府核心",
+            80
+        ],
+        [
+            "36288b92-4e60-427a-a65f-31b74f1a8e50",
+            "贾母",
+            "孙子",
+            "贾琏",
+            88,
+            "贾府核心",
+            80
+        ],
+        [
+            "afd8ceb2-d365-4a36-8320-39949ed3299f",
+            "贾母",
+            "孙子",
+            "贾珍",
+            88,
+            "贾府核心",
+            80
+        ],
+        [
+            "62a5de48-5cea-42e7-a09e-39baed292c76",
+            "贾母",
+            "孙女",
+            "贾元春",
+            88,
+            "贾府核心",
+            80
+        ],
+        [
+            "4698957c-ee2e-4732-a9b4-1dc847f5b2ff",
+            "贾母",
+            "孙女",
+            "贾探春",
+            88,
+            "贾府核心",
+            80
+        ],
+        [
+            "3c468210-bf53-428a-8931-eac58a4181e2",
+            "贾母",
+            "孙女",
+            "贾惜春",
+            88,
+            "贾府核心",
+            80
+        ],
+        [
+            "7c365d11-6c60-4c0c-b81e-6825ede17041",
+            "贾母",
+            "孙女",
+            "贾迎春",
+            88,
+            "贾府核心",
+            80
+        ],
+        [
+            "2b76bf5b-d06e-4de0-8f7e-cc2ef8267610",
+            "贾母",
+            "丫鬟",
+            "鸳鸯",
+            88,
+            "贾府核心",
+            55
+        ],
+        [
+            "f8b5f8dc-cbd8-4fcd-a29c-dd02a29e347f",
+            "贾母",
+            "丫鬟",
+            "琥珀",
+            88,
+            "贾府核心",
+            55
+        ],
+        [
+            "fc99bff8-efdd-46c4-aa7a-526ee4b7e6a2",
+            "贾母",
+            "丫鬟",
+            "翡翠",
+            88,
+            "贾府核心",
+            55
+        ],
+        [
+            "126fdf62-4c9a-4f49-8ff3-4e47961d5731",
+            "贾母",
+            "丫鬟",
+            "玻璃",
+            88,
+            "贾府核心",
+            55
+        ],
+        [
+            "4f18877c-ae99-47eb-83d0-9edb45c2533c",
+            "贾母",
+            "丫鬟",
+            "傻大姐",
+            88,
+            "贾府核心",
+            55
+        ],
+        [
+            "6c583573-96b3-46dd-8eee-d3ed4e1b4b68",
+            "贾政",
+            "妻子",
+            "王夫人",
+            85,
+            "贾府核心",
+            95
+        ],
+        [
+            "2f9cdca0-ed2e-4d48-a64a-b5a51352c5cf",
+            "贾政",
+            "妻子",
+            "赵姨娘",
+            85,
+            "贾府核心",
+            95
+        ],
+        [
+            "6c24f4a0-9656-42e6-9f67-d38623f5c44a",
+            "贾政",
+            "儿子",
+            "贾宝玉",
+            85,
+            "贾府核心",
+            90
+        ],
+        [
+            "e77e1a12-b607-4e82-a0bd-b5dad46a01b4",
+            "贾政",
+            "儿子",
+            "贾环",
+            85,
+            "贾府核心",
+            90
+        ],
+        [
+            "606bcb3f-2612-47ca-a34b-d964a9520142",
+            "贾政",
+            "女儿",
+            "贾元春",
+            85,
+            "贾府核心",
+            90
+        ],
+        [
+            "931ecc5a-e748-42b4-9a04-ce6259732cf9",
+            "贾政",
+            "女儿",
+            "贾探春",
+            85,
+            "贾府核心",
+            90
+        ],
+        [
+            "3f87fbe1-cca6-4ab8-9b12-22b3f4ab6e7e",
+            "王夫人",
+            "丫鬟",
+            "金钏",
+            82,
+            "贾府核心",
+            55
+        ],
+        [
+            "53252311-bcaf-4973-b744-16aaecd68d4a",
+            "王夫人",
+            "丫鬟",
+            "玉钏",
+            82,
+            "贾府核心",
+            55
+        ],
+        [
+            "670e5d03-38f4-47ee-b1c7-556af7b435bc",
+            "王夫人",
+            "丫鬟",
+            "彩云",
+            82,
+            "贾府核心",
+            55
+        ],
+        [
+            "d0e90ba9-3969-4c3b-a014-8083ee30eb73",
+            "王夫人",
+            "丫鬟",
+            "彩霞",
+            82,
+            "贾府核心",
+            55
+        ],
+        [
+            "2d62cf2e-a17f-445d-89c8-4e0c7f12b495",
+            "王夫人",
+            "丫鬟",
+            "绣鸾",
+            82,
+            "贾府核心",
+            55
+        ],
+        [
+            "e4ea09bf-c80e-4010-af13-4b50f7f87425",
+            "王夫人",
+            "丫鬟",
+            "绣凤",
+            82,
+            "贾府核心",
+            55
+        ],
+        [
+            "f33fd7b9-27aa-437e-affc-c27994535233",
+            "王夫人",
+            "亲戚",
+            "薛姨妈",
+            82,
+            "贾府核心",
+            35
+        ],
+        [
+            "b0d60349-6658-4115-b4b9-6bff0ecb9bb4",
+            "贾琏",
+            "妻子",
+            "王熙凤",
+            78,
+            "贾府旁支",
+            95
+        ],
+        [
+            "1b8fe806-bcc8-4a5f-9cd7-614ed76474ad",
+            "贾琏",
+            "妻子",
+            "尤二姐",
+            78,
+            "贾府旁支",
+            95
+        ],
+        [
+            "0a211d60-68b6-4dc1-929f-aba3fbaf4d23",
+            "贾琏",
+            "妻子",
+            "秋桐",
+            78,
+            "贾府旁支",
+            95
+        ],
+        [
+            "b595f724-b7cc-4e8e-9d9c-4f1ba28e9825",
+            "贾琏",
+            "父亲",
+            "贾赦",
+            78,
+            "贾府旁支",
+            95
+        ],
+        [
+            "96b4ca54-afbe-4832-a6d8-5d531e70de9c",
+            "贾琏",
+            "母亲",
+            "邢夫人",
+            78,
+            "贾府旁支",
+            95
+        ],
+        [
+            "e38584f1-7c17-491d-b3a2-cc777683ac73",
+            "贾琏",
+            "儿子",
+            "巧姐",
+            78,
+            "贾府旁支",
+            90
+        ],
+        [
+            "1be0a00c-1939-433a-b7c0-50c0b6119a77",
+            "贾琏",
+            "丫鬟",
+            "平儿",
+            78,
+            "贾府旁支",
+            55
+        ],
+        [
+            "54c0f2d7-39ad-4b02-b4b9-d0e67333304d",
+            "贾琏",
+            "丫鬟",
+            "丰儿",
+            78,
+            "贾府旁支",
+            55
+        ],
+        [
+            "e3f04965-0186-41ca-8911-c299c2c2c3c7",
+            "贾琏",
+            "仆人",
+            "兴儿",
+            78,
+            "贾府旁支",
+            50
+        ],
+        [
+            "9644ef59-a770-4769-9eaa-5c98beee766b",
+            "贾琏",
+            "仆人",
+            "旺儿",
+            78,
+            "贾府旁支",
+            50
+        ],
+        [
+            "586551ed-263d-42ab-9d2a-fb963c055e5d",
+            "贾琏",
+            "表弟",
+            "贾宝玉",
+            78,
+            "贾府旁支",
+            65
+        ],
+        [
+            "3c21c555-d80c-45e5-9d2f-0527016b99f7",
+            "贾珍",
+            "妻子",
+            "尤氏",
+            75,
+            "贾府旁支",
+            95
+        ],
+        [
+            "5610f4c9-4a67-4a05-8c5d-e0ee133a678f",
+            "贾珍",
+            "儿子",
+            "贾蓉",
+            75,
+            "贾府旁支",
+            90
+        ],
+        [
+            "4cb65890-2ce0-4b39-9289-44acf418b719",
+            "贾珍",
+            "父亲",
+            "贾敬",
+            75,
+            "贾府旁支",
+            95
+        ],
+        [
+            "b1375276-4a45-4232-b18f-859e4f0d12fc",
+            "贾珍",
+            "侄子",
+            "贾宝玉",
+            75,
+            "贾府旁支",
+            30
+        ],
+        [
+            "ae22d31c-44e5-4b0d-b63a-8a00a9aaca81",
+            "贾珍",
+            "侄子",
+            "贾琏",
+            75,
+            "贾府旁支",
+            30
+        ],
+        [
+            "8f4458bb-f387-4e0b-b0b4-a306c8068261",
+            "贾蓉",
+            "妻子",
+            "秦可卿",
+            72,
+            "贾府旁支",
+            95
+        ],
+        [
+            "c7b253fb-05db-41b7-871b-9bce61a42736",
+            "贾蓉",
+            "父亲",
+            "贾珍",
+            72,
+            "贾府旁支",
+            95
+        ],
+        [
+            "01065bf6-cccc-459d-a3c0-9107b6959573",
+            "贾蓉",
+            "表叔",
+            "贾政",
+            72,
+            "贾府旁支",
+            15
+        ],
+        [
+            "3b63f3b9-247b-432b-8055-9e94d119ad56",
+            "贾蓉",
+            "表叔",
+            "贾赦",
+            72,
+            "贾府旁支",
+            15
+        ],
+        [
+            "06cefb75-509c-4ce1-9461-f822a464d8d6",
+            "贾蓉",
+            "表兄",
+            "贾宝玉",
+            72,
+            "贾府旁支",
+            30
+        ],
+        [
+            "498d4404-19ae-43b4-8f18-aa18d273def7",
+            "贾蓉",
+            "表兄",
+            "贾琏",
+            72,
+            "贾府旁支",
+            30
+        ],
+        [
+            "84a2d306-ab8f-4af2-ab0a-a863bb65f1a4",
+            "贾蓉",
+            "表妹",
+            "林黛玉",
+            72,
+            "贾府旁支",
+            65
+        ],
+        [
+            "271d6f34-5acc-4e90-9c91-f3c6d222f8ed",
+            "贾蓉",
+            "表妹",
+            "薛宝钗",
+            72,
+            "贾府旁支",
+            65
+        ],
+        [
+            "87a2239d-6cb1-4923-82e6-02cb8e59057d",
+            "贾蓉",
+            "丫鬟",
+            "瑞珠",
+            72,
+            "贾府旁支",
+            55
+        ],
+        [
+            "ffd55662-b263-41f4-afe5-695c586eeae7",
+            "贾蓉",
+            "丫鬟",
+            "宝珠",
+            72,
+            "贾府旁支",
+            55
+        ],
+        [
+            "69e52265-ceea-4b37-a366-95a6521bbda4",
+            "秦可卿",
+            "丈夫",
+            "贾蓉",
+            73,
+            "贾府旁支",
+            95
+        ],
+        [
+            "e4cba4a2-7bc6-45d8-a729-fa06aad5ba45",
+            "秦可卿",
+            "公公",
+            "贾珍",
+            73,
+            "贾府旁支",
+            30
+        ],
+        [
+            "6e703ce6-94e8-411c-bfd8-a54dc62c2299",
+            "秦可卿",
+            "婆婆",
+            "尤氏",
+            73,
+            "贾府旁支",
+            30
+        ],
+        [
+            "18795753-f173-40e2-b288-f56c3a498146",
+            "秦可卿",
+            "表妹",
+            "王熙凤",
+            73,
+            "贾府旁支",
+            65
+        ],
+        [
+            "de9b45ef-3379-4193-9ebe-af111f1f9d28",
+            "秦可卿",
+            "表妹",
+            "林黛玉",
+            73,
+            "贾府旁支",
+            65
+        ],
+        [
+            "572f9f86-dd28-40a3-90ec-2be8f989a1b3",
+            "秦可卿",
+            "表妹",
+            "薛宝钗",
+            73,
+            "贾府旁支",
+            65
+        ],
+        [
+            "32c80f39-82ca-4216-beef-2890e3e91d55",
+            "秦可卿",
+            "丫鬟",
+            "瑞珠",
+            73,
+            "贾府旁支",
+            55
+        ],
+        [
+            "2d30a38d-56ae-41ac-b2ac-338114eca52e",
+            "秦可卿",
+            "丫鬟",
+            "宝珠",
+            73,
+            "贾府旁支",
+            55
+        ],
+        [
+            "53ea8c58-4b1c-4619-a592-a77f2d64b0eb",
+            "刘姥姥",
+            "恩人",
+            "王熙凤",
+            57,
+            "乡下亲戚",
+            40
+        ],
+        [
+            "3ef664b0-db15-47f1-9cf7-880f816f1856",
+            "刘姥姥",
+            "恩人",
+            "贾母",
+            57,
+            "乡下亲戚",
+            40
+        ],
+        [
+            "72c26c0b-4af1-40fe-a693-f35b659f2f5b",
+            "刘姥姥",
+            "亲戚",
+            "王夫人",
+            57,
+            "乡下亲戚",
+            35
+        ],
+        [
+            "7242f51e-1605-4c1a-b0d1-ef6a13ddf65c",
+            "刘姥姥",
+            "女婿",
+            "狗儿",
+            57,
+            "乡下亲戚",
+            30
+        ],
+        [
+            "900f3532-e8a0-426c-b28d-5bef19f84a68",
+            "刘姥姥",
+            "外孙",
+            "板儿",
+            57,
+            "乡下亲戚",
+            30
+        ],
+        [
+            "30f9d580-281a-485b-87ff-7f54a802d3e8",
+            "刘姥姥",
+            "外孙女",
+            "青儿",
+            57,
+            "乡下亲戚",
+            30
+        ],
+        [
+            "a9c927fb-5653-4bcf-8386-9f92f1478d6b",
+            "史湘云",
+            "姑妈",
+            "贾母",
+            75,
+            "史家核心",
+            30
+        ],
+        [
+            "568a2eab-89dc-4ea3-8919-a7043df6a22f",
+            "史湘云",
+            "姑父",
+            "史鼐",
+            75,
+            "史家核心",
+            30
+        ],
+        [
+            "cb6c6253-5d84-4d4e-9884-69b9d6282cdf",
+            "史湘云",
+            "表哥",
+            "贾宝玉",
+            75,
+            "史家核心",
+            65
+        ],
+        [
+            "3bf185b6-6c88-400d-b8c6-a65197b01187",
+            "史湘云",
+            "表姐",
+            "林黛玉",
+            75,
+            "史家核心",
+            65
+        ],
+        [
+            "8ca9d7b7-3c8b-4d46-847e-1d7a9c4bc5f9",
+            "史湘云",
+            "表姐",
+            "薛宝钗",
+            75,
+            "史家核心",
+            65
+        ],
+        [
+            "83f6f28b-4173-45cc-bb09-0e36bd1738c9",
+            "史湘云",
+            "丫鬟",
+            "翠缕",
+            75,
+            "史家核心",
+            55
+        ],
+        [
+            "76977cd3-8f86-4523-ae36-d81b20c4240a",
+            "史湘云",
+            "丫鬟",
+            "葵官",
+            75,
+            "史家核心",
+            55
+        ],
+        [
+            "65a490d0-b5c7-44e2-aedd-192221b84ae5",
+            "妙玉",
+            "朋友",
+            "林黛玉",
+            59,
+            "栊翠庵",
+            45
+        ],
+        [
+            "1c872f71-5dde-40a9-a300-e4423fd1c9fa",
+            "妙玉",
+            "朋友",
+            "贾宝玉",
+            59,
+            "栊翠庵",
+            45
+        ],
+        [
+            "6072be72-868e-4d32-8ba3-d1222818bc42",
+            "妙玉",
+            "朋友",
+            "薛宝钗",
+            59,
+            "栊翠庵",
+            45
+        ],
+        [
+            "f799bc5b-e60b-43f3-adff-1cef993eb73f",
+            "妙玉",
+            "朋友",
+            "史湘云",
+            59,
+            "栊翠庵",
+            45
+        ],
+        [
+            "94476d5a-a6f6-4d3c-b526-e50aa05bd423",
+            "薛蟠",
+            "母亲",
+            "薛姨妈",
+            62,
+            "薛家旁支",
+            95
+        ],
+        [
+            "9de62916-e5c9-4cd9-a1df-197cbbefcdfb",
+            "薛蟠",
+            "妹妹",
+            "薛宝钗",
+            62,
+            "薛家旁支",
+            75
+        ],
+        [
+            "ca84b9fe-5938-4a98-a0d7-93858111cef3",
+            "薛蟠",
+            "妻子",
+            "夏金桂",
+            62,
+            "薛家旁支",
+            95
+        ],
+        [
+            "d49006f4-e509-4106-a809-a1c744130003",
+            "薛蟠",
+            "妻子",
+            "香菱",
+            62,
+            "薛家旁支",
+            95
+        ],
+        [
+            "9b548602-2b8b-4476-89d1-3b1834a70fb8",
+            "薛蟠",
+            "仆人",
+            "张德辉",
+            62,
+            "薛家旁支",
+            50
+        ],
+        [
+            "4b25e401-ec09-4ce6-898e-520cb2dfe6af",
+            "薛蟠",
+            "仆人",
+            "老苍头",
+            62,
+            "薛家旁支",
+            50
+        ],
+        [
+            "b7854ddc-6bc8-4964-8209-6d70739586d0",
+            "薛蟠",
+            "朋友",
+            "柳湘莲",
+            62,
+            "薛家旁支",
+            45
+        ],
+        [
+            "29659230-34ff-4361-9bc2-559cb9e242e9",
+            "薛蟠",
+            "朋友",
+            "詹光",
+            62,
+            "薛家旁支",
+            45
+        ],
+        [
+            "057d2491-7b73-4b4a-949f-e1f300c94419",
+            "薛蟠",
+            "朋友",
+            "程日兴",
+            62,
+            "薛家旁支",
+            45
+        ],
+        [
+            "99f07454-3888-40f4-9f20-5c9832bbeeb4",
+            "薛蟠",
+            "朋友",
+            "单聘仁",
+            62,
+            "薛家旁支",
+            45
+        ],
+        [
+            "1328474d-4675-4509-99c7-e54a52565539",
+            "香菱",
+            "主人",
+            "薛蟠",
+            66,
+            "薛家丫鬟",
+            55
+        ],
+        [
+            "f3b72da2-b5d5-4938-9ac0-3af4ebb857d3",
+            "香菱",
+            "主人",
+            "夏金桂",
+            66,
+            "薛家丫鬟",
+            55
+        ],
+        [
+            "f9a61cee-b047-4205-966f-c45916a31206",
+            "香菱",
+            "主人",
+            "薛宝钗",
+            66,
+            "薛家丫鬟",
+            55
+        ],
+        [
+            "0135c796-bc09-4493-8752-191422a99a6e",
+            "香菱",
+            "朋友",
+            "林黛玉",
+            66,
+            "薛家丫鬟",
+            45
+        ],
+        [
+            "9df9de3a-545f-4577-b92e-7b4d7daf2c6c",
+            "香菱",
+            "朋友",
+            "史湘云",
+            66,
+            "薛家丫鬟",
+            45
+        ],
+        [
+            "1ac29b50-3b02-49ee-aec2-f9eee696ea0d",
+            "香菱",
+            "丫鬟",
+            "宝蟾",
+            66,
+            "薛家丫鬟",
+            55
+        ],
+        [
+            "01206e9d-4aca-4c15-8e0d-75c130b40777",
+            "袭人",
+            "主人",
+            "贾宝玉",
+            69,
+            "贾府丫鬟",
+            55
+        ],
+        [
+            "993f0dce-70f1-4a01-84f7-bc16f78a2b22",
+            "袭人",
+            "主人",
+            "王夫人",
+            69,
+            "贾府丫鬟",
+            55
+        ],
+        [
+            "f7869c0c-7aed-4a82-8aac-9195b1b32908",
+            "袭人",
+            "表妹",
+            "珍珠",
+            69,
+            "贾府丫鬟",
+            65
+        ],
+        [
+            "342f92c9-c1f7-4a2e-adeb-caccda38327e",
+            "袭人",
+            "表妹",
+            "琥珀",
+            69,
+            "贾府丫鬟",
+            65
+        ],
+        [
+            "0424f407-305b-454f-821a-dcc70142cd86",
+            "晴雯",
+            "主人",
+            "贾宝玉",
+            67,
+            "贾府丫鬟",
+            55
+        ],
+        [
+            "b00dbeb7-6cb8-42ac-ad51-6325d1c21d88",
+            "晴雯",
+            "表哥",
+            "多浑虫",
+            67,
+            "贾府丫鬟",
+            65
+        ],
+        [
+            "afa6addf-ff9c-4849-a359-f8e3245d0a62",
+            "晴雯",
+            "嫂子",
+            "多姑娘",
+            67,
+            "贾府丫鬟",
+            30
+        ],
+        [
+            "d4681fbc-136b-4653-9361-1e58bac82019",
+            "平儿",
+            "主人",
+            "王熙凤",
+            65,
+            "贾府丫鬟",
+            55
+        ],
+        [
+            "bd5dd4ae-4446-413f-be22-ad8487d943ce",
+            "平儿",
+            "主人",
+            "贾琏",
+            65,
+            "贾府丫鬟",
+            55
+        ],
+        [
+            "eb30a4b4-3c50-4e3b-b2d8-cfacc13fe529",
+            "平儿",
+            "表妹",
+            "丰儿",
+            65,
+            "贾府丫鬟",
+            65
+        ],
+        [
+            "76985318-ad46-4468-8951-abbfeea483a3",
+            "紫鹃",
+            "主人",
+            "林黛玉",
+            63,
+            "贾府丫鬟",
+            55
+        ],
+        [
+            "86503025-a5a2-4497-aa30-3128e6f958fd",
+            "紫鹃",
+            "表妹",
+            "雪雁",
+            63,
+            "贾府丫鬟",
+            65
+        ],
+        [
+            "1853781b-a534-406b-9a64-a093e80a605c",
+            "紫鹃",
+            "表妹",
+            "春纤",
+            63,
+            "贾府丫鬟",
+            65
+        ],
+        [
+            "d23dab34-14b1-47d8-be3a-7ad16d97d97c",
+            "鸳鸯",
+            "主人",
+            "贾母",
+            61,
+            "贾府丫鬟",
+            55
+        ],
+        [
+            "4349590f-0ce5-4787-ac36-e1e9a71da916",
+            "鸳鸯",
+            "表妹",
+            "琥珀",
+            61,
+            "贾府丫鬟",
+            65
+        ],
+        [
+            "fdf9ff58-bbed-4cbe-88be-b51c7acdd560",
+            "鸳鸯",
+            "表妹",
+            "翡翠",
+            61,
+            "贾府丫鬟",
+            65
+        ],
+        [
+            "fe0b597d-ed15-4f03-b3f7-cb159c979147",
+            "鸳鸯",
+            "表妹",
+            "玻璃",
+            61,
+            "贾府丫鬟",
+            65
+        ],
+        [
+            "9971b002-0bea-4235-8e5d-0ca9a12dd07c",
+            "贾雨村",
+            "恩人",
+            "甄士隐",
+            50,
+            "官场人物",
+            40
+        ],
+        [
+            "8d6e21db-d257-4e1f-97b7-0d2bffd189ec",
+            "贾雨村",
+            "学生",
+            "林黛玉",
+            50,
+            "官场人物",
+            30
+        ],
+        [
+            "4fcea225-53d6-46df-b345-dbcedaf65dc3",
+            "贾雨村",
+            "朋友",
+            "冷子兴",
+            50,
+            "官场人物",
+            45
+        ],
+        [
+            "d676a16a-41e2-4403-b797-e2da3ce3f19a",
+            "贾雨村",
+            "朋友",
+            "张如圭",
+            50,
+            "官场人物",
+            45
+        ],
+        [
+            "e8f81a48-a5ff-4862-a5a2-d3e1234046d4",
+            "贾雨村",
+            "朋友",
+            "门子",
+            50,
+            "官场人物",
+            45
+        ],
+        [
+            "d45acfb5-eadf-448c-a59b-93253884479f",
+            "甄士隐",
+            "恩人",
+            "贾雨村",
+            40,
+            "隐士",
+            40
+        ],
+        [
+            "0daed545-d86a-4ae1-b374-1344db5558f6",
+            "甄士隐",
+            "女儿",
+            "甄英莲",
+            40,
+            "隐士",
+            90
+        ],
+        [
+            "cf5a2497-04e6-4d79-a8d9-e72d4a3dcd7a",
+            "甄士隐",
+            "朋友",
+            "跛足道人",
+            40,
+            "隐士",
+            45
+        ],
+        [
+            "c5daddf7-5f6d-45a9-a5e1-ea978d451393",
+            "甄士隐",
+            "朋友",
+            "癞头和尚",
+            40,
+            "隐士",
+            45
+        ],
+        [
+            "bfa810b0-15d0-49cd-bd82-c910de5d4b76",
+            "柳湘莲",
+            "朋友",
+            "薛蟠",
+            52,
+            "江湖人士",
+            45
+        ],
+        [
+            "b0338ec9-5a96-4aa0-9aa9-40a2ff1ac6df",
+            "柳湘莲",
+            "朋友",
+            "贾宝玉",
+            52,
+            "江湖人士",
+            45
+        ],
+        [
+            "f325a5ec-7cc6-44c2-b944-b241fa44991b",
+            "柳湘莲",
+            "妻子",
+            "尤三姐",
+            52,
+            "江湖人士",
+            95
+        ],
+        [
+            "eafb2767-4752-43e5-97c9-18b858aee7f4",
+            "柳湘莲",
+            "表妹",
+            "尤二姐",
+            52,
+            "江湖人士",
+            65
+        ],
+        [
+            "b0c77be9-7692-40f1-a25a-d4d5fdc3bda6",
+            "柳湘莲",
+            "表妹",
+            "尤三姐",
+            52,
+            "江湖人士",
+            65
+        ],
+        [
+            "aa1ca06e-1f34-4ed3-9a41-cff94dd5b0b2",
+            "秦钟",
+            "父亲",
+            "秦业",
+            54,
+            "秦家",
+            95
+        ],
+        [
+            "79b716e2-ff2f-4ccc-891b-7dd09ad7de25",
+            "秦钟",
+            "姐姐",
+            "秦可卿",
+            54,
+            "秦家",
+            75
+        ],
+        [
+            "2b60c5c0-4881-43d5-a81b-aa54dce6b8a9",
+            "秦钟",
+            "朋友",
+            "贾宝玉",
+            54,
+            "秦家",
+            45
+        ],
+        [
+            "38c35917-fed4-44ad-b846-906ed2ba357a",
+            "秦钟",
+            "朋友",
+            "智能儿",
+            54,
+            "秦家",
+            45
+        ],
+        [
+            "2623c030-9857-4d41-bee8-88b5cf39ac07",
+            "秦钟",
+            "表哥",
+            "贾宝玉",
+            54,
+            "秦家",
+            65
+        ],
+        [
+            "fd77078b-5ce9-4d9e-bbe0-87070612dd5a",
+            "秦钟",
+            "表哥",
+            "贾蓉",
+            54,
+            "秦家",
+            65
+        ],
+        [
+            "73a8ea06-452b-4c92-aa72-f7f7a2662f96",
+            "贾瑞",
+            "祖父",
+            "贾代儒",
+            48,
+            "贾府远亲",
+            85
+        ],
+        [
+            "8d6ba6d3-563e-4c50-bb24-49d84560b6ba",
+            "贾瑞",
+            "表叔",
+            "贾琏",
+            48,
+            "贾府远亲",
+            15
+        ],
+        [
+            "e0b54061-ec06-4499-82b9-1d2411b89a93",
+            "贾瑞",
+            "表叔",
+            "贾珍",
+            48,
+            "贾府远亲",
+            15
+        ],
+        [
+            "dffcb576-844f-43b7-b55f-8c87625f76ed",
+            "贾瑞",
+            "表叔",
+            "贾政",
+            48,
+            "贾府远亲",
+            15
+        ],
+        [
+            "7c6fd109-79db-463e-9e0f-600d66634dee",
+            "贾瑞",
+            "表妹",
+            "王熙凤",
+            48,
+            "贾府远亲",
+            65
+        ],
+        [
+            "eb6ee782-863e-48d8-b63a-0f424bef569e",
+            "贾瑞",
+            "表妹",
+            "林黛玉",
+            48,
+            "贾府远亲",
+            65
+        ],
+        [
+            "54b14f21-e57f-4adf-ab08-83fb51ea49c7",
+            "贾瑞",
+            "表妹",
+            "薛宝钗",
+            48,
+            "贾府远亲",
+            65
+        ],
+        [
+            "cb9f15d0-5a95-44b0-b1e7-ff6b0559b410",
+            "贾瑞",
+            "表妹",
+            "史湘云",
+            48,
+            "贾府远亲",
+            65
+        ],
+        [
+            "adc9a2a5-7668-4c3b-b3c7-4eab5e133a11",
+            "癞头和尚",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "d089ed31-adab-4f66-8d75-ef607d7bbb3e",
+            "雪雁",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "a7893809-b566-4d30-8656-ed30a21e2d1f",
+            "丰儿",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "21082a87-0ab3-49ca-87d1-12d9af354094",
+            "宝蟾",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "cff5c0b7-4fb6-4164-805d-15d56bf8036b",
+            "翡翠",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "2866a53b-a8e1-4994-8b96-254c035d7011",
+            "春纤",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "edcad6dc-9002-4edf-8bd4-e7103d7a8bd9",
+            "李纨",
+            "",
+            "",
+            69,
+            "贾府旁支",
+            0
+        ],
+        [
+            "93c9f0f6-e772-4615-9600-1ca7ad6f6a8a",
+            "麝月",
+            "",
+            "",
+            58,
+            "贾府丫鬟",
+            0
+        ],
+        [
+            "66b3fd49-cbaa-4dbb-a982-e9c71648237c",
+            "双瑞",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "658033e2-cc63-47b1-bf46-80e996b12b7b",
+            "周瑞家的",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "9753e31a-cd88-487d-9948-08da0d6bbd9e",
+            "贾元春",
+            "",
+            "",
+            80,
+            "贾府核心",
+            0
+        ],
+        [
+            "ad689185-e593-468f-b923-ea3eba2cfaf3",
+            "贾环",
+            "",
+            "",
+            65,
+            "贾府旁支",
+            0
+        ],
+        [
+            "27dd1828-5025-43d1-a739-fe92e08e54e8",
+            "甄英莲",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "b8716a41-9487-49ed-b2c0-72e6ce621723",
+            "冷子兴",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "0c59ce73-4801-40c6-9366-9180200472ae",
+            "玻璃",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "30d30ec5-9135-4998-be40-7d719771f38c",
+            "玉钏",
+            "",
+            "",
+            51,
+            "贾府丫鬟",
+            0
+        ],
+        [
+            "c23e37f6-ff40-478e-89df-cc18df79bb10",
+            "琥珀",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "fe83745d-e436-40a6-acd2-edc9a827deee",
+            "单聘仁",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "4b2761a6-ba19-45bc-8715-01294db126aa",
+            "老苍头",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "6289fdbb-8d0d-4b03-a80c-65cc9b63a85c",
+            "来旺",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "37ad7062-34bd-4a88-84de-4ca0db52d7c8",
+            "翠缕",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "9cb0331b-72bc-41a8-9b2d-c2cf37ed11c6",
+            "邢夫人",
+            "",
+            "",
+            63,
+            "贾府旁支",
+            0
+        ],
+        [
+            "65407e8f-e599-40cf-a732-ea2663c376fa",
+            "青儿",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "f901ae71-fc47-40c2-bcb9-b4f01be5b02f",
+            "兴儿",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "14b3993f-0452-4eaa-add2-45af6ce59072",
+            "蒋玉菡",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "2ef0581d-4367-4620-a46c-65c01e068015",
+            "彩云",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "3e4a74af-241b-47c4-9797-024296f272dc",
+            "狗儿",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "2c481b46-0c24-49f6-97d2-9d25ce61bb0c",
+            "墨雨",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "866019c7-a7bb-4b4a-ac99-d051cbf36b50",
+            "瑞珠",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "d557b754-7975-4303-be1b-c9d78816fa66",
+            "智能儿",
+            "",
+            "",
+            42,
+            "水月庵",
+            0
+        ],
+        [
+            "cd1f6e59-6ebc-43f7-9857-d227c1e5e2df",
+            "贾代儒",
+            "",
+            "",
+            58,
+            "贾府远亲",
+            0
+        ],
+        [
+            "277355bc-b8a7-4707-86e2-2d1d38f08fdb",
+            "史鼐",
+            "",
+            "",
+            64,
+            "史家旁支",
+            0
+        ],
+        [
+            "d3575f47-1db3-4db5-8358-6c0e502ede5b",
+            "芳官",
+            "",
+            "",
+            55,
+            "贾府丫鬟",
+            0
+        ],
+        [
+            "82bf7b56-b480-4331-aedd-a2a2ee5ce109",
+            "多姑娘",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "672a1d1b-ad01-4634-ab86-cab5bd2caa68",
+            "跛足道人",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "18d08f2a-9e42-4839-b26d-469153e8e65b",
+            "引泉",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "1be966c4-989f-4784-acbf-ced61309a924",
+            "尤氏",
+            "",
+            "",
+            67,
+            "贾府旁支",
+            0
+        ],
+        [
+            "a01dc111-077b-4d08-b3ee-75e4232fac33",
+            "尤三姐",
+            "",
+            "",
+            52,
+            "尤家",
+            0
+        ],
+        [
+            "0dfb7b0d-c75b-443b-b7d1-483aa1de4942",
+            "绣凤",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "3cec9695-fa23-47ef-a91a-cf4599b3ee76",
+            "小红",
+            "",
+            "",
+            53,
+            "贾府丫鬟",
+            0
+        ],
+        [
+            "6193eb91-35d0-401a-967c-127a9fd15d23",
+            "门子",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "8b3a2aba-0252-4d2d-8a27-c12924f61de1",
+            "薛姨妈",
+            "",
+            "",
+            78,
+            "薛家核心",
+            0
+        ],
+        [
+            "197def4d-7294-4fd5-8fd5-d5af66433931",
+            "赵姨娘",
+            "",
+            "",
+            56,
+            "贾府旁支",
+            0
+        ],
+        [
+            "8f30b28f-3670-4116-ac26-cb96fbebe522",
+            "张如圭",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "d1bf441a-1dad-4483-aad9-5a8cb3879cdb",
+            "赖大",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "418d6686-51f1-435b-af7b-73ebc54a9ab4",
+            "夏金桂",
+            "",
+            "",
+            48,
+            "夏家",
+            0
+        ],
+        [
+            "315436e5-e516-4167-837a-77a4519959f7",
+            "多浑虫",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "bd669dc0-23e5-440a-b943-c958d4c5440b",
+            "旺儿",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "6c575a39-d85e-4ade-b301-ee58b55b92c6",
+            "尤二姐",
+            "",
+            "",
+            54,
+            "尤家",
+            0
+        ],
+        [
+            "973bee46-acd7-4bb2-a070-adb3137bbe15",
+            "贾惜春",
+            "",
+            "",
+            70,
+            "贾府旁支",
+            0
+        ],
+        [
+            "ab4ed178-0747-4c13-bd18-7d9c1c4f7b24",
+            "扫红",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "b7f507e9-ca24-4955-80ba-94132db92223",
+            "林如海",
+            "",
+            "",
+            40,
+            "林家",
+            0
+        ],
+        [
+            "8cad5a18-2135-4778-8a96-f7cd5919284c",
+            "蕊官",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "21d06708-cfad-4ef8-b8a1-2ce62575cfe3",
+            "贾探春",
+            "",
+            "",
+            76,
+            "贾府核心",
+            0
+        ],
+        [
+            "267c7c51-eabc-42d9-a736-910d40d7a92c",
+            "张德辉",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "20053220-8042-4dbd-9221-561a1f5be935",
+            "文杏",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "7420d414-649c-45e0-b0bf-294a6b30f9db",
+            "李贵",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "1d90d7ed-70c6-4983-bcc3-a8b0a2eaeea2",
+            "扫花",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "cc2531a7-75e9-4113-9a33-e4d58e305902",
+            "挑云",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "e0d1b6bb-de6c-4b45-9158-2f7ee6ac90ec",
+            "板儿",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "fd1b77a5-d054-4739-9b1e-a5814365b3fe",
+            "程日兴",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "037384e0-0ebd-4327-bd7e-37e50660f544",
+            "绣鸾",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "2d4dce1c-9c17-408b-8ecb-58d657c628f0",
+            "茗烟",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "c9a6ad0e-430c-4281-9b12-f79987c07432",
+            "伴鹤",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "9197f307-445e-400b-8b65-dcc3f34d874f",
+            "珍珠",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "d6a56c53-48d3-409b-bd0a-bcef89cb61da",
+            "傻大姐",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "2d1f75f1-ec54-43b1-a6db-8b6acad10cc7",
+            "贾敏",
+            "",
+            "",
+            40,
+            "贾府旁支",
+            0
+        ],
+        [
+            "01f602e3-bcab-46f5-8766-909a52a44d6d",
+            "巧姐",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "baa7449e-aab9-4436-9f9c-f774c2d76db5",
+            "林之孝",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "64d2e0ed-df32-4211-b821-5ca481cb424a",
+            "金钏",
+            "",
+            "",
+            52,
+            "贾府丫鬟",
+            0
+        ],
+        [
+            "cce9716b-3658-4d02-a324-77f51c3a05d5",
+            "彩明",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "da0f00c6-757a-4702-8202-257c8b70face",
+            "葵官",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "762190db-70e6-4f7b-8a58-6c19c499cd67",
+            "莺儿",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "cb92cdc3-2798-45ec-a791-073cacb09c29",
+            "彩霞",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "e22b51f3-4e42-4f19-9aee-33a1ffd3d73a",
+            "詹光",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "271c237b-8728-463d-abb9-af83ef991540",
+            "宝珠",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "f33ace1a-6ef5-4a49-8de8-5642b63aec2d",
+            "秋桐",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "dd164ee2-c74c-4ee9-bf7c-2218aebe7ee0",
+            "旺儿媳妇",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "9fc89282-a89b-4c50-ba6e-9d2193f62c5a",
+            "贾迎春",
+            "",
+            "",
+            68,
+            "贾府旁支",
+            0
+        ],
+        [
+            "cb5df3a5-fdb0-46c4-a731-d79ef8848831",
+            "锄药",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "2776b0d2-6e93-4bcf-940b-0ffcc76b391a",
+            "贾赦",
+            "",
+            "",
+            74,
+            "贾府核心",
+            0
+        ],
+        [
+            "6037518b-ee99-44a4-b28e-a9b338f360c2",
+            "秦业",
+            "",
+            "",
+            50,
+            "秦家",
+            0
+        ],
+        [
+            "ef591c70-8753-4dc8-938d-531310e6b9e0",
+            "周瑞",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ],
+        [
+            "2dd454c8-1e1c-4aee-b1db-f0b8f3552175",
+            "贾敬",
+            "",
+            "",
+            50,
+            "其他",
+            0
+        ]
     ]
 }

@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import {defineProps, defineEmits, onMounted} from 'vue';
+import {defineProps, defineEmits} from 'vue';
 
 const props = defineProps({
   options: {
@@ -41,7 +41,7 @@ const props = defineProps({
     type: Boolean,
     default: false
   }
-});
+})
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -56,6 +56,7 @@ const handleChange = (value) => {
 <style scoped>
 .radio-input {
   display: flex;
+  cursor: pointer;
 }
 
 .radio-input label {
@@ -69,6 +70,7 @@ const handleChange = (value) => {
 }
 
 .radio-input .text {
+  cursor: pointer;
   color: var(--font-color);
 }
 
@@ -81,11 +83,13 @@ const handleChange = (value) => {
   display: flex;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
 
 .radio-input input[type="radio"]:checked {
   background-color: var(--active-color);
   animation: pulse 0.7s forwards;
+  cursor: pointer;
 }
 
 .radio-input input[type="radio"]:before {
@@ -96,10 +100,12 @@ const handleChange = (value) => {
   transition: all 0.1s cubic-bezier(0.165, 0.84, 0.44, 1);
   background-color: #fff;
   transform: scale(0);
+  cursor: pointer;
 }
 
 .radio-input input[type="radio"]:checked::before {
   transform: scale(1);
+  cursor: pointer;
 }
 
 @keyframes pulse {

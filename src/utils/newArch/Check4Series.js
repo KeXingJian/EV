@@ -1,11 +1,22 @@
-import {getData, getData3, getPieData, getRadarVData} from "./DataUtils.js";
-import {getFieldDetails, x0y} from "../BeautifyUtils.js";
+import {getData, getData3, getPieData, getRelationData, getSingle} from "./DataUtils.js";
 import emitter from "../../emitter/emitter.js";
-import {buildGrid, buildPolar} from "./Position.js";
+import {buildPolar, getRandomInt, labelTypeForPosition, roseTypeSelect} from "./Position.js";
 import {pushMsg} from "../MsgUtils.js";
 import {useOptionConfig} from "../../store/OptionConfig.js";
 import zoomIcon from "../../assets/zoom.svg";
 import {debounce} from "../DebounceUtils.js";
+import {
+    chartType,
+    funnelAlign,
+    funnelLabel,
+    funnelSort, legendStyleSelect,
+    relationEdgeLabelPosition,
+    relationEdgeSymbol,
+    relationLabelPosition,
+    relationLayout, relationStyleSelect,
+    startPoints
+} from "./ConstantPool.js";
+import {storeToRefs} from "pinia";
 
 
 export const checkSeries = (s, echartsOptions) => {
@@ -24,50 +35,57 @@ const loadSeries = (s, echartsOptions) => {
     emitter.emit('init-legend-area')
 
     const addItem = {
-        id: s.id, name: s.seriesName, emphasis: {
-            focus: 'series', itemStyle: {
+        id: s.id,
+        name: s.seriesName,
+        emphasis: {
+            focus: 'series',
+            itemStyle: {
                 shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0, 0, 0, 0.5)'
             }
-        }, areaStyle: null, itemStyle: {}, label: {
-            show: s.isLabel, color: s.labelColor
-        }, labelLine: {}, data: []
+        },
+        areaStyle: null,
+        itemStyle: {},
+        label: {
+            show: s.isLabel,
+            color: s.labelColor
+        },
+        labelLine: {},
+        data: []
     }
     //检查使用什么系列
-    if (s.C.type === 0) {
-        //console.log('加载x0y系列')
+    if (s.C?.type === 0) {
+
         addItem.coordinateSystem = 'cartesian2d'
         addItem.xAxisId = s.C.id
         addItem.yAxisId = s.C.id
-        addSeriesForType0(addItem, s, echartsOptions)
+        addSeriesForType0(addItem, s)
 
-    } else if (s.C.type === 1) {
+    } else if (s.C?.type === 1) {
         addItem.coordinateSystem = 'polar'
         addItem.polarId = s.C.id
-        addSeriesForType0(addItem, s, echartsOptions)
-    } else if (s.C.type === 2) {
+        addSeriesForType0(addItem, s)
+    } else if (s.C?.type === 2) {
         //获取数据
-        addItem.data = getPieData(s.category, s.number, s.color, s.D)
-
-        //标签
-        addItem.label.show = s.isLabel
-        addItem.label.color = s.labelColor
+        addItem.data = getPieData(s.category, s.number, s.color, s.D,s.id)
 
         if (s.type === 3) addPie(addItem, s,echartsOptions)
         else addFunnel(addItem, s,echartsOptions)
 
         pushMsg(0, `无系图颜色调整方式:点击对应区域`)
 
-    }// else if (s.C.type === 3) addRadar(addItem, s,echartsOptions)
+    }else if(s.type === 5){
+        if (s.isAI) addRelation2(addItem,s)
+        else addRelation(addItem,s)
+    }
 
-    echartsOptions.value.series.push(addItem)
+    echartsOptions.series.push(addItem)
 
     emitter.emit('load-chart')
 
 }
 
-//系列
-const addSeriesForType0 = (addItem, series, echartsOptions) => {
-
+//系列配置加载
+const addSeriesForType0 = (addItem, series) => {
     addItem.type = chartType[series.type]
     getDataForSimpleSeries(addItem, series)
     if (series.type === 0) {
@@ -101,8 +119,7 @@ const addSeriesForType0 = (addItem, series, echartsOptions) => {
 
     if (series.C.isStack) addItem.stack = series.C.id + 'stack' + series.type
 
-    x0y(series, echartsOptions, addItem)
-
+    x0y(series,addItem)
 }
 
 const addPie = (addItem, series,echartsOptions) => {
@@ -160,23 +177,286 @@ const addFunnel = (addItem, s,echartsOptions) => {
 
 }
 
-const addRadar = (addItem, s, echartsOptions) => {
-    addItem.radarIndex = echartsOptions.value.radar.findIndex(i => s.C.id === i.id)
+const addRelation = (addItem,s)=>{
 
-    addItem.type = 'radar'
-    addItem.data.push({
-        value: getRadarVData(s.number), name: s.seriesName, label: {
-            show: s.isLabel, color: s.labelColor,
-        }, itemStyle: {
-            color: s.color
-        }, areaStyle: {
-            color: s.radarConfig.isArea ? s.radarConfig.areaColor : undefined
+    const {getChartSize} = useOptionConfig()
+
+    const {width, height} = getChartSize()
+
+    const data = getRelationData(s)
+    const nodeMap = new Map();
+    const edges = [];
+    const ids =  getSingle(0)
+    const {
+        labelConfig,symbolConfig,
+        categoryConfig,otherConfig,
+        colorSet,edgeLabel,weightConfig
+    } = s
+
+    addItem.type = chartType[5]
+    addItem.data = undefined
+    addItem.nodeScaleRatio = 0
+
+    addItem.emphasis.focus = 'adjacency'
+    addItem.emphasis.scale = 1
+
+    addItem.roam = true
+    addItem.draggable = true
+    addItem.selectedMode = 'multiple'
+
+    addItem.layout = relationLayout[s.layout]
+    addItem.select = {
+        lineStyle:{
+            width: 3,
+            shadowColor: 'rgba(0, 0, 0, 0.5)',
+            shadowBlur: 10
         }
+    }
+
+    //以上不修改
+    addItem.color = symbolConfig.color
+    addItem.symbol = relationStyleSelect[symbolConfig.symbol].label
+    addItem.symbolSize = weightConfig.symbolSize
+
+    addItem.label.show = labelConfig.isLabel
+    addItem.label.color = labelConfig.labelColor
+    addItem.label.position = relationLabelPosition[labelConfig.position]
+
+    addItem.edgeLabel = {
+        show:edgeLabel.show,
+        position: relationEdgeLabelPosition[edgeLabel.position],
+        fontSize: 10,
+        color: edgeLabel.color
+    }
+    addItem.lineStyle = {
+        width:1,
+        color: edgeLabel.color
+    }
+    addItem.edgeSymbol = relationEdgeSymbol[otherConfig.isDirected*1]
+
+
+    const {canCategoryMap} = categoryConfig
+    const {canWeightMap} = weightConfig
+
+
+    //节点类目
+    const categoryData =  canCategoryMap ?
+        getSingle(5) : null
+    //去重
+    const category = canCategoryMap ?
+        [...new Set(categoryData)].map((i,index)=>{
+            const length = colorSet.length
+            return {
+                name: i,
+                itemStyle:{
+                    color: length > 0 ? colorSet[index % length] : symbolConfig.color
+                }
+            }
+        }) : []
+
+    const weightData = canWeightMap ?
+        getSingle(4) : null
+
+    const nodesItem = [...new Set(getSingle(1))]
+
+
+    const {max, min} = canWeightMap ? getFieldDetails(4) : {min: 0, max: 0}
+    const [rMin,rMax] = weightConfig.symbolRange
+
+
+    data.forEach((d,index) => {
+        //从map中查询
+        const target = nodeMap.get(d[0])
+
+        if (
+            d[0]&& d[2] &&
+            d[0]!=='' && d[2]!=='' &&
+            nodesItem.includes(d[2])
+        ) {
+            //取无效边
+            edges.push({
+                idEV:ids[index],
+                source: d[0],
+                target: d[2],
+                label:{
+                    formatter: d[1],
+                },
+                lineStyle:{
+
+                },
+
+            })
+        }
+
+        let currentCategory = undefined
+
+        //处理节点
+        let size = undefined
+        let position = {
+            x: getRandomInt(250,500),
+            y: getRandomInt(250,500),
+        }
+
+        if (category)  currentCategory = category.findIndex(
+            i=> i.name === categoryData[index]
+        )
+
+        if (canWeightMap){
+
+            size  = rMin + (rMax - rMin) * (weightData[index] - min) / (max - min)
+
+            if (canCategoryMap) position = centerSpreadWithRegion(
+                    width, height, min, max, weightData[index],
+                    category.length,currentCategory,4
+            )
+            else position = centerSpread(
+                    width, height, min, max, weightData[index], 1
+            )
+
+        }else if (canCategoryMap)position = partitionOnly(
+                width, height, category.length, currentCategory, 3
+        )
+
+
+        if (!target){
+            nodeMap.set(d[0],{
+                idEV: [ids[index]],
+                name: d[0],
+                symbolSize: size,
+                itemStyle:{},
+                category: currentCategory,
+                ...position
+            })
+
+        }else {
+            //覆盖
+            if (canWeightMap) target.symbolSize = size
+            target.idEV.push(ids[index])
+        }
+
+
     })
+
+
+    addItem.categories = category
+    addItem.nodes = Array.from(nodeMap.values())
+    addItem.edges = edges
+
 }
 
+const addRelation2 = (addItem,s)=>{
+
+    const {getChartSize} = useOptionConfig()
+
+    const {width, height} = getChartSize()
+
+    const data = getRelationData(s)
+    const nodeMap = new Map();
+    const edges = [];
+    const ids =  getSingle(0)
+    const {
+        labelConfig,symbolConfig,otherConfig,
+        edgeLabel,weightConfig
+    } = s
+
+    addItem.type = chartType[5]
+    addItem.data = undefined
+    addItem.nodeScaleRatio = 0
+
+    addItem.emphasis.focus = 'adjacency'
+    addItem.emphasis.scale = 1
+
+    addItem.roam = true
+    addItem.draggable = true
+    addItem.selectedMode = 'multiple'
+
+    addItem.layout = relationLayout[s.layout]
+    addItem.select = {
+        lineStyle:{
+            width: 3,
+            shadowColor: 'rgba(0, 0, 0, 0.5)',
+            shadowBlur: 10
+        }
+    }
+
+    //以上不修改
+    addItem.color = symbolConfig.color
+    addItem.symbol = relationStyleSelect[symbolConfig.symbol].label
+    addItem.symbolSize = weightConfig.symbolSize
+
+    addItem.label.show = labelConfig.isLabel
+    addItem.label.color = labelConfig.labelColor
+    addItem.label.position = relationLabelPosition[labelConfig.position]
+
+    addItem.edgeLabel = {
+        show:edgeLabel.show,
+        position: relationEdgeLabelPosition[edgeLabel.position],
+        fontSize: 10,
+        color: edgeLabel.color
+    }
+    addItem.lineStyle = {
+        width:1,
+        color: edgeLabel.color
+    }
+    addItem.edgeSymbol = relationEdgeSymbol[otherConfig.isDirected*1]
+
+
+
+    const {canWeightMap} = weightConfig
+
+
+    const weightDataS = canWeightMap ?
+        getSingle(4) : null
+    const weightDataO = canWeightMap ?
+        getSingle(5) : null
+
+
+    const {max, min} = canWeightMap ? getFieldDetails(4) : {min: 0, max: 0}
+    const [rMin,rMax] = weightConfig.symbolRange
+
+
+    data.forEach((d,index) => {
+        //从map中查询
+
+
+        if (
+            d[0] && d[2]
+            &&
+            d[0]!=='' && d[2]!==''
+        ) edges.push({
+                idEV:ids[index],
+                source: d[0],
+                target: d[2],
+                label:{
+                    formatter: d[1],
+                },
+                lineStyle:{
+
+                },
+
+        })
+        handleRelation(
+            nodeMap,d[0],min,max,rMin,rMax,index,canWeightMap,
+                width,height,weightDataS,ids
+        )
+
+        handleRelation(
+            nodeMap,d[2],min,max,rMin,rMax,index,canWeightMap,
+            width,height,weightDataO,ids
+        )
+
+
+    })
+
+
+    addItem.nodes = Array.from(nodeMap.values())
+    addItem.edges = edges
+
+}
+
+//系列变更
 const updateSeries = (s, echartsOptions) => {
-    const targetSeries = echartsOptions.value.series.find(i => i.id === s.id)
+    const targetSeries = echartsOptions.series.find(i => i.id === s.id)
     const {lang} = useOptionConfig()
     if (s.C.type === 0) {
         targetSeries.coordinateSystem = 'cartesian2d'
@@ -189,15 +469,14 @@ const updateSeries = (s, echartsOptions) => {
         targetSeries.coordinateSystem = 'polar'
         targetSeries.polarId = s.C.id
     } else if (s.C.type === 2) {
-        //console.log("update")
-        targetSeries.data = getPieData(s.category, s.number, s.color, s.D, targetSeries)
+        targetSeries.data = getPieData(s.category, s.number, s.color, s.D,s.id)
 
         if (targetSeries.data.length >= 500) {
             if (!lang) pushMsg(1, `系列[${targetSeries.name}]数据条目超过500开启视口取样优化`)
             else pushMsg(1, `series [${targetSeries.name}] enable viewport sampling optimization when data entries exceed 500`)
             targetSeries.sampling = 'lttb'
         } else targetSeries.sampling = undefined
-    }//else if (s.C.type === 3) targetSeries.data[0].value = getRadarVData(s.number)
+    }
 
 
     if (s.C.isStack) targetSeries.stack = s.C.id + 'stack' + s.type
@@ -208,28 +487,35 @@ const updateSeries = (s, echartsOptions) => {
 }
 
 export const unloadSeries = (s, echartsOptions) => {
-    echartsOptions.value.series = echartsOptions.value.series.filter(i => i.id !== s.id)
+    echartsOptions.series = echartsOptions.series.filter(i => i.id !== s.id)
     s.isLoad = false
     emitter.emit('load-chart')
 }
 
 export const unloadSeriesLazy = (s, echartsOptions) => {
-    echartsOptions.value.series = echartsOptions.value.series.filter(i => i.id !== s.id)
+    echartsOptions.series = echartsOptions.series.filter(i => i.id !== s.id)
     s.isLoad = false
 }
 
 export const deleteSeries = (s, Ss, echartsOptions) => {
+
+    if (s.type === 5){
+        const { isLoadRelation,chartInstance} = storeToRefs(useOptionConfig())
+        chartInstance.value.off('selectchanged')
+        chartInstance.value.off('mousedown')
+        isLoadRelation.value = false
+    }
     unloadSeries(s, echartsOptions)
-    Ss.value = Ss.value.filter(i => i.id !== s.id)
+    Ss.splice(Ss.findIndex(i => i.id !== s.id),1)
 }
 
 const checkLink = (s) => {
-/*    if (s.C && s.C.type === 3) {
-        if (s.D) pushMsg(1, '雷达系数据源锁定为ROOT,您可以通过过滤ROOT改变数据源')
-        if (!s.category === -1) pushMsg(1, '雷达系类目锁定,您可以通过过滤ROOT改变类目')
-        return !(s.number === -1)
-    }*/
-    return !(s.category === -1 || s.number === -1 || !s.C || !s.D)
+
+    return(
+        (s.type===5 && s.from !==-1 && s.to !==-1 && s.relationship !==-1)
+        ||
+        (!(s.category === -1 || s.number === -1 || !s.C || !s.D))
+    )
 }
 
 //组装任何类型数据
@@ -256,6 +542,7 @@ export const getDataForSimpleSeries = (addItem, series) => {
     } else addItem.sampling = undefined
 }
 
+//缩放区域
 export const loadPieArea = (pieConfig,id,targetPie,echartsOptions)=>{
     const {isLock} = useOptionConfig()
 
@@ -366,12 +653,12 @@ export const loadPieArea = (pieConfig,id,targetPie,echartsOptions)=>{
         }, 200)()
     }
 
-    echartsOptions.value.graphic.elements.push(rect)
-    echartsOptions.value.graphic.elements.push(point)
+    echartsOptions.graphic.elements.push(rect)
+    echartsOptions.graphic.elements.push(point)
 }
 
 export const unloadPieArea = (id,echartsOptions)=>{
-    echartsOptions.value.graphic.elements = echartsOptions.value
+    echartsOptions.graphic.elements = echartsOptions
         .graphic
         .elements
         .filter(i=>i.key!=='pie'+id)
@@ -486,19 +773,67 @@ export const loadFunnelArea = (funnelConfig,id,targetFunnel,echartsOptions)=>{
 
     }
 
-    echartsOptions.value.graphic.elements.push(rect)
-    echartsOptions.value.graphic.elements.push(point)
+    echartsOptions.graphic.elements.push(rect)
+    echartsOptions.graphic.elements.push(point)
 }
 
 export const unLoadFunnelArea = (id,echartsOptions)=>{
-    echartsOptions.value.graphic.elements = echartsOptions.value
+    echartsOptions.graphic.elements = echartsOptions
         .graphic
         .elements
         .filter(i=>i.key!=='funnel'+id)
 }
 
+//系列配置更新
+export const updateLine = (newVal,echartsOptions)=>{
+    const target = echartsOptions.series.find(i=>i.id===newVal.id)
+
+    x0y(newVal,target)
+
+    target.smooth = newVal.lineConfig.lineType === 1 ? 0.5 : 0
+
+    if (newVal.lineConfig.lineType === 2) target.step = startPoints[newVal.lineConfig.startPoint]
+    else target.step=''
+
+    if (newVal.lineConfig.isArea) target.areaStyle = {color: newVal.areaColor}
+    else target.areaStyle = null
+
+}
+
+export const updateBar = (newVal,echartsOptions)=>{
+    const target = echartsOptions.series.find(i=>i.id===newVal.id)
+    if(newVal.barConfig.isAuto){
+        target.barWidth = undefined
+    }else {
+        target.barWidth = newVal.barConfig.barWidth
+    }
+    target.itemStyle.borderRadius = newVal.barConfig.borderRadius
+    x0y(newVal,target)
+}
+
+export const updateScatter = (newVal,echartsOptions)=>{
+
+    const target = echartsOptions.series.find(i => i.id === newVal.id)
+
+    x0y(newVal, target)
+
+    getDataForSimpleSeries(target,newVal)
+
+    const {scatterConfig} = newVal
+
+    if (scatterConfig.type === 1 && scatterConfig.mapField !==-1){
+        const {max,min} = getFieldDetails(scatterConfig.mapField)
+        target.symbolSize =  function (val) {
+            return (scatterConfig.range[1]-scatterConfig.range[0]) *((val[2]-min) / (max-min)) +scatterConfig.range[0];
+        }
+    }else {
+        target.symbolSize = scatterConfig.size;
+    }
+
+}
+
 export const pieInit = (newVal,echartsOptions)=>{
-    const target = echartsOptions.value.series.find(i => i.id === newVal.id)
+    const target = echartsOptions.series.find(i => i.id === newVal.id)
     const pieConfig = newVal.pieConfig
 
     target.label.show = newVal.isLabel
@@ -528,12 +863,14 @@ export const pieInit = (newVal,echartsOptions)=>{
     if (pieConfig.isRose) target.roseType = roseTypeSelect[pieConfig.roseType]
     else target.roseType = false
 
+    target.data = getPieData(newVal.category, newVal.number, newVal.color, newVal.D,newVal.id)
+
 
 }
 
 export const funnelInit = (newVal,echartsOptions)=>{
     const funnelConfig = newVal.funnelConfig
-    const target = echartsOptions.value.series.find(i => i.id === newVal.id)
+    const target = echartsOptions.series.find(i => i.id === newVal.id)
 
     target.label.show = newVal.isLabel
     target.label.color = newVal.labelColor
@@ -550,18 +887,141 @@ export const funnelInit = (newVal,echartsOptions)=>{
     target.height = funnelConfig.position.h
     target.top = funnelConfig.position.t
     target.left = funnelConfig.position.l
+    target.data = getPieData(newVal.category, newVal.number, newVal.color, newVal.D,newVal.id)
+
 }
 
-export const startPoints = ['start', 'middle', 'end']
+//工具
+export const x0y = (newVal,target)=>{
+    target.itemStyle.color = newVal.color
+    target.label.show = newVal.isLabel
+    target.name = newVal.seriesName
+}
 
-export const funnelLabel = ['left', 'inside', 'right']
+export const getFieldDetails = (mapIndex)=>{
+    const {fileData:{columnStats}} = useOptionConfig()
+    return columnStats[mapIndex].numericStats
+}
 
-export const funnelAlign = ['left', 'center', 'right']
+// 增加区域约束的中心散布算法
+export function centerSpreadWithRegion(width, height, minWeight, maxWeight, currentWeight, regionCount, regionIndex, span = 1) {
 
-export const funnelSort = ['ascending', 'none', 'descending']
+    const weightRatio = (currentWeight - minWeight) / (maxWeight - minWeight);
 
-export const chartType = ['line', 'bar', 'scatter', 'pie', 'funnel', 'radar']
+    const distanceRatio = 1 - weightRatio + 0.2
 
-export const labelTypeForPosition = ['inner', 'outside']
+    const maxRadius = Math.min(width, height)
+    const radius = maxRadius * distanceRatio * (1+Math.random()) /2
 
-export const roseTypeSelect = ['radius', 'area']
+    // 计算扇形区域的角度范围
+    const sectorAngle = (2 * Math.PI) / regionCount;
+    const baseStartAngle = regionIndex * sectorAngle;
+    const baseEndAngle = (regionIndex + 1) * sectorAngle;
+
+    // 根据跨度扩展扇形区域
+    const spanAngle = sectorAngle * span;
+    const startAngle = baseStartAngle - (spanAngle - sectorAngle) / 2;
+    const endAngle = baseEndAngle + (spanAngle - sectorAngle) / 2;
+
+    // 在扩展的扇形区域内随机选择角度
+    const randomAngle = startAngle + Math.random() * (endAngle - startAngle);
+
+    // 计算坐标
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    const x = centerX + radius * Math.cos(randomAngle);
+    const y = centerY + radius * Math.sin(randomAngle);
+
+    return { x, y };
+}
+// 基础中心散布算法
+export function centerSpread(width, height, minWeight, maxWeight, currentWeight, spreadFactor) {
+
+    const weightRatio = (currentWeight - minWeight) / (maxWeight - minWeight);
+
+    const distanceRatio = 1 - weightRatio + 0.2
+
+    const maxRadius = Math.min(width, height)
+    const radius = maxRadius * distanceRatio * spreadFactor * (1+Math.random()) /2
+
+    const angle = Math.random() * 2 * Math.PI;
+
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    const x = centerX + radius * Math.cos(angle);
+    const y = centerY + radius * Math.sin(angle);
+
+    return { x, y };
+}
+
+export function partitionOnly(width, height, regionCount, regionIndex, span = 1) {
+    // 计算扇形区域的角度范围
+    const sectorAngle = (2 * Math.PI) / regionCount;
+    const baseStartAngle = regionIndex * sectorAngle;
+    const baseEndAngle = (regionIndex + 1) * sectorAngle;
+
+    // 根据跨度扩展扇形区域
+    const spanAngle = sectorAngle * span;
+    const startAngle = baseStartAngle - (spanAngle - sectorAngle) / 2;
+    const endAngle = baseEndAngle + (spanAngle - sectorAngle) / 2;
+
+    // 在扩展的扇形区域内随机选择角度
+    const randomAngle = startAngle + Math.random() * (endAngle - startAngle);
+
+    // 计算半径（随机在扇形区域内）
+    const maxRadius = Math.min(width, height) / 2;
+    const radius = Math.random() * maxRadius;
+
+    // 计算坐标
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    const x = centerX + radius * Math.cos(randomAngle);
+    const y = centerY + radius * Math.sin(randomAngle);
+
+    return { x, y };
+}
+
+const handleRelation = (
+    nodeMap,node,min,max,rMin,rMax,index,canWeightMap,
+    width,height,weightData,ids
+)=>{
+
+    const target = nodeMap.get(node)
+
+    //处理节点
+    let size = undefined
+    let position = {
+        x: getRandomInt(250,500),
+        y: getRandomInt(250,500),
+    }
+
+    if (canWeightMap){
+        size  = rMin + (rMax - rMin) * (weightData[index] - min) / (max - min)
+        position = centerSpread(
+            width, height, min, max, weightData[index], 1
+        )
+
+    }
+
+
+    if (!target){
+        nodeMap.set(node,{
+            idEV: [ids[index]],
+            name: node,
+            symbolSize: size,
+            itemStyle:{},
+            ...position
+        })
+
+    }else {
+        //覆盖
+        if (canWeightMap) target.symbolSize = size
+        target.idEV.push(ids[index])
+    }
+
+}
+
+

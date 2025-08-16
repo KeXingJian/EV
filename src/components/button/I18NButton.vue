@@ -13,11 +13,11 @@ const changeLang = ()=>{
   if (toLang.value==='English'){
     locale.value = 'en'
     toLang.value='中文'
-    lang.value = false
+    lang.value = true
   }else {
     locale.value = 'zh-CN'
     toLang.value='English'
-    lang.value = true
+    lang.value = false
   }
 
 }

@@ -1,27 +1,26 @@
 export const getGrid = () => {
-    const t = getRandomInt(100,150)
-    const l = getRandomInt(50,100)
-    const w = getRandomInt(700,750)
-    const h = getRandomInt(600,650)
+    const t = getRandomInt(100, 150)
+    const l = getRandomInt(50, 100)
+    const w = getRandomInt(700, 750)
+    const h = getRandomInt(600, 650)
 
-
-    return  {
-            t: t,
-            l: l,
-            w: w,
-            h: h
+    return {
+        t: t,
+        l: l,
+        w: w,
+        h: h
     }
 }
 
 export const getPolar = () => {
 
-    const po = getRandomInt(300,350)
+    const po = getRandomInt(300, 350)
 
     return {
-            pi: 0,
-            po: po,
-            pl: po,
-            pt: po
+        pi: 0,
+        po: po,
+        pl: po,
+        pt: po
     }
 }
 
@@ -42,7 +41,7 @@ export const buildPolar = (pi, po, pl, pt) => {
     }
 }
 
-function getRandomInt(min, max) {
+export function getRandomInt(min, max) {
     // 处理min > max的情况
     if (min > max) [min, max] = [max, min];
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -63,7 +62,7 @@ export const getSymbol = (is) => {
     else return ['arrow', 'none']
 }
 
-export const labelTypeForPosition = ['inner','outside']
+export const labelTypeForPosition = ['inner', 'outside']
 
-export const roseTypeSelect = ['radius','area']
+export const roseTypeSelect = ['radius', 'area']
 

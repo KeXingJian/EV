@@ -1,5 +1,4 @@
 <template>
-  <!-- The AG Grid component -->
   <div class="table">
     <div class="datasets">
       <div  class="item"
@@ -50,7 +49,7 @@
         :single-click-edit="true"
         :components="components"
         @cell-value-changed="onCellValueChanged"
-        :rowSelection=" currentSource===-1 ?
+        :rowSelection=" currentSource===-1 && !isLoadRelation ?
           {
             mode: 'multiRow'
           } : undefined"
@@ -73,12 +72,16 @@ import InputBox from "../box/InputBox.vue";
 import CheckButton from "../svg/CheckButton.vue";
 import CloseButton from "../svg/CloseButton.vue";
 import AddLongButton from "../button/AddLongButton.vue";
-import {analyzeColumns2} from "../../utils/ExcelUtils.js";
 import DeleteLongButton from "../button/DeleteLongButton.vue";
-import {checkSeries, unloadSeries} from "../../utils/newArch/Check4Series.js";
+import {checkSeries} from "../../utils/newArch/Check4Series.js";
+import {reloadNumericStats, reloadNumericStats4One} from "../../utils/ExcelUtils.js";
+import {v4 as uuidv4} from "uuid";
 
-const store = useOptionConfig()
-const {dataset, Ds, fileData, Ss, echartsOptions,theme} = storeToRefs(useOptionConfig());
+const {
+  getDataFromD, refreshDataset,
+  dataset, echartsOptions, fileData
+} = useOptionConfig()
+const {Ds, Ss,theme,isLoadRelation} = storeToRefs(useOptionConfig());
 
 const isAddingField = ref(false)
 const newFieldName = ref('')
@@ -113,66 +116,59 @@ const components = {
 }
 
 const columnDefs = computed(() => {
-  // 如果维度数组存在且有效，优先使用维度数组
-  if (fileData.value?.columnStats?.length !== 0) {
-    return fileData.value.columnStats.map((dim, index) => {
+  if (fileData.columnStats?.length !== 0) {
+    return fileData.columnStats.filter((_,index)=>index!==0).map((dim, index) => {
       return {
         headerName: dim.field,
         field: `col${index}`,
         suppressSizeToFit: false,
-        editable: currentSource.value === -1,  // 确保维度列可编辑
+        editable: currentSource.value === -1 && !isLoadRelation.value,
         // 禁止排序
         sortable: false,
-        suppressMovable: true,   // 新增：禁止列交换
+        suppressMovable: true,
         headerComponent: 'editable-header',
-        headerComponentParams: {
-          onHeaderNameChange: (colIndex, newName) => {
-            fileData.value.columnStats[colIndex].field = newName
-          },
-          deleteField: (colIndex) => {
-            deleteField(colIndex)
-          }
-        },
         cellStyle: {textAlign: 'center'}, // 单元格文字居中
         type: dim.type === 'number' ? 'numeric' : 'text',
         // 自动应用对应类型的编辑器（数字列自动使用数字输入框）
         cellEditor: dim.type === 'number' ? 'agNumberCellEditor' : 'agTextCellEditor',
       }
     })
-  } else return []
-});
+  }
+})
 
 // 转换二维数组为对象数组
 const rowData = computed(() => {
   if (currentSource.value===-1){
-    return dataset.value.source.map(row =>
-        row.reduce((obj, val, idx) => {
+    return dataset.source.map(row =>
+        row.filter((_,index)=>index!==0).reduce((obj, val, idx) => {
           obj[`col${idx}`] = val
           return obj
         }, {})
     )
   }else {
-    return store.getDataFromD(Ds.value[currentSource.value]).map(row =>
-        row.reduce((obj, val, idx) => {
+    return getDataFromD(Ds.value[currentSource.value]).map(row =>
+        row.filter((_,index)=>index!==0).reduce((obj, val, idx) => {
           obj[`col${idx}`] = val
           return obj
         }, {})
     )
   }
-});
+})
 
 // 修改事件
 const onCellValueChanged = (event) => {
-  const {rowIndex, colDef, data} = event;
+  const {rowIndex, colDef, data} = event
   const columnIdx = parseInt(colDef.field.replace('col', ''), 10);
   // 直接修改原始数据源
-  dataset.value.source[rowIndex][columnIdx] = data[colDef.field];
-  updateColumnStats(); // 添加统计更新
+  dataset.source[rowIndex][columnIdx+1] = data[colDef.field];
+
+  if (fileData.columnStats[columnIdx+1].type === 'number') reloadNumericStats4One(columnIdx+1)
+
   Ss.value.filter(i=>i.isLoad).forEach((s) => {
     checkSeries(s,echartsOptions)
   })
-  store.refreshDataset(Ds.value[0].id)
-};
+  refreshDataset(Ds.value[0].id)
+}
 
 const startAddingField = () => {
   isAddingField.value = true
@@ -185,18 +181,24 @@ const confirmAddField = () => {
   if (newFieldName.value.trim()) {
     // 添加新字段到columnStats
     const newColumn = {
-      index: fileData.value.columnStats.length,
+      index: fileData.columnStats.length,
       field: newFieldName.value.trim(),
       type: selectedType.value
     }
 
-    fileData.value.columnStats.push(newColumn)
+    if(selectedType.value==='number') {
+      newColumn.numericStats = {
+        min: 0,
+        max: 0,
+      }
+    }
+
+    fileData.columnStats.push(newColumn)
 
     // 为每行数据添加新字段
-    dataset.value.source.forEach(row => {
+    dataset.source.forEach(row => {
       row.push(selectedType.value === 'number' ? 0 : '')
     })
-    updateColumnStats(); // 添加统计更新
 
     cancelAddField()
   }
@@ -208,40 +210,18 @@ const cancelAddField = () => {
   newFieldName.value = ''
 }
 
-// 删除字段
-const deleteField = (colIndex) => {
-  // 从列配置中删除
-  fileData.value.columnStats.splice(colIndex, 1)
-
-  // 从每行数据中删除对应列
-  dataset.value.source.forEach(row => {
-    row.splice(colIndex, 1)
-  })
-
-  Ss.value.forEach((s) => {
-    let needUnload = false
-    if (s.category === colIndex) {
-      s.category = -1
-      needUnload = true
-    }
-
-    if (s.number === colIndex){
-      s.number = -1
-      needUnload = true
-    }
-
-    if (s.isLoad && needUnload) unloadSeries(s,echartsOptions)
-  })
-}
-
 const addRow = () => {
   const newRow = []
-  fileData.value.columnStats.forEach(i => {
-    newRow.push(i.type === 'number' ? 0 : '')
+  fileData.columnStats.forEach((i,index) => {
+    if (index === 0){
+      newRow.push(uuidv4())
+    }else {
+      newRow.push(i.type === 'number' ? 0 : '')
+    }
+
   })
-  dataset.value.source.push(newRow)
-  updateColumnStats(); // 添加统计更新
-  store.refreshDataset(Ds.value[0].id)
+  dataset.source.push(newRow)
+  refreshDataset(Ds.value[0].id)
 }
 
 const onRowSelected = (event)=> {
@@ -256,49 +236,18 @@ const deleteSelectedRows = ()=>{
   // 方法一：使用 filter 生成新数组
   const indicesSet = new Set(deleteIndex.value);
   // 生成过滤后的新数据（排除选中行）
-  dataset.value.source = dataset.value.source.filter(
+  dataset.source = dataset.source.filter(
       (_, index) => !indicesSet.has(index)
   );
 
   deleteIndex.value.length = 0
-  updateColumnStats(); // 更新统计信息
+  reloadNumericStats()
   Ss.value.filter(i=>i.isLoad).forEach((s) => {
     checkSeries(s,echartsOptions)
   })
-  store.refreshDataset(Ds.value[0].id)
+  refreshDataset(Ds.value[0].id)
 
 }
-
-const updateColumnStats = () => {
-  // 保留旧状态
-  //prevColumnStats.value = [...store.fileData.columnStats]
-
-  const header = fileData.value.columnStats.map(col => col.field)
-
-  // 检测变化
-  //const uniquenessChanges = store.trackColumnStatsChange(newStats)
-
-  // 更新正式状态
-  fileData.value.columnStats = analyzeColumns2(dataset.value.source, header,false)
-
-  // 触发处理逻辑
-  //handleUniquenessChanges(uniquenessChanges)
-}
-// 新增处理函数
-// const handleUniquenessChanges = (changes) => {
-//   changes.forEach(change => {
-//     emitter.emit('uniqueness-changed', change)
-//     pushMsg(2,
-//         `字段 [${change.field}] 失去唯一性.`
-//     )
-//     Ss.value.forEach((s) => {
-//       if (s.category === change.index) {
-//         s.category = -1
-//         if (s.isLoad) unloadSeries(s,echartsOptions)
-//       }
-//     })
-//   })
-// }
 
 watch(theme,(newVal)=>{
   myTheme.value = newVal ? darkTheme : lightTheme
@@ -313,7 +262,6 @@ watch(theme,(newVal)=>{
   grid-template-rows: auto auto 1fr;
   margin-left: 8px;
   gap: 10px
-
 }
 
 .table ::-webkit-scrollbar {

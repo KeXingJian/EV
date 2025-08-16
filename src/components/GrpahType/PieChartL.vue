@@ -132,7 +132,7 @@ const labelTypeSelect = [
   },
 ]
 
-const {echartsOptions} = storeToRefs(useOptionConfig())
+const {echartsOptions} = useOptionConfig()
 
 const emitLoadChart = debounce(() => {
   emitter.emit('merge-option')

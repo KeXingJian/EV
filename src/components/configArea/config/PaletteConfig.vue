@@ -21,7 +21,6 @@ import FavoriteButton from "../../button/FavoriteButton.vue";
 import {computed} from "vue";
 import OwnPaletteBox from "../../box/OwnPaletteBox.vue";
 import {storeToRefs} from "pinia";
-import {useOptionConfig} from "../../../store/OptionConfig.js";
 import {usePalettesConfig} from "../../../store/PalettesConfig.js";
 
 const {palettes} = storeToRefs(usePalettesConfig())

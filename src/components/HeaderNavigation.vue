@@ -2,9 +2,8 @@
   <section>
     <a class="logo">
       EXCEL<span>VISION.</span>
-      <span class="label">v1.3.3</span>
+      <span class="label">v2.0.0</span>
     </a>
-
     <div class="header-right">
       <input
           type="file"
@@ -26,14 +25,16 @@ import {useOptionConfig} from "../store/OptionConfig.js";
 import {analyzeColumns2} from "../utils/ExcelUtils.js";
 import emitter from "../emitter/emitter.js";
 import {pushMsg} from "../utils/MsgUtils.js";
-import {init} from "../utils/newArch/InitUtils.js";
+import {init} from "../utils/InitUtils.js";
 import {useI18n} from "vue-i18n";
 const { t } = useI18n()
+import { v4 as uuidv4 } from 'uuid';
 
-const fileInput = ref(null);
+const fileInput = ref();
 
 // 数据存储结构
-const {fileData, dataset, Ss, Ds} = storeToRefs(useOptionConfig())
+const {dataset, Ds} = storeToRefs(useOptionConfig())
+const {fileData} = useOptionConfig()
 
 // 触发文件选择
 const triggerFileInput = () => fileInput.value.click();
@@ -45,7 +46,7 @@ const handleFileUpload = async (e) => {
 
   Ds.value = Ds.value.filter(i=>i.id===-1)
 
-  if (!fileData.value.raw) cleanup()
+  if (fileData.rowCount!==-1) cleanup()
 
   const reader = new FileReader();
   reader.onload = async (e) => {
@@ -54,14 +55,23 @@ const handleFileUpload = async (e) => {
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const rawData = XLSX.utils.sheet_to_json(sheet, {header: 1, defval: null});
     const endData = rawData.slice(1)
-    // 数据结构
-    fileData.value = {
-      rowCount: rawData.length - 1, // 排除表头
-      columnStats: analyzeColumns2(endData, rawData[0]?.map(String) || [],),
-    };
 
-    dataset.value.source =  endData// 存储原始数据（排除表头）
-    dataset.value.dimension = fileData.value.columnStats.map(i => i.field)
+    rawData[0].unshift('id')
+    endData.forEach(i=>i.unshift(uuidv4()))
+
+    fileData.rowCount = rawData.length - 1
+    fileData.columnStats.splice
+    (0,
+        fileData.columnStats.length,
+        ...analyzeColumns2(endData, rawData[0]?.map(String) || [])
+    )
+
+
+    dataset.value.source = endData// 存储原始数据（排除表头）
+    dataset.value.dimension = fileData.columnStats.map(i => i.field)
+
+    console.log(dataset.value.source)
+    console.log(dataset.value.dimension)
 
     importDone()
   };
@@ -70,8 +80,8 @@ const handleFileUpload = async (e) => {
 };
 
 const importDone = () => {
-  if (fileData.value.columnStats) {
-    pushMsg(0, generateAnalysisReport(fileData.value.columnStats))
+  if (fileData.columnStats) {
+    pushMsg(0, generateAnalysisReport(fileData.columnStats))
     Ds.value[0].from = 'excel import'
     Ds.value[0].groupCondition.length = 0
     Ds.value[0].filterConditions.length = 0
@@ -100,18 +110,17 @@ const generateAnalysisReport = (data) => {
 
   if (anomalies.length > 0) {
     const anomalyFields = anomalies.map(item => item.field);
-    return `${t('Notice.B')}${fileData.value.rowCount}${t('Notice.C')}${anomalyFields.join(', ')}${t('Notice.D')}`;
+    return `${t('Notice.B')}${fileData.rowCount}${t('Notice.C')}${anomalyFields.join(', ')}${t('Notice.D')}`;
   }
-  return `${t('Notice.B')}${fileData.value.rowCount}${t('Notice.E')}`;
+  return `${t('Notice.B')}${fileData.rowCount}${t('Notice.E')}`;
 }
 
 
 // 清理数据
 const cleanup = () => {
-  fileData.value = {
-    rowCount: 0,
-    columnStats: []
-  }
+  fileData.rowCount = -1
+  fileData.columnStats.length = 0
+
 }
 
 // 页面关闭时自动清理

@@ -31,12 +31,11 @@ import RadioBox from "../box/RadioBox.vue";
 import { watch} from "vue";
 import CheckBox from "../box/CheckBox.vue";
 import ColorPoint from "../button/ColorPoint.vue";
-import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
 import emitter from "../../emitter/emitter.js";
-import {x0y} from "../../utils/BeautifyUtils.js";
-import {startPoints} from "../../utils/newArch/Check4Series.js";
+
 import {debounce} from "../../utils/DebounceUtils.js";
+import {updateLine} from "../../utils/newArch/Check4Series.js";
 
 const props = defineProps({
   item: {
@@ -75,7 +74,7 @@ const startPointType = [
   }
 ]
 
-const {echartsOptions} = storeToRefs(useOptionConfig())
+const {echartsOptions} = useOptionConfig()
 
 const emitLoadChart = debounce(() => {
   emitter.emit('merge-option')
@@ -83,22 +82,7 @@ const emitLoadChart = debounce(() => {
 
 
 watch(props.item, (newVal) => {
-
-  const target = echartsOptions.value.series.find(i=>i.id===newVal.id)
-
-  x0y(newVal,echartsOptions,target)
-
-  target.smooth = newVal.lineConfig.lineType === 1 ? 0.5 : 0
-
-  if (newVal.lineConfig.lineType === 2) target.step = startPoints[newVal.lineConfig.startPoint]
-  else target.step=''
-
-  if (newVal.lineConfig.isArea) target.areaStyle = {color: newVal.areaColor}
-  else target.areaStyle = null
-
-
-
-  //console.log('系列更新触发合并',echartsOptions.value)
+  updateLine(newVal,echartsOptions)
   emitLoadChart()
 })
 </script>

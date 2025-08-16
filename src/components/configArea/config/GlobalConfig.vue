@@ -140,11 +140,11 @@ import {useOptionConfig} from "../../../store/OptionConfig.js";
 import {computed, watch} from "vue";
 import ColorPoint from "../../button/ColorPoint.vue";
 import InputBox from "../../box/InputBox.vue";
-import {legendStyleSelect, legendTypeSelect} from "../../../utils/BeautifyUtils.js";
 import emitter from "../../../emitter/emitter.js";
 import ProgressBarArea from "../../button/ProgressBarArea.vue";
 import {debounce} from "../../../utils/DebounceUtils.js";
 import {useGlobalConfig} from "../../../store/GlobalConfig.js";
+import {legendStyleSelect,legendTypeSelect} from "../../../utils/newArch/ConstantPool.js";
 
 const {echartsOptions} = storeToRefs(useOptionConfig())
 const {global} = storeToRefs(useGlobalConfig())
@@ -190,7 +190,7 @@ watch(
       titleConfig.style.fontSize = newTitle.fontSize;
       titleConfig.style.fontWeight = newTitle.fontWeight;
 
-      emitLoadChart();
+      emitLoadChart()
     },
     { deep: true }
 );
@@ -259,7 +259,7 @@ watch(
       echartsOptions.value.toolbox.feature.saveAsImage.pixelRatio = newRatio;
       emitLoadChart();
     }
-);
+)
 
 </script>
 
@@ -341,15 +341,15 @@ span {
 }
 
 .box{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  .option-value{
-    color: var(--active-color);
-  }
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
+   gap: 8px;
+   .option-value{
+     color: var(--active-color);
+   }
 
-}
+ }
 
 .button-top{
   cursor: pointer;

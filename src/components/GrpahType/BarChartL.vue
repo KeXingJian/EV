@@ -18,9 +18,9 @@ import { watch} from "vue";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
 import emitter from "../../emitter/emitter.js";
-import {x0y} from "../../utils/BeautifyUtils.js";
 import ProgressBar from "../button/ProgressBar.vue";
 import {debounce} from "../../utils/DebounceUtils.js";
+import {updateBar} from "../../utils/newArch/Check4Series.js";
 
 const props=defineProps({
   item:{
@@ -29,21 +29,14 @@ const props=defineProps({
   }
 })
 
-const {echartsOptions} = storeToRefs(useOptionConfig())
+const {echartsOptions} = useOptionConfig()
 
 const emitLoadChart = debounce(() => {
   emitter.emit('merge-option')
 }, 200);
 
 watch(props.item ,(newVal)=>{
-  const target = echartsOptions.value.series.find(i=>i.id===newVal.id)
-  if(newVal.barConfig.isAuto){
-    target.barWidth = undefined
-  }else {
-    target.barWidth = newVal.barConfig.barWidth
-  }
-  target.itemStyle.borderRadius = newVal.barConfig.borderRadius
-  x0y(newVal,echartsOptions,target)
+  updateBar(newVal,echartsOptions)
   emitLoadChart()
 })
 

@@ -1,5 +1,5 @@
 import {useOptionConfig} from "../../store/OptionConfig.js";
-import {storeToRefs} from "pinia";
+import {useNodeState} from "../../store/NodeState.js";
 
 export const getData = (hIndex, vIndex, dataset) => {
     const store = useOptionConfig()
@@ -28,44 +28,36 @@ export const getData3 = (hIndex, vIndex, mapIndex, dataset) => {
     })
 }
 
-export const getPieData = (hIndex, vIndex, color, dataset,addItem) => {
-    const store = useOptionConfig()
-    //console.log("addd",addItem)
-    return store.getDataFromD(dataset).filter(i =>
+export const getPieData = (hIndex, vIndex, color, dataset,id) => {
+    const {getDataFromD} = useOptionConfig()
+    const {getColorPie} = useNodeState()
+
+    return getDataFromD(dataset).filter(i =>
         (i[hIndex]!==null && i[hIndex] !== '') &&
         (i[vIndex]!==null && i[vIndex] !== '')
         //过滤横轴或纵轴为空
-    ).map((item,index) => {
+    ).map(item => {
         return {
+            id: item[0],
             name: item[hIndex],
             value: item[vIndex],
             itemStyle: {
-                color: addItem ? addItem.data[index].itemStyle.color : color,
+                color: getColorPie(item[0]+id) || color,
             },
         }
     })
 }
 
-export const getRadarCData = (hIndex,max,color) => {
-    const store = useOptionConfig()
-    const {Ds} = storeToRefs(useOptionConfig())
-    return store.getDataFromD(Ds.value[0]).filter(i =>
-            (i[hIndex]!==null && i[hIndex] !== '')
-        //过滤横轴或纵轴为空
-    ).map((item) => {
-        return {
-            text: item[hIndex],
-            color: color,
-            max: max
-        }
+export const getRelationData = (s)=>{
+    const {dataset:{source}} = useOptionConfig()
+    return source.map(item => {
+        return [item[s.from], item[s.relationship], item[s.to]]
     })
 }
 
-export const getRadarVData = (hIndex) => {
-    const store = useOptionConfig()
-    const {Ds,} = storeToRefs(useOptionConfig())
-    return store.getDataFromD(Ds.value[0]).filter(i =>
-            (i[hIndex]!==null && i[hIndex] !== '')
-        //过滤横轴或纵轴为空
-    ).map((item) => item[hIndex])
+export const getSingle = (index)=>{
+    const {dataset:{source}} = useOptionConfig()
+    return source.map(item => {
+        return item[index]
+    })
 }

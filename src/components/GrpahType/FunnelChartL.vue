@@ -65,13 +65,12 @@
 import RadioBox from "../box/RadioBox.vue";
 import CheckBox from "../box/CheckBox.vue";
 import ProgressBar from "../button/ProgressBar.vue";
-import {onBeforeMount, watch} from "vue";
+import { watch} from "vue";
 import ColorPoint from "../button/ColorPoint.vue";
 import emitter from "../../emitter/emitter.js";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
-import {buildGrid} from "../../utils/newArch/Position.js";
-import {funnelAlign, funnelInit, funnelLabel, funnelSort} from "../../utils/newArch/Check4Series.js";
+import { funnelInit, } from "../../utils/newArch/Check4Series.js";
 import {debounce} from "../../utils/DebounceUtils.js";
 
 const props = defineProps({
@@ -126,7 +125,7 @@ const sortType = [
   }
 ]
 
-const {echartsOptions} = storeToRefs(useOptionConfig())
+const {echartsOptions} = useOptionConfig()
 
 const emitLoadChart = debounce(() => {
   emitter.emit('merge-option')

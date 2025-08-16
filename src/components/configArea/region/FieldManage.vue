@@ -10,7 +10,10 @@
     </div>
     <div class="file">
       <span class="head">{{ $t('field') }}</span>
-      <div v-for="(item,index) in fileData.columnStats.map(item => item.field)" :key="index" class="file-item">
+      <div v-for="(item,index) in
+      fileData.columnStats.map(
+          item => item.field
+      )" :key="index" class="file-item">
        <span>
            {{ item }}
         </span>
@@ -18,24 +21,18 @@
     </div>
     <div class="type">
       <span class="head">{{ $t('type') }}</span>
-      <div v-for="(item,index) in fileData.columnStats.map(item => item.type)" :key="index" class="type-item">
+      <div v-for="(item,index) in
+      fileData.columnStats.map(
+          item => item.type
+      )" :key="index" class="type-item">
         <span>
            {{ item }}
         </span>
       </div>
     </div>
-<!--    <div class="sole">-->
-<!--      <span class="head">{{ $t('sole') }}</span>-->
-<!--      <div v-for="(item,index) in fileData.columnStats.map(item => item.isUnique)" :key="index" class="type-item">-->
-<!--        <Check v-if="item"></Check>-->
-<!--        <Close v-else></Close>-->
-<!--      </div>-->
-<!--    </div>-->
   </div>
 </template>
 <script setup>
-import Close from "../../svg/Close.vue";
-import Check from "../../svg/Check.vue";
 import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../../store/OptionConfig.js";
 import ExcelColumnMap from "../../../utils/ExcelColumnMapUtils.js";
