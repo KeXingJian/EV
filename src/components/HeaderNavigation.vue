@@ -66,30 +66,29 @@ const handleFileUpload = async (e) => {
         ...analyzeColumns2(endData, rawData[0]?.map(String) || [])
     )
 
-
     dataset.value.source = endData// 存储原始数据（排除表头）
     dataset.value.dimension = fileData.columnStats.map(i => i.field)
 
-    console.log(dataset.value.source)
-    console.log(dataset.value.dimension)
+    //console.log(dataset.value.source)
+    //console.log(dataset.value.dimension)
 
     importDone()
-  };
-  reader.readAsArrayBuffer(file);
+  }
+  reader.readAsArrayBuffer(file)
 
-};
+}
 
 const importDone = () => {
-  if (fileData.columnStats) {
-    pushMsg(0, generateAnalysisReport(fileData.columnStats))
-    Ds.value[0].from = 'excel import'
-    Ds.value[0].groupCondition.length = 0
-    Ds.value[0].filterConditions.length = 0
-    Ds.value[0].filterConditions.filterChain = null
-    init()
-    emitter.emit('load-chart')
-  }
 
+  pushMsg(0, generateAnalysisReport(fileData.columnStats))
+
+  Ds.value[0].from = 'excel import'
+  Ds.value[0].groupCondition.length = 0
+  Ds.value[0].filterConditions.length = 0
+  Ds.value[0].filterConditions.filterChain = null
+
+  init()
+  emitter.emit('load-chart')
 }
 
 const generateAnalysisReport = (data) => {
@@ -103,6 +102,7 @@ const generateAnalysisReport = (data) => {
     }
 
   })
+
   if (noUniques.length > 0) {
     const noUniquesFields = noUniques.map(item => item.field)
     pushMsg(1,`${t('Notice.G')}${noUniquesFields.join(', ')}${t('Notice.I')}`)
@@ -114,7 +114,6 @@ const generateAnalysisReport = (data) => {
   }
   return `${t('Notice.B')}${fileData.rowCount}${t('Notice.E')}`;
 }
-
 
 // 清理数据
 const cleanup = () => {

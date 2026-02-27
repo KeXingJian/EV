@@ -49,15 +49,8 @@
       </div>
     </div>
 
-    <div class="config-item" v-if="categoryConfig.canCategoryMap">
-      <div class="button-top">
-        <div class="box">
-          <span>归属映射</span>
-          <CheckBox v-model="categoryConfig.isCategoryMap"></CheckBox>
-        </div>
-      </div>
-    </div>
-    <div class="config-item">
+
+    <div class="config-item" v-if="false">
       <span>颜色集</span>
       <RelationPaletteBox :colors="colorSet"></RelationPaletteBox>
     </div>
@@ -81,7 +74,6 @@ import {useOptionConfig} from "../../store/OptionConfig.js";
 import ProgressBarRange from "../button/ProgressBarRange.vue";
 import RelationPaletteBox from "../box/RelationPaletteBox.vue";
 import {debounce} from "../../utils/DebounceUtils.js";
-import {getSingle} from "../../utils/newArch/DataUtils.js";
 import {getFieldDetails} from "../../utils/newArch/Check4Series.js";
 import {useI18n} from "vue-i18n";
 const {t} = useI18n()
@@ -140,7 +132,6 @@ const currentStyle = computed(() => {
 // 提取配置项为 computed 属性
 const symbolConfig = computed(() => item.symbolConfig)
 const weightConfig = computed(() => item.weightConfig)
-const categoryConfig = computed(() => item.categoryConfig)
 const edgeLabel = computed(() => item.edgeLabel)
 const otherConfig = computed(() => item.otherConfig)
 const colorSet = computed(() => item.colorSet)
@@ -149,7 +140,6 @@ const labelConfig = computed(() => item.labelConfig)
 watch(
     symbolConfig,
     (newVal) => {
-
       tagetSeries.color = newVal.color
       tagetSeries.symbol = relationStyleSelect[newVal.symbol].label
       tagetSeries.symbolSize = newVal.symbolSize
@@ -192,31 +182,15 @@ watch(
       if (!newVal.canWeightMap) return
 
       const {isWeightMap} = newVal
-      const weightData = isWeightMap ? getSingle(4) : null
-      const ids = isWeightMap ? getSingle(0) : null
 
       const {max, min} = isWeightMap ? getFieldDetails(4) : {max:0, min:0}
       const [rMin,rMax] = newVal.symbolRange
 
-
-
       tagetSeries.nodes.forEach(i=>{
-        let size = undefined
-
-        if (newVal.isWeightMap){
-          //权重和类目映射
-          size  = rMin + (rMax - rMin) * (
-              weightData[ids.findIndex(
-                      id=>id===i.idEV[i.idEV.length-1]
-                    )
-                  ]
-              - min
-          ) / (max - min
-          )
-        }else {
-          size = newVal.symbolSize
-        }
-        i.symbolSize = size
+        i.symbolSize = newVal.isWeightMap && i.weight!==-1 ?
+            rMin + (rMax - rMin) * (i.weight - min) / (max - min)
+            :
+            newVal.symbolSize
 
       })
 
@@ -226,52 +200,6 @@ watch(
     { deep: true }
 )
 
-watch(
-    categoryConfig,
-    (newVal) => {
-
-      if (!newVal.canCategoryMap) return
-
-      const {isCategoryMap} = newVal
-
-      const categoryData = isCategoryMap ?
-          getSingle(5) : undefined
-
-
-      const category = isCategoryMap ?
-          [...new Set(categoryData)].map((i,index)=>{
-            const length = colorSet.value.length
-            return {
-              name: i,
-              itemStyle:{
-                color: length > 0 ? colorSet.value[index % length] : symbolConfig.value.color
-              }
-            }
-          }) : undefined
-
-
-      if (isCategoryMap){
-
-        const ids =  getSingle(0)
-        tagetSeries.categories = category
-        tagetSeries.nodes.forEach(node=>{
-          const currentCategory = categoryData[ids.findIndex(id=>id===node.idEV[node.idEV.length-1])]
-          node.category = category.findIndex(i => i.name === currentCategory)
-        })
-      }else {
-        //卸载
-        tagetSeries.categories = undefined
-
-        tagetSeries.nodes.forEach(node=>{
-          node.category = undefined
-        })
-      }
-
-      emitLoadChart()
-
-    },
-    { deep: true }
-)
 
 watch(
     colorSet,

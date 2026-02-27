@@ -17,7 +17,6 @@
         <ConnectionButton @click="toConnect" v-if="isDouble"></ConnectionButton>
         <span @click.stop="showLegendStyle" class="option-value">{{ $t(currentStyle) }}</span>
         <DeleteButton @click="toDelete"></DeleteButton>
-        <span @click.stop="showCategory" class="option-value">{{ currentCategory }}</span>
       </div>
       <div class="config-item top">
         <ProgressBar
@@ -82,7 +81,7 @@ import {useOptionConfig} from "../../store/OptionConfig.js";
 import AddButton from "../svg/AddButton.vue";
 import DeleteButton from "../svg/DeleteButton.vue";
 import ColorPoint from "../button/ColorPoint.vue";
-import {computed, ref, watch} from "vue";
+import {ref, watch} from "vue";
 import EditButton from "../svg/EditButton.vue";
 import CloseButton from "../svg/CloseButton.vue";
 import CheckButton from "../svg/CheckButton.vue";
@@ -95,59 +94,24 @@ import {storeToRefs} from "pinia";
 import {useI18n} from "vue-i18n";
 import {relationStyleSelect} from "../../utils/newArch/ConstantPool.js";
 import Drag from "../svg/Drag.vue";
+import {debounce} from "../../utils/DebounceUtils.js";
 
 const {t} = useI18n()
 
 const {
-  Ss,echartsOptions,dataset,
-  chartInstance,selects,fileData,
-  refreshDataset,Ds,selectsE
+  Ss,echartsOptions,
+  chartInstance,selects,
+  selectsE
 } = useOptionConfig()
 
 const {
   nodeIndex
 } = storeToRefs(useOptionConfig())
 
-
 const targetSeriesMap = Ss.find(i=>i.type === 5)
 const {symbolConfig,weightConfig,edgeLabel} = targetSeriesMap
 
 const targetSeries = echartsOptions.series.find(x=>x.type === 'graph')
-
-const currentCategory = computed(() => {
-  if (!targetSeries.categories) return '未定义'
-  return targetSeries.categories[cache[0].category]?.name || '未定义'
-})
-
-const categoriesSelect = computed(() => {
-  return targetSeries?.categories?.map((i,index) => {
-    return {
-      index,
-      label: i.name
-    }
-  })
-})
-
-const showCategory = (event)=>{
-  emitter.emit('show-options', {
-    x: event.clientX,
-    y: event.clientY,
-    target: cache,
-    options: categoriesSelect.value,
-    handle: (index, target) => {
-      const targetIds = []
-      target.forEach(i=> {
-        i.category = index
-        targetIds.push(...i.idEV)
-      })
-
-      dataset.source.filter(i=>targetIds.includes(i[0])).forEach(i=>{
-        i[5] = categoriesSelect.value[index].label
-      })
-      emitter.emit('merge-option')
-    }
-  })
-}
 
 const showLegendStyle = (event) => {
   emitter.emit('show-options-i18n', {
@@ -186,18 +150,13 @@ const toSaveName = ()=>{
   }
 
   const isSole = targetSeries.nodes.find(i=>i.name === currentName.value)
-  if(isSole){
-    emitter.emit("toast", t('节点名重复不予以修改'))
-  }else {
-    const edges =targetSeries.edges
+  if(isSole) emitter.emit("toast", t('节点名重复不予以修改'))
+  else {
 
-    dataset.source.forEach((i,index)=>{
-      if (cache[0].name===i[targetSeriesMap.from]) i[targetSeriesMap.from] = currentName.value
-      if (cache[0].name===i[targetSeriesMap.to]) i[targetSeriesMap.to] = currentName.value
-      if (cache[0].name===edges[index]?.source)  edges[index].source = currentName.value
-      if (cache[0].name===edges[index]?.target)  edges[index].target = currentName.value
+    targetSeries.edges.forEach(i=>{
+      if (cache[0].name===i.source) i.source = currentName.value
+      if (cache[0].name===i.target) i.target = currentName.value
     })
-
     beforeName = currentName.value
     cache[0].name = currentName.value
     emitter.emit('merge-option')
@@ -208,38 +167,15 @@ const toSaveName = ()=>{
       seriesId: targetSeries.id,
       dataIndex: selects[0]
     })
-
   }
 }
 
 const toAdd = ()=>{
-  const newName = 'Node'+(++nodeIndex.value)
-  const idEV = []
+  const newName = '节点'+(++nodeIndex.value)
+
   cache.forEach(node=>{
-    const newRow = []
-
-    const uuid = uuidv4()
-    idEV.push(uuid)
-    fileData.columnStats.forEach((i,index) => {
-
-      if (index === 0){
-
-        newRow.push(uuid)
-      }else if(index === 1){
-        newRow.push(newName)
-      }else if(index === 2){
-        newRow.push('新关系')
-      }else if(index === 3){
-        newRow.push(node.name)
-      }else {
-        newRow.push(i.type === 'number' ? getFieldDetails(index).min : '')
-      }
-
-    })
-
 
     targetSeries.edges.push({
-      idEV: uuid,
       source: newName,
       target: node.name,
       label:{
@@ -247,7 +183,6 @@ const toAdd = ()=>{
       },
     })
 
-    dataset.source.push(newRow)
   })
 
   const position = {
@@ -256,71 +191,34 @@ const toAdd = ()=>{
   }
 
   targetSeries.nodes.push({
-    idEV: idEV,
     name: newName,
     symbolSize: weightConfig.symbolSize,
     itemStyle:{},
-    category:undefined,
     ...position
   })
 
-  refreshDataset(Ds[0].id)
-
   cleanAllN()
-
   emitter.emit('merge-option')
 }
 
 const toConnect = ()=>{
-  const newRow = []
-  const uuid = uuidv4()
-  fileData.columnStats.forEach((i,index) => {
-    if (index === 0){
-      cache[0].idEV.push(uuid)
-      newRow.push(uuid)
-    }else if(index === 1){
-      newRow.push(cache[0].name)
-    }else if(index === 2){
-      newRow.push('新关系')
-    }else if(index === 3){
-      newRow.push(cache[1].name)
-    }else {
-      newRow.push(i.type === 'number' ? getFieldDetails(index).min : '')
-    }
-
-  })
 
   targetSeries.edges.push({
-    idEV: uuid,
     source: cache[0].name,
     target: cache[1].name,
     label:{
       formatter: '新关系',
     },
   })
-  dataset.source.push(newRow)
-  refreshDataset(Ds[0].id)
 
   emitter.emit('merge-option')
 }
 
 const toDelete = ()=>{
-  targetSeries.nodes = targetSeries.nodes.filter((item,index)=> {
-    if (selects.includes(index)){
-      dataset.source = dataset.source.filter(i=>{
-        return !(
-            i[targetSeriesMap.from] === item.name ||
-            i[targetSeriesMap.to] === item.name
-        )
-      })
-      return false
-    }else {
-      return true
-    }
-  })
+  targetSeries.nodes = targetSeries.nodes.filter((_,index)=> !selects.includes(index))
   cleanAllN()
   selects.length = 0
-  emitter.emit('load-chart')
+  emitter.emit('merge-option')
 }
 
 const toCancel = ()=>{
@@ -352,6 +250,7 @@ const cleanAll = ()=>{
 }
 
 watch(color, (newVal)=>{
+
   cache.forEach((item)=> {
     item.itemStyle.color = newVal
   })
@@ -359,40 +258,31 @@ watch(color, (newVal)=>{
 })
 
 watch(currentSize, (newVal) => {
-
-  cache.forEach((item) => {
-    item.symbolSize = newVal
-  })
-  emitter.emit('merge-option')
+  debounce(()=>{
+    cache.forEach(item=> item.symbolSize = newVal)
+    emitter.emit('merge-option')
+  },100)()
 
 })
 
 watch(selects, (newVal) => {
-  if (!newVal || newVal.length === 0) {
-    selected.value = false
-    isShow.value = false
-    cache = null
-    isDouble.value = false
-  }else if (newVal.length === 1){
-    selected.value = false
-    isShow.value = true
+  const length = newVal.length
 
-    const single = targetSeries.nodes[newVal[0]]
-    cache = [single]
-    currentName.value = single.name
-    beforeName =  single.name
-    isDouble.value = false
+  cache = length > 0 ?
+      targetSeries.nodes.filter((_,index)=> newVal.includes(index))
+      :
+      []
 
-  }else if (newVal.length  > 1){
-    isDouble.value = newVal.length === 2
-    cache = targetSeries.nodes.filter((_,index)=> newVal.includes(index))
-    selected.value = true
-    isShow.value = true
-  }
-  color.value = symbolConfig.color
+  isDouble.value = length === 2
+  selected.value = !(newVal.length === 0 || newVal.length===1)
+  isShow.value = newVal.length > 0
+
+  currentName.value = length===1 ? cache[0].name : ''
+  beforeName = length===1 ? cache[0].name : ''
+
   currentStyle.value = relationStyleSelect[symbolConfig.symbol].label
 
-  console.log(newVal)
+  //console.log(cache)
 })
 
 //edge
@@ -412,14 +302,10 @@ const toSaveNameE = ()=>{
     emitter.emit("toast", t('不能为空,至少输入空格'))
   }
 
-  const item = dataset.source.find(i=>i[0]===cacheE[0].idEV)
-
-  item[2] =  currentNameE.value
   beforeNameE =  currentNameE.value
   cacheE[0].label.formatter = currentNameE.value
-  console.log(item)
-  isEditEdge.value = false
 
+  isEditEdge.value = false
   emitter.emit('merge-option')
 }
 
@@ -429,15 +315,12 @@ const toCancelE = ()=>{
 }
 
 const toDeleteE = ()=>{
-
-  const ids = cacheE.map(item=>item.idEV)
-
-  dataset.source = dataset.source.filter(item=> !ids.includes(item[0]))
-  targetSeries.edges = targetSeries.edges.filter(item=> !ids.includes(item.idEV))
-
+  targetSeries.edges = targetSeries
+      .edges
+      .filter((_,index)=> !selectsE.includes(index))
   selectsE.length = 0
-  emitter.emit('load-chart')
-
+  selects.length = 0
+  emitter.emit('merge-option')
 }
 
 watch(colorE,
@@ -451,28 +334,21 @@ watch(colorE,
 )
 
 watch(selectsE, (newVal) => {
+  const length = newVal.length
 
-  if (!newVal || newVal.length === 0) {
-    selectedE.value = false
-    isShowE.value = false
-    cacheE = null
+  cacheE = length > 0 ?
+      targetSeries.edges.filter((_,index)=> newVal.includes(index))
+      :
+      []
 
-  }else if (newVal.length === 1){
-    selectedE.value = false
-    isShowE.value = true
-    const single = targetSeries.edges[newVal[0]]
-    cacheE = [single]
-    currentNameE.value = single.label.formatter
-    beforeNameE =  single.label.formatter
+  selectedE.value = !(length===0 || length===1)
 
-  }else if (newVal.length  > 1){
-    cacheE = targetSeries.edges.filter((_,index)=> newVal.includes(index))
-    selectedE.value = true
-    isShowE.value = true
-  }
+  isShowE.value = length > 0
 
-  colorE.value = edgeLabel.color
+  currentNameE.value = length===1 ? cacheE[0].label.formatter : ''
+  beforeNameE =  length===1 ? cacheE[0].label.formatter : ''
 
+  //console.log(newVal)
 })
 
 // 拖动相关
@@ -509,12 +385,13 @@ const stopDrag = () => {
   document.removeEventListener('mousemove', onDrag)
   document.removeEventListener('mouseup', stopDrag)
 }
-
-
-
 </script>
 <style scoped>
 .top-div {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   position: fixed;
   display: flex;
   flex-direction: column;

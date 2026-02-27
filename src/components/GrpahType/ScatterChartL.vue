@@ -34,11 +34,9 @@
 
 import RadioBox from "../box/RadioBox.vue";
 import {computed, watch} from "vue";
-import InputBox from "../box/InputBox.vue";
 import emitter from "../../emitter/emitter.js";
-import {storeToRefs} from "pinia";
 import {useOptionConfig} from "../../store/OptionConfig.js";
-import {getDataForSimpleSeries, updateScatter} from "../../utils/newArch/Check4Series.js";
+import {updateScatter} from "../../utils/newArch/Check4Series.js";
 import ProgressBarRange from "../button/ProgressBarRange.vue";
 import ProgressBar from "../button/ProgressBar.vue";
 import {useI18n} from 'vue-i18n'

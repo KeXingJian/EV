@@ -16,9 +16,11 @@ import {debounce} from "../utils/DebounceUtils.js";
 import LockButton from "./button/LockButton.vue";
 import {useGlobalConfig} from "../store/GlobalConfig.js";
 import {useNodeState} from "../store/NodeState.js";
-import {getSingle} from "../utils/newArch/DataUtils.js";
 import {getRandomInt} from "../utils/newArch/Position.js";
-import {centerSpread, centerSpreadWithRegion, getFieldDetails, partitionOnly} from "../utils/newArch/Check4Series.js";
+import {
+  centerSpread,
+  getFieldDetails,
+} from "../utils/newArch/Check4Series.js";
 
 const {echartsOptions,getChartSize} = useOptionConfig()
 const {chartInstance,Ss,isLoadRelation} = storeToRefs(useOptionConfig())
@@ -75,7 +77,6 @@ const handleChartClick = (params)=>{
 //缩放事件
 const handUpdateChart = (params)=> {
   debounce(()=>{
-
     echartsOptions.dataZoom.forEach((i,index)=>{
       if(
           !params.batch
@@ -101,9 +102,7 @@ const handUpdateChart = (params)=> {
 
 
     })
-
   })()
-
 }
 
 //标题与图例拖拽
@@ -136,85 +135,43 @@ const restore = ()=>{
   if (isLoadRelation.value){
 
     const {width, height} = getChartSize()
+
     const targetMap = Ss.value.find(i=>i.type === 5)
     const target = echartsOptions.series.find(i=>i.type === 'graph')
 
-    const {
-      symbolConfig,
-      categoryConfig,
-      colorSet,weightConfig
-    } = targetMap
-
-    const {canWeightMap,isWeightMap} = weightConfig
-    const {canCategoryMap,isCategoryMap} = categoryConfig
+    const {weightConfig:{isWeightMap,canWeightMap}} = targetMap
 
     const {nodes} = target
 
-    const ids = getSingle(0)
+    const toWeightMap = canWeightMap && isWeightMap
 
-    const categoryData = canCategoryMap && isCategoryMap ?
-        getSingle(5) : null
-    //去重
-    const category = canCategoryMap && isCategoryMap ?
-        [...new Set(categoryData)].map((i, index) => {
-          const length = colorSet.length
-          return {
-            name: i,
-            itemStyle: {
-              color: length > 0 ? colorSet[index % length] : symbolConfig.color
-            }
-          }
-        }) : null
+    const detailsS = toWeightMap ? getFieldDetails(4) : null
+    const detailsO = toWeightMap ? getFieldDetails(5) : null
 
 
-    const weightData = canWeightMap && isWeightMap ?
-        getSingle(4) : null
+    const {max, min} =  toWeightMap ?
+        {
+          max: Math.max(detailsS.max, detailsO.max),
+          min: Math.min(detailsS.min, detailsO.min),
+        }
+        : {max:0,min:0}
 
 
-    const {max, min} = canWeightMap && isWeightMap
-        ? getFieldDetails(4) : {max:0,min:0}
-
-    const [rMin, rMax] = weightConfig.symbolRange
-
-
-    nodes.forEach(elem => {
-      const index = ids.findIndex(i => i === elem.idEV[elem.idEV.length - 1])
-
-      let size = undefined
-
+    nodes.forEach(d=> {
       let position = {
-        x: getRandomInt(250, 500),
-        y: getRandomInt(250, 500),
+        x: getRandomInt(250,500),
+        y: getRandomInt(250,500),
       }
 
-      let currentCategory = undefined
-
-      if (category) currentCategory = category.findIndex(
-          i => i.name === categoryData[index]
-      )
-
-      if (weightData) {
-
-        size = rMin + (rMax - rMin) * (weightData[index] - min) / (max - min)
-
-        if (currentCategory) position = centerSpreadWithRegion(
-              width, height, min, max, weightData[index],
-              category.length, currentCategory, 4
+      if (toWeightMap && d.weight!==-1){
+        position = centerSpread(
+            width, height, min, max,
+            d.weight, 1
         )
-        else position = centerSpread(
-              width, height, min, max, weightData[index], 1
-        )
+      }
 
-
-      } else if (currentCategory) position = partitionOnly(
-            width, height, category.length, currentCategory, 3
-      )
-
-      elem.category = currentCategory
-      elem.symbolSize = size
-      elem.x = position.x
-      elem.y = position.y
-
+      d.x = position.x
+      d.y = position.y
     })
 
   }
@@ -252,7 +209,6 @@ onMounted(()=>{
   emitter.on('load-chart', loadChart)
   emitter.on('merge-option',mergeOption)
   emitter.on('init-legend-area',initLegendArea)
-
 
 })
 </script>

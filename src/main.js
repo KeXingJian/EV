@@ -1,7 +1,7 @@
-import { createApp } from 'vue'
+import {createApp} from 'vue'
 import App from './App.vue'
 import './styles/variables.css'
-import { createPinia } from 'pinia'
+import {createPinia} from 'pinia'
 import router from './router'
 import {AllCommunityModule, ModuleRegistry} from "ag-grid-community";
 import {DomainCheckPlugin} from "./plugins/dominCheck.js";

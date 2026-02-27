@@ -156,7 +156,7 @@ const showOption4Var = (event,type) => {
     target: modelItem,
     options: options,
     handle: (index,target)=>{
-      console.log(index)
+
       if (type===0){
         if (target.category !== -1 && target.category===index) return
         target.category = index

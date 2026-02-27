@@ -30,7 +30,7 @@ export default defineConfig({
         proxy: {
             // 代理规则示例
             '/api': {
-                target: 'http://localhost:8080', // 后端接口地址
+                target: 'http://tool.excelvision.cloud:8080', // 后端接口地址
                 changeOrigin: true, // 允许跨域
             }
         }

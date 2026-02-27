@@ -15,7 +15,6 @@ export const useOptionConfig = defineStore('optionConfig', {
 
             isLoadRelation: false,
 
-
             fileData: {
                 rowCount: -1,
                 columnStats: [],
@@ -376,185 +375,13 @@ export const useOptionConfig = defineStore('optionConfig', {
 
             const length = this.dataset.dimension.length
 
-            let canWeightMap = false
-            let canCategoryMap = false
+            const canWeightMap =
+                length >= 6
+                &&
+                this.fileData.columnStats[4].type === 'number'
+                &&
+                this.fileData.columnStats[5].type === 'number'
 
-
-            if (length < 4){
-                emitter.emit("toast", '数据缺失,不符合初节点-关系-末节点')
-                return
-            }else if (length === 5){
-                //仅启用权重
-                if (this.fileData.columnStats[4].type === 'number'){
-                    canWeightMap = true
-                }else {
-                    canWeightMap = false
-                    emitter.emit("toast", '第4列不为数字,不启用权重映射')
-                }
-            }else if (length >= 6){
-                //仅启用权重
-                if (this.fileData.columnStats[4].type === 'number'){
-                    canWeightMap = true
-                }else {
-                    canWeightMap = false
-                    emitter.emit("toast", '第4列不为数字,不予启用权重映射')
-                }
-
-                canCategoryMap = true
-            }
-
-
-            this.isLoadRelation = true
-            const selects = this.selects
-            const selectsE = this.selectsE
-
-            const s = {
-
-                id: ++this.sIndex,
-                type: 5,
-                name: '关系图',
-                seriesName: '关系图',
-                isLoad: false,
-                layout: 0, //0普通,重力,2环形
-
-                //映射
-                from: 1,
-                relationship: 2,
-                to: 3,
-
-                //标签
-                labelConfig: {
-                    position: 2,//右侧
-                    isLabel: true,
-                    labelColor: fontColor,
-                },
-
-                //图标
-                symbolConfig:{
-                    color:activeColor,
-                    symbol: 0, //圆形
-                },
-
-                weightConfig:{
-                    symbolSize: 20,
-                    symbolRange: [10,70],
-                    isWeightMap: canWeightMap,
-                    canWeightMap: canWeightMap
-                },
-
-                categoryConfig:{
-                    isCategoryMap: canCategoryMap,
-                    canCategoryMap: canCategoryMap
-                },
-
-                edgeLabel:{
-                    show:true,
-                    position: 0,
-                    color: fontColor
-                },
-
-                otherConfig: {
-                    isDirected: false,
-                    isHideOverlap: false,
-                },
-
-                colorSet: [
-                    '#6930C3', '#14FFEC', '#FF90BB',
-                    '#FF004D', '#0D6E6E', '#FFC7ED'
-                ]
-            }
-
-            this.Ss.push(s)
-
-            checkSeries(s,this.echartsOptions)
-
-            this.chartInstance.on('mousedown', (eDown) =>{
-                if (
-                    eDown.componentSubType!=='graph' ||
-                    eDown.componentType!=='series' ||
-                    eDown.dataType !== 'node'
-                ) return
-
-                const target = this.echartsOptions.series[eDown.componentIndex].nodes[eDown.dataIndex]
-
-                const dragCoords = [eDown.event?.offsetX, eDown.event?.offsetY]
-
-                this.chartInstance.on('mouseup', (eUp) =>{
-                    const { offsetX, offsetY } =  eUp.event
-                    target.x +=(offsetX - dragCoords[0])
-                    target.y +=(offsetY - dragCoords[1])
-                    this.chartInstance.off('mouseup')
-                })
-            })
-
-            this.chartInstance.on('selectchanged',(p)=>{
-                const {fromActionPayload,fromAction} = p
-
-                if (
-                    fromAction === 'select' &&
-                    fromActionPayload.dataType ==='node'
-                ) {
-                    selects.push(fromActionPayload.dataIndexInside)
-                }else if (
-                    fromAction === 'unselect'&&
-                    fromActionPayload.dataType ==='node'
-                ){
-                    selects.splice(selects.indexOf(fromActionPayload.dataIndexInside),1)
-                }else if (
-                    fromAction === 'select' &&
-                    fromActionPayload.dataType ==='edge'
-                ){
-                    selectsE.push(fromActionPayload.dataIndexInside)
-                }else if (
-                    fromAction === 'unselect' &&
-                    fromActionPayload.dataType ==='edge'
-                ){
-                    selectsE.splice(selectsE.indexOf(fromActionPayload.dataIndexInside),1)
-                }
-
-
-            })
-
-        },
-
-        addRelation2(){
-            if (
-                this.isLoadRelation ||
-                this.Cs.length !== 1 ||
-                this.Ss.length !== 0
-            ) {
-                emitter.emit("toast", '关系图独立唯一,不予以添加')
-                return
-            }
-
-            const length = this.dataset.dimension.length
-
-            let canWeightMap = false
-            let canCategoryMap = false
-
-
-            if (length < 4){
-                emitter.emit("toast", '数据缺失,不符合初节点-关系-末节点')
-                return
-            }else if (length === 5){
-                //仅启用权重
-                if (this.fileData.columnStats[4].type === 'number'){
-                    canWeightMap = true
-                }else {
-                    canWeightMap = false
-                    emitter.emit("toast", '第4列不为数字,不启用权重映射')
-                }
-            }else if (length >= 6){
-                //仅启用权重
-                if (this.fileData.columnStats[4].type === 'number'){
-                    canWeightMap = true
-                }else {
-                    canWeightMap = false
-                    emitter.emit("toast", '第4列不为数字,不予启用权重映射')
-                }
-
-                canCategoryMap = true
-            }
 
 
             this.isLoadRelation = true
@@ -595,11 +422,6 @@ export const useOptionConfig = defineStore('optionConfig', {
                     canWeightMap: canWeightMap
                 },
 
-                categoryConfig:{
-                    isCategoryMap: false,
-                    canCategoryMap: false
-                },
-
                 edgeLabel:{
                     show:true,
                     position: 0,
@@ -643,31 +465,22 @@ export const useOptionConfig = defineStore('optionConfig', {
             this.chartInstance.on('selectchanged',(p)=>{
                 const {fromActionPayload,fromAction} = p
 
-                console.log(fromActionPayload)
-                console.log(fromAction)
                 if (
                     fromAction === 'select' &&
                     fromActionPayload.dataType ==='node'
-                ) {
-                    selects.push(fromActionPayload.dataIndexInside)
-                }else if (
+                ) selects.push(fromActionPayload.dataIndexInside)
+                else if (
                     fromAction === 'unselect'&&
                     fromActionPayload.dataType ==='node'
-                ){
-                    selects.splice(selects.indexOf(fromActionPayload.dataIndexInside),1)
-                }else if (
+                ) selects.splice(selects.indexOf(fromActionPayload.dataIndexInside),1)
+                else if (
                     fromAction === 'select' &&
                     fromActionPayload.dataType ==='edge'
-                ){
-                    selectsE.push(fromActionPayload.dataIndexInside)
-                }else if (
+                ) selectsE.push(fromActionPayload.dataIndexInside)
+                else if (
                     fromAction === 'unselect' &&
                     fromActionPayload.dataType ==='edge'
-                ){
-                    selectsE.splice(selectsE.indexOf(fromActionPayload.dataIndexInside),1)
-                }
-
-
+                ) selectsE.splice(selectsE.indexOf(fromActionPayload.dataIndexInside),1)
             })
 
         },

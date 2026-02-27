@@ -56,7 +56,7 @@ const loadPolarAxis = (c, echartsOptions) => {
     R.polarId = c.id
     R.type = !c.axisType ? 'category' : 'value'  // 类目轴（离散数据）
     R.z = 2
-    console.log("构建半径轴模型", R)
+    //console.log("构建半径轴模型", R)
 
     const A = getSimpleAxisModel(c.V)
     A.id = c.id
@@ -65,7 +65,7 @@ const loadPolarAxis = (c, echartsOptions) => {
     A.startAngle = c.V.sa
     A.endAngle = c.V.ea
     A.z = 2
-    console.log("构建角度轴模型", A)
+    //console.log("构建角度轴模型", A)
 
     updatePolar(R,c.H,0)
     updatePolar(R,c.V,1)

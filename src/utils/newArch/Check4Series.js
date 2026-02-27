@@ -52,19 +52,11 @@ const loadSeries = (s, echartsOptions) => {
         labelLine: {},
         data: []
     }
+
     //检查使用什么系列
-    if (s.C?.type === 0) {
-
-        addItem.coordinateSystem = 'cartesian2d'
-        addItem.xAxisId = s.C.id
-        addItem.yAxisId = s.C.id
-        addSeriesForType0(addItem, s)
-
-    } else if (s.C?.type === 1) {
-        addItem.coordinateSystem = 'polar'
-        addItem.polarId = s.C.id
-        addSeriesForType0(addItem, s)
-    } else if (s.C?.type === 2) {
+    if (s.C?.type === 0) addSeriesForType0(addItem, s,false)
+    else if (s.C?.type === 1) addSeriesForType0(addItem, s,true)
+    else if (s.C?.type === 2) {
         //获取数据
         addItem.data = getPieData(s.category, s.number, s.color, s.D,s.id)
 
@@ -73,19 +65,21 @@ const loadSeries = (s, echartsOptions) => {
 
         pushMsg(0, `无系图颜色调整方式:点击对应区域`)
 
-    }else if(s.type === 5){
-        if (s.isAI) addRelation2(addItem,s)
-        else addRelation(addItem,s)
-    }
+    }else if(s.type === 5) addRelation(addItem,s)
 
     echartsOptions.series.push(addItem)
 
     emitter.emit('load-chart')
-
 }
 
 //系列配置加载
-const addSeriesForType0 = (addItem, series) => {
+const addSeriesForType0 = (addItem, series,type) => {
+
+    addItem.coordinateSystem = type ? 'polar' :'cartesian2d'
+    addItem.xAxisId = type ? undefined : series.C.id
+    addItem.yAxisId = type ? undefined : series.C.id
+    addItem.polarId = type ? series.C.id : undefined
+
     addItem.type = chartType[series.type]
     getDataForSimpleSeries(addItem, series)
     if (series.type === 0) {
@@ -149,7 +143,6 @@ const addPie = (addItem, series,echartsOptions) => {
         pieConfig.polar.pt
     )
 
-
     addItem.radius = position.radius
     addItem.center = position.center
 
@@ -186,174 +179,6 @@ const addRelation = (addItem,s)=>{
     const data = getRelationData(s)
     const nodeMap = new Map();
     const edges = [];
-    const ids =  getSingle(0)
-    const {
-        labelConfig,symbolConfig,
-        categoryConfig,otherConfig,
-        colorSet,edgeLabel,weightConfig
-    } = s
-
-    addItem.type = chartType[5]
-    addItem.data = undefined
-    addItem.nodeScaleRatio = 0
-
-    addItem.emphasis.focus = 'adjacency'
-    addItem.emphasis.scale = 1
-
-    addItem.roam = true
-    addItem.draggable = true
-    addItem.selectedMode = 'multiple'
-
-    addItem.layout = relationLayout[s.layout]
-    addItem.select = {
-        lineStyle:{
-            width: 3,
-            shadowColor: 'rgba(0, 0, 0, 0.5)',
-            shadowBlur: 10
-        }
-    }
-
-    //以上不修改
-    addItem.color = symbolConfig.color
-    addItem.symbol = relationStyleSelect[symbolConfig.symbol].label
-    addItem.symbolSize = weightConfig.symbolSize
-
-    addItem.label.show = labelConfig.isLabel
-    addItem.label.color = labelConfig.labelColor
-    addItem.label.position = relationLabelPosition[labelConfig.position]
-
-    addItem.edgeLabel = {
-        show:edgeLabel.show,
-        position: relationEdgeLabelPosition[edgeLabel.position],
-        fontSize: 10,
-        color: edgeLabel.color
-    }
-    addItem.lineStyle = {
-        width:1,
-        color: edgeLabel.color
-    }
-    addItem.edgeSymbol = relationEdgeSymbol[otherConfig.isDirected*1]
-
-
-    const {canCategoryMap} = categoryConfig
-    const {canWeightMap} = weightConfig
-
-
-    //节点类目
-    const categoryData =  canCategoryMap ?
-        getSingle(5) : null
-    //去重
-    const category = canCategoryMap ?
-        [...new Set(categoryData)].map((i,index)=>{
-            const length = colorSet.length
-            return {
-                name: i,
-                itemStyle:{
-                    color: length > 0 ? colorSet[index % length] : symbolConfig.color
-                }
-            }
-        }) : []
-
-    const weightData = canWeightMap ?
-        getSingle(4) : null
-
-    const nodesItem = [...new Set(getSingle(1))]
-
-
-    const {max, min} = canWeightMap ? getFieldDetails(4) : {min: 0, max: 0}
-    const [rMin,rMax] = weightConfig.symbolRange
-
-
-    data.forEach((d,index) => {
-        //从map中查询
-        const target = nodeMap.get(d[0])
-
-        if (
-            d[0]&& d[2] &&
-            d[0]!=='' && d[2]!=='' &&
-            nodesItem.includes(d[2])
-        ) {
-            //取无效边
-            edges.push({
-                idEV:ids[index],
-                source: d[0],
-                target: d[2],
-                label:{
-                    formatter: d[1],
-                },
-                lineStyle:{
-
-                },
-
-            })
-        }
-
-        let currentCategory = undefined
-
-        //处理节点
-        let size = undefined
-        let position = {
-            x: getRandomInt(250,500),
-            y: getRandomInt(250,500),
-        }
-
-        if (category)  currentCategory = category.findIndex(
-            i=> i.name === categoryData[index]
-        )
-
-        if (canWeightMap){
-
-            size  = rMin + (rMax - rMin) * (weightData[index] - min) / (max - min)
-
-            if (canCategoryMap) position = centerSpreadWithRegion(
-                    width, height, min, max, weightData[index],
-                    category.length,currentCategory,4
-            )
-            else position = centerSpread(
-                    width, height, min, max, weightData[index], 1
-            )
-
-        }else if (canCategoryMap)position = partitionOnly(
-                width, height, category.length, currentCategory, 3
-        )
-
-
-        if (!target){
-            nodeMap.set(d[0],{
-                idEV: [ids[index]],
-                name: d[0],
-                symbolSize: size,
-                itemStyle:{},
-                category: currentCategory,
-                ...position
-            })
-
-        }else {
-            //覆盖
-            if (canWeightMap) target.symbolSize = size
-            target.idEV.push(ids[index])
-        }
-
-
-    })
-
-
-    addItem.categories = category
-    addItem.nodes = Array.from(nodeMap.values())
-    addItem.edges = edges
-
-}
-
-const addRelation2 = (addItem,s)=>{
-
-    const {getChartSize} = useOptionConfig()
-
-    const {width, height} = getChartSize()
-
-    const data = getRelationData(s)
-    const nodeMap = new Map();
-    const edges = [];
-    const ids =  getSingle(0)
     const {
         labelConfig,symbolConfig,otherConfig,
         edgeLabel,weightConfig
@@ -361,7 +186,7 @@ const addRelation2 = (addItem,s)=>{
 
     addItem.type = chartType[5]
     addItem.data = undefined
-    addItem.nodeScaleRatio = 0
+    addItem.nodeScaleRatio = 0.6
 
     addItem.emphasis.focus = 'adjacency'
     addItem.emphasis.scale = 1
@@ -371,6 +196,7 @@ const addRelation2 = (addItem,s)=>{
     addItem.selectedMode = 'multiple'
 
     addItem.layout = relationLayout[s.layout]
+    addItem.layout = 'force'
     addItem.select = {
         lineStyle:{
             width: 3,
@@ -378,6 +204,16 @@ const addRelation2 = (addItem,s)=>{
             shadowBlur: 10
         }
     }
+    addItem.center = [width/2,height/2]
+    addItem. roamTrigger = 'global'
+    addItem.coordinateSystemUsage = 'box'
+    addItem.z = 10
+    addItem.force = {
+        repulsion: 1000,
+        gravity: 0.1,
+        edgeLength:110
+    }
+
 
     //以上不修改
     addItem.color = symbolConfig.color
@@ -400,54 +236,47 @@ const addRelation2 = (addItem,s)=>{
     }
     addItem.edgeSymbol = relationEdgeSymbol[otherConfig.isDirected*1]
 
-
-
     const {canWeightMap} = weightConfig
 
+    const weightDataS = canWeightMap ? getSingle(4) : null
+    const weightDataO = canWeightMap ? getSingle(5) : null
 
-    const weightDataS = canWeightMap ?
-        getSingle(4) : null
-    const weightDataO = canWeightMap ?
-        getSingle(5) : null
+    const detailsS = getFieldDetails(4)
+    const detailsO = getFieldDetails(5)
 
+    const {max, min} = canWeightMap ?
+        {
+            max: Math.max(detailsS.max, detailsO.max),
+            min: Math.min(detailsS.min, detailsO.min),
+        }
+        : {max:0,min:0}
 
-    const {max, min} = canWeightMap ? getFieldDetails(4) : {min: 0, max: 0}
     const [rMin,rMax] = weightConfig.symbolRange
-
 
     data.forEach((d,index) => {
         //从map中查询
-
-
         if (
             d[0] && d[2]
             &&
             d[0]!=='' && d[2]!==''
         ) edges.push({
-                idEV:ids[index],
                 source: d[0],
                 target: d[2],
                 label:{
                     formatter: d[1],
                 },
-                lineStyle:{
-
-                },
-
+                lineStyle:{},
         })
         handleRelation(
             nodeMap,d[0],min,max,rMin,rMax,index,canWeightMap,
-                width,height,weightDataS,ids
+                width,height,weightDataS
         )
 
         handleRelation(
             nodeMap,d[2],min,max,rMin,rMax,index,canWeightMap,
-            width,height,weightDataO,ids
+            width,height,weightDataO
         )
-
-
     })
-
 
     addItem.nodes = Array.from(nodeMap.values())
     addItem.edges = edges
@@ -458,6 +287,7 @@ const addRelation2 = (addItem,s)=>{
 const updateSeries = (s, echartsOptions) => {
     const targetSeries = echartsOptions.series.find(i => i.id === s.id)
     const {lang} = useOptionConfig()
+    console.log(s.C)
     if (s.C.type === 0) {
         targetSeries.coordinateSystem = 'cartesian2d'
         targetSeries.xAxisId = s.C.id
@@ -465,9 +295,10 @@ const updateSeries = (s, echartsOptions) => {
 
         getDataForSimpleSeries(targetSeries, s)
     } else if (s.C.type === 1) {
-        getDataForSimpleSeries(targetSeries, s)
+
         targetSeries.coordinateSystem = 'polar'
         targetSeries.polarId = s.C.id
+        getDataForSimpleSeries(targetSeries, s)
     } else if (s.C.type === 2) {
         targetSeries.data = getPieData(s.category, s.number, s.color, s.D,s.id)
 
@@ -506,11 +337,10 @@ export const deleteSeries = (s, Ss, echartsOptions) => {
         isLoadRelation.value = false
     }
     unloadSeries(s, echartsOptions)
-    Ss.splice(Ss.findIndex(i => i.id !== s.id),1)
+    Ss.splice(Ss.findIndex(i => i.id === s.id),1)
 }
 
 const checkLink = (s) => {
-
     return(
         (s.type===5 && s.from !==-1 && s.to !==-1 && s.relationship !==-1)
         ||
@@ -940,7 +770,7 @@ export function centerSpread(width, height, minWeight, maxWeight, currentWeight,
 
     const weightRatio = (currentWeight - minWeight) / (maxWeight - minWeight);
 
-    const distanceRatio = 1 - weightRatio + 0.2
+    const distanceRatio = 1 - weightRatio
 
     const maxRadius = Math.min(width, height)
     const radius = maxRadius * distanceRatio * spreadFactor * (1+Math.random()) /2
@@ -984,12 +814,13 @@ export function partitionOnly(width, height, regionCount, regionIndex, span = 1)
     return { x, y };
 }
 
-const handleRelation = (
+export const handleRelation = (
     nodeMap,node,min,max,rMin,rMax,index,canWeightMap,
-    width,height,weightData,ids
+    width,height,weightData
 )=>{
 
     const target = nodeMap.get(node)
+    const weight = canWeightMap ? weightData[index] : -1
 
     //处理节点
     let size = undefined
@@ -999,19 +830,18 @@ const handleRelation = (
     }
 
     if (canWeightMap){
-        size  = rMin + (rMax - rMin) * (weightData[index] - min) / (max - min)
+        size  = rMin + (rMax - rMin) * (weight - min) / (max - min)
         position = centerSpread(
-            width, height, min, max, weightData[index], 1
+            width, height, min, max, weight, 1
         )
 
     }
 
-
     if (!target){
         nodeMap.set(node,{
-            idEV: [ids[index]],
             name: node,
             symbolSize: size,
+            weight,
             itemStyle:{},
             ...position
         })
@@ -1019,7 +849,7 @@ const handleRelation = (
     }else {
         //覆盖
         if (canWeightMap) target.symbolSize = size
-        target.idEV.push(ids[index])
+        target.weight = weight
     }
 
 }

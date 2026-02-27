@@ -29,7 +29,7 @@ export const analyzeColumns2 = (rows, header,isNeedSoleCheck=true) => {
     rows.forEach((row,index) => {
         row.forEach((value, col) => {
 
-            if (col===0) return
+            if (col===0 || col > stats.length - 1) return
 
             const current = stats[col]
             // 空值检测
